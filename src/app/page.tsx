@@ -8,7 +8,7 @@ export default function Home() {
   return (
     <>
       <section>
-        <div className="my-8">
+        <div className="my-8 overflow-hidden">
           <HeroSection />
         </div>
         <div className="my-8">
