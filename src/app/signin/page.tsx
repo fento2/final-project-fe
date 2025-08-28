@@ -1,18 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { LogIn, Mail, Lock, Github, Facebook } from "lucide-react";
+import { LogIn, MoveLeft } from "lucide-react";
 import SocialButtons from "../components/SocialButtons";
 import Artwork from "../components/ArtWork";
 import FormAuth from "../components/FormAuth";
-import Router from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -20,17 +20,20 @@ export default function LoginPage() {
         try {
             // TODO: panggil API autentikasi
             console.log("submit", { email, password });
-            Router.push("/dashboard");
+            router.push("/dashboard");
         } finally {
             setLoading(false);
         }
     }
 
     return (
-        <div className="min-h-screen flex flex-col lg:flex-row justify-center items-start">
+        <div className="min-h-screen flex flex-col lg:flex-row justify-center items-center">
             {/* Left: Form */}
             <div className="w-full lg:max-w-xl px-6 py-12 flex flex-col justify-center order-last lg:order-first">
                 <div className="max-w-md w-full mx-auto">
+                    <div className="flex gap-2 hover:underline cursor-pointer text-black/50 w-fit" onClick={() => router.push("/")}>
+                        <MoveLeft />back to home
+                    </div>
                     <h1 className="text-3xl font-extrabold mb-2 flex items-center gap-2">
                         {/* Welcome Back <span className="text-2xl">👋</span> */}
                         Welcome Back
