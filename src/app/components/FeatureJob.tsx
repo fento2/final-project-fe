@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react";
-import JobCard from "./JobCard";
+import FeatureJobCard from "./JobCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const jobs = [
@@ -35,7 +35,7 @@ export default function FeatureJobSection() {
     const [page, setPage] = useState(2);
 
     return (
-        <section className="py-12">
+        <section className="py-12 px-3">
             <div className="text-center mb-10">
                 <h2 className="text-3xl font-bold">Featured Jobs</h2>
                 <p className="text-gray-500 mt-2">
@@ -45,7 +45,7 @@ export default function FeatureJobSection() {
 
             <div className="flex flex-col md:flex-row gap-8 justify-center">
                 {jobs.map((job, i) => (
-                    <JobCard key={i} {...job} />
+                    <FeatureJobCard key={i} {...job} />
                 ))}
             </div>
 
