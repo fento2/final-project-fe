@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { usePathname } from "next/navigation";
-import Navbar from "@/components/core/Navbar";
+import Navbar from "@/components/core/Navab";
 
 export default function ConditionalNavbar() {
   const pathname = usePathname() || "/";
