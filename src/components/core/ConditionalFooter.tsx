@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { usePathname } from "next/navigation";
-import Footer from "./footer";
+import Footer from "./Footer";
 
 export default function ConditionalFooter() {
   const pathname = usePathname() || "/";
