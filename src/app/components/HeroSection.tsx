@@ -38,8 +38,8 @@ const HeroSection = () => {
 					<p className="text-center text-base sm:text-lg text-[#52525B] mb-8 max-w-2xl px-2">
 						Discover your next career move with Horizon Jobs, the go-to job marketplace for job seekers and employers.
 					</p>
-					<form onSubmit={handleSubmit} className="flex flex-col md:flex-row items-center w-full max-w-3xl gap-3 sm:gap-4 mb-6 px-2">
-						<div className="flex items-center bg-white rounded-lg shadow px-4 py-2 w-full md:w-[400px] border border-gray-200">
+					<form onSubmit={handleSubmit} className="flex flex-col md:flex-row items-center w-full max-w-5xl gap-3 sm:gap-4 mb-6 px-2">
+						<div className="flex items-center bg-white rounded-lg shadow px-4 py-2 w-full md:w-[520px] border border-gray-200">
 							<Search className="w-5 h-5 text-gray-400 mr-2" />
 							<input
 								type="text"
@@ -49,7 +49,7 @@ const HeroSection = () => {
 								className="w-full outline-none bg-transparent text-sm sm:text-base"
 							/>
 						</div>
-						<div className="flex items-center bg-white rounded-lg shadow px-4 py-2 w-full md:w-[260px] border border-gray-200 relative">
+						<div className="flex items-center bg-white rounded-lg shadow px-4 py-2 w-full md:w-[320px] border border-gray-200 relative">
 							<select
 								aria-label="Category"
 								value={category}
@@ -64,7 +64,7 @@ const HeroSection = () => {
 							<ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" size={16} />
 						</div>
 
-						<div className="flex items-center bg-white rounded-lg shadow px-4 py-2 w-full md:w-[200px] border border-gray-200">
+						<div className="flex items-center bg-white rounded-lg shadow px-4 py-2 w-full md:w-[280px] border border-gray-200">
 							<MapPin className="w-5 h-5 text-gray-400 mr-2" />
 							<input
 								type="text"

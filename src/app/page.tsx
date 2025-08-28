@@ -21,6 +21,9 @@ export default function Home() {
         <div className="my-8">
           <TopCompaniesSection />
         </div>
+        <div className="my-8">
+          <DiscoverySection />
+        </div>
       </section>
 
     </>
