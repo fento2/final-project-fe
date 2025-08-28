@@ -123,7 +123,7 @@ const JobCategories = () => {
       <div className="text-center mt-10">
         <button
           onClick={() => setShowAll(!showAll)}
-          className="px-6 py-2 rounded-lg text-indigo-500 font-medium border border-indigo-500 hover:bg-indigo-50"
+          className="px-6 py-2 rounded-lg bg-indigo-500 font-medium hover:bg-indigo-700 text-white"
         >
           {showAll ? "See Less" : "See All"}
         </button>
