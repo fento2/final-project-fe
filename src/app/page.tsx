@@ -1,5 +1,5 @@
 import HeroSection from "./components/HeroSection";
-
+import DiscoverySection from "./components/DiscoverySection";
 import FeatureJobSection from "./components/FeatureJob";
 import TopCompaniesSection from "./components/TopCompaniesSection";
 import JobCategories from "./components/JobCategories";
@@ -7,6 +7,7 @@ import JobCategories from "./components/JobCategories";
 export default function Home() {
   return (
     <>
+
       <section>
         <div className="my-8">
           <HeroSection />
@@ -21,6 +22,7 @@ export default function Home() {
           <TopCompaniesSection />
         </div>
       </section>
+
     </>
   );
 }
