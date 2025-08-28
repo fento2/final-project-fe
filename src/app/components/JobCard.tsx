@@ -1,7 +1,8 @@
 // components/JobCard.tsx
 import { Calendar, MapPin, DollarSign } from "lucide-react";
+import Image from "next/image";
 
-interface JobCardProps {
+interface FeatureJobCardProps {
     company: string;
     logo: string;
     postedDate: string;
@@ -13,7 +14,7 @@ interface JobCardProps {
     daysLeft: number;
 }
 
-const JobCard = ({
+const FeatureJobCard = ({
     company,
     logo,
     postedDate,
@@ -23,13 +24,19 @@ const JobCard = ({
     type,
     description,
     daysLeft,
-}: JobCardProps) => {
+}: FeatureJobCardProps) => {
     return (
         <div className="flex flex-col md:flex-row justify-between items-center bg-white rounded-2xl shadow-md p-6 w-full max-w-2xl">
             {/* Left Section */}
             <div className="flex-1">
                 <div className="flex items-center gap-3">
-                    <img src={logo} alt={company} className="w-12 h-12 object-contain" />
+                    <Image
+                        src={logo}
+                        alt={company}
+                        width={48}
+                        height={48}
+                        className="w-12 h-12 object-contain"
+                    />
                     <div>
                         <p className="font-semibold">{company}</p>
                         <p className="text-sm text-gray-500">{postedDate}</p>
@@ -65,4 +72,4 @@ const JobCard = ({
     );
 };
 
-export default JobCard;
+export default FeatureJobCard;
