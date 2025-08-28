@@ -1,6 +1,6 @@
 
 import HeroSection from "./components/HeroSection";
-
+import DiscoverySection from "./components/DiscoverySection";
 import FeatureJobSection from "./components/FeatureJob";
 import TopCompaniesSection from "./components/TopCompaniesSection";
 
@@ -10,12 +10,10 @@ export default function Home() {
     <>
       <div>
 
-      <HeroSection />
-
-        <h1 className="text-3xl">Testing</h1>
+        <HeroSection />
         <FeatureJobSection />
         <TopCompaniesSection />
-
+        <DiscoverySection />
       </div>
 
     </>

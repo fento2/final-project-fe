@@ -1,7 +1,20 @@
+"use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Search, MapPin, ChevronDown } from "lucide-react";
 
 const HeroSection = () => {
+	const router = useRouter();
+	const [keyword, setKeyword] = useState("");
+	const [category, setCategory] = useState("");
+	const [location, setLocation] = useState("");
+
+	const handleSubmit = (e: React.FormEvent) => {
+		e.preventDefault();
+		const q = `query=${encodeURIComponent(keyword)}&category=${encodeURIComponent(category)}&location=${encodeURIComponent(location)}`;
+		router.push(`/search?${q}`);
+	};
 	return (
 			<section className="w-screen min-h-[600px] md:min-h-[700px] lg:min-h-screen flex items-center justify-center bg-white -mt-6 md:-mt-12">
 			<div
@@ -24,25 +37,41 @@ const HeroSection = () => {
 					<p className="text-center text-base sm:text-lg text-[#52525B] mb-8 max-w-2xl px-2">
 						Discover your next career move with Horizon Jobs, the go-to job marketplace for job seekers and employers.
 					</p>
-					<form className="flex flex-col md:flex-row items-center w-full max-w-3xl gap-3 sm:gap-4 mb-6 px-2">
+					<form onSubmit={handleSubmit} className="flex flex-col md:flex-row items-center w-full max-w-3xl gap-3 sm:gap-4 mb-6 px-2">
 						<div className="flex items-center bg-white rounded-lg shadow px-4 py-2 w-full md:w-[400px] border border-gray-200">
-							<svg className="w-5 h-5 text-gray-400 mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+							<Search className="w-5 h-5 text-gray-400 mr-2" />
 							<input
 								type="text"
 								placeholder="What job are you looking for?"
+								value={keyword}
+								onChange={(e) => setKeyword(e.target.value)}
 								className="w-full outline-none bg-transparent text-sm sm:text-base"
 							/>
 						</div>
-						<div className="relative w-full md:w-[200px]">
-							<select className="w-full bg-white border rounded-lg px-4 py-2 text-base outline-none appearance-none">
-								<option>Select Category</option>
-								<option>Graphic Designer</option>
-								<option>UI/UX</option>
-								<option>Web Developer</option>
+						<div className="flex items-center bg-white rounded-lg shadow px-4 py-2 w-full md:w-[260px] border border-gray-200 relative">
+							<select
+								aria-label="Category"
+								value={category}
+								onChange={(e) => setCategory(e.target.value)}
+								className="w-full bg-transparent border-none text-base outline-none appearance-none pr-8"
+							>
+								<option value="">Select category</option>
+								<option value="Graphic Designer">Graphic Designer</option>
+								<option value="UI/UX">UI/UX</option>
+								<option value="Web Developer">Web Developer</option>
 							</select>
-							<span className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 text-lg">
-								▼
-							</span>
+							<ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400" size={16} />
+						</div>
+
+						<div className="flex items-center bg-white rounded-lg shadow px-4 py-2 w-full md:w-[200px] border border-gray-200">
+							<MapPin className="w-5 h-5 text-gray-400 mr-2" />
+							<input
+								type="text"
+								placeholder="Location (city, country)"
+								value={location}
+								onChange={(e) => setLocation(e.target.value)}
+								className="w-full outline-none bg-transparent text-sm sm:text-base"
+							/>
 						</div>
 						<button
 							type="submit"
