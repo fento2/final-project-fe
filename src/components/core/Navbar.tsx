@@ -60,8 +60,9 @@ const Navbar: React.FC = () => {
         >
           {menus.map((m) => (
             <li key={m.label} className="pb-4 text-[#111827]">
-              <Link href={m.href} legacyBehavior>
-                <a
+              <div>
+                <Link
+                  href={m.href}
                   ref={(el) => {
                     menuRefs.current[m.label] = el;
                     return undefined;
@@ -75,8 +76,8 @@ const Navbar: React.FC = () => {
                   aria-current={active === m.label ? "page" : undefined}
                 >
                   {m.label}
-                </a>
-              </Link>
+                </Link>
+              </div>
             </li>
           ))}
 

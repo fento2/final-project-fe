@@ -6,7 +6,6 @@ import ShowSideBar from "./dashboard/components/ShowSideBar";
 
 import ConditionalNavbar from "@/components/core/ConditionalNavbar";
 
-
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -32,16 +31,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-
         <ShowSideBar />
-        
+        <ConditionalNavbar />
         {children}
-
-
-  <ConditionalNavbar />
-  {children}
-
-
       </body>
     </html>
   );
