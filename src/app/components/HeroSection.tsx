@@ -22,7 +22,7 @@ const HeroSection = () => {
 						Find Your Dream<br />Job with Us
 					</h1>
 					<p className="text-center text-base sm:text-lg text-[#52525B] mb-8 max-w-2xl px-2">
-						Discover your next career move with JobLinkup, the go-to job marketplace for job seekers and employers.
+						Discover your next career move with Horizon Jobs, the go-to job marketplace for job seekers and employers.
 					</p>
 					<form className="flex flex-col md:flex-row items-center w-full max-w-3xl gap-3 sm:gap-4 mb-6 px-2">
 						<div className="flex items-center bg-white rounded-lg shadow px-4 py-2 w-full md:w-[400px] border border-gray-200">
