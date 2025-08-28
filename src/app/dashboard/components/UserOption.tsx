@@ -1,0 +1,81 @@
+"use client";
+import { FileClock, LayoutDashboard, MessagesSquare } from "lucide-react";
+import { motion } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+
+interface IUserOption {
+  isCollapsed: boolean;
+}
+const UserOption = ({ isCollapsed }: IUserOption) => {
+  const pathname = usePathname();
+  const variants = {
+    open: {
+      x: 0,
+      opacity: 1,
+      transition: {
+        x: { stiffness: 1000, velocity: -100 },
+      },
+    },
+    closed: {
+      x: -20,
+      opacity: 0,
+      transition: {
+        x: { stiffness: 100 },
+      },
+    },
+  };
+  return (
+    <>
+      <Link
+        href="/dashboard/user/profile"
+        className={cn(
+          "flex h-8 w-full flex-row items-center rounded-md px-2 py-1.5   transition hover:bg-muted hover:text-primary",
+          pathname?.includes("dashboard") && "bg-muted text-blue-600"
+        )}
+      >
+        <LayoutDashboard className="h-4 w-4" />
+        <motion.li variants={variants}>
+          {!isCollapsed && <p className="ml-2 text-sm font-medium">Profile</p>}
+        </motion.li>
+      </Link>
+      <Link
+        href="/dashboard/user/reports"
+        className={cn(
+          "flex h-8 w-full flex-row items-center rounded-md px-2 py-1.5 transition hover:bg-muted hover:text-primary",
+
+          pathname?.includes("reports") && "bg-muted text-blue-600"
+        )}
+      >
+        <FileClock className="h-4 w-4" />{" "}
+        <motion.li variants={variants}>
+          {!isCollapsed && (
+            <div className="flex items-center gap-2">
+              <p className="ml-2 text-sm font-medium">Reports</p>
+            </div>
+          )}
+        </motion.li>
+      </Link>
+      <Link
+        href="dashboard/user/interview"
+        className={cn(
+          "flex h-8 flex-row items-center rounded-md px-2 py-1.5 transition hover:bg-muted hover:text-primary",
+          pathname?.includes("chat") && "bg-muted text-blue-600"
+        )}
+      >
+        <MessagesSquare className="h-4 w-4" />
+        <motion.li variants={variants}>
+          {!isCollapsed && (
+            <div className="ml-2 flex items-center  gap-2">
+              <p className="text-sm font-medium">Interview</p>
+            </div>
+          )}
+        </motion.li>
+      </Link>
+    </>
+  );
+};
+
+export default UserOption;

@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { useState } from "react";
@@ -92,6 +93,7 @@ const HeroSection = () => {
 			</div>
 		</section>
 	);
+
 };
 
 export default HeroSection;
