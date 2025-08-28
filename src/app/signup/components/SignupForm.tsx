@@ -7,6 +7,7 @@ import RoleSelector from "./RoleSelector";
 import CompanyFields from "./CompanyFields";
 import SocialButtons from "../../components/SocialButtons";
 import FormAuth from "@/app/components/FormAuth";
+import { MoveLeft } from "lucide-react";
 
 export default function SignupForm() {
     const [companyName, setCompanyName] = useState("");
@@ -56,6 +57,9 @@ export default function SignupForm() {
 
     return (
         <div className="max-w-md w-full mx-auto">
+            <div className="flex gap-2 hover:underline cursor-pointer text-black/50 w-fit" onClick={() => router.push("/")}>
+                <MoveLeft />back to home
+            </div>
             <h1 className="text-3xl font-extrabold mb-2">Create your account</h1>
             <p className="text-sm text-gray-600 mb-8">
                 Join JobListing and start exploring great opportunities with top companies.

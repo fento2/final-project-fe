@@ -5,7 +5,7 @@ import SignupForm from "./components/SignupForm";
 
 export default function SignupPage() {
     return (
-        <div className="min-h-screen flex flex-col lg:flex-row justify-center items-start">
+        <div className="min-h-screen flex flex-col lg:flex-row justify-center items-center">
             {/* Artwork (tampil di atas di mobile) */}
             <Artwork />
 
