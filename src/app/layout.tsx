@@ -4,6 +4,7 @@ import "./globals.css";
 
 import ShowSideBar from "./dashboard/components/ShowSideBar";
 import ConditionalNavbar from "@/components/core/ConditionalNavbar";
+import ConditionalFooter from "@/components/core/ConditionalFooter";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,6 +35,7 @@ export default function RootLayout({
         <ConditionalNavbar />
 
         {children}
+        <ConditionalFooter />
       </body>
     </html>
   );
