@@ -45,7 +45,7 @@ const MobileNav = ({ setOpen, setActive, active }: IMobileNav) => {
           ))}
         </ul>
         {/* Divider inside mobile menu */}
-        <div className="border-t mt-6 pt-6 flex flex-col gap-3">
+        {/* <div className="border-t mt-6 pt-6 flex flex-col gap-3">
           <Button
             className="w-full bg-indigo-600 text-white hover:bg-[#4F46E5]"
             onClick={() => {
@@ -64,13 +64,13 @@ const MobileNav = ({ setOpen, setActive, active }: IMobileNav) => {
           >
             Sign Up
           </Button>
-        </div>
-        {/* <div>
+        </div> */}
+        <div>
           <Button className="w-full bg-indigo-600 text-white hover:bg-[#4F46E5]">
             <LayoutDashboardIcon />
             Dashboard
           </Button>
-        </div> */}
+        </div>
       </div>
     </>
   );

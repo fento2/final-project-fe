@@ -111,7 +111,7 @@ const Navbar: React.FC = () => {
           >
             Sign In
           </Button>
-          {/* Divider */}
+
           <span className="hidden md:inline-block w-px h-6 bg-gray-300" />
           <Button
             className="hidden md:inline-block px-5 py-2 border border-[#4F46E5] rounded-lg font-medium bg-transparant text-indigo-600 hover:text-white hover:bg-[#4F46E5] transition"

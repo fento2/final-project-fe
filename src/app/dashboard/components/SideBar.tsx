@@ -8,7 +8,9 @@ import { Separator } from "@/components/ui/separator";
 import ProfileNavSection from "./ProfileNavSection";
 import UserOption from "./UserOption";
 import HeaderDashboard from "./HeaderDashboard";
-import { Menu, X } from "lucide-react";
+import { Menu, LayoutDashboard, ChevronLeft } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const sidebarVariants = {
   open: { width: "15rem" },
@@ -74,8 +76,6 @@ export function SideBar() {
         variants={mobileVariants}
         transition={transitionProps as any}
       >
-        {/* Tombol close */}
-
         <SidebarContent isCollapsed={false} />
       </motion.div>
     </>
@@ -87,19 +87,36 @@ function SidebarContent({ isCollapsed }: { isCollapsed: boolean }) {
     <motion.div className="relative z-40 flex text-muted-foreground h-full shrink-0 flex-col transition-all">
       <motion.ul className="flex h-full flex-col">
         <div className="flex grow flex-col items-center">
+          {/* Profile Section */}
           <div className="flex h-[54px] w-full shrink-0 border-b p-2">
             <ProfileNavSection isCollapsed={!isCollapsed} />
           </div>
 
+          {/* Main User Options */}
           <div className="flex h-full w-full flex-col">
             <div className="flex grow flex-col gap-4">
               <ScrollArea className="h-16 grow p-2">
                 <div className={cn("flex w-full flex-col gap-1")}>
                   <UserOption isCollapsed={isCollapsed} />
-                  <Separator className="w-full" />
                 </div>
               </ScrollArea>
             </div>
+
+            {/* Separator */}
+            <Separator className="w-full" />
+
+            {/* Home Menu di paling bawah */}
+            <Link
+              href="/"
+              className={cn(
+                "flex h-10 w-full items-center rounded-md px-4 py-2 mb-4 transition hover:bg-muted hover:text-primary"
+              )}
+            >
+              <ChevronLeft className="h-6 w-6" />
+              {!isCollapsed && (
+                <span className="ml-3 font-medium">Back Home</span>
+              )}
+            </Link>
           </div>
         </div>
       </motion.ul>

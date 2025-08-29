@@ -1,6 +1,5 @@
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { AvatarFallback } from "@radix-ui/react-avatar";
-import { BadgeCheck, User, User2, UserCircle } from "lucide-react";
 interface IProfileNavSection {
   isCollapsed: boolean;
 }

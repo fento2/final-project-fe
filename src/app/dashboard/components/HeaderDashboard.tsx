@@ -7,6 +7,7 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { HomeIcon } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
 
