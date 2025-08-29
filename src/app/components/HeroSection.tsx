@@ -30,7 +30,7 @@ const HeroSection = () => {
 				{/* Overlay for soft white effect*/}
 				<div className="absolute inset-0 bg-white/20 z-10" />
 
-				<div className="relative z-20 flex flex-col items-center w-full px-4 sm:px-6 py-8 sm:py-12">
+				<div className="relative z-10 flex flex-col items-center w-full px-4 sm:px-6 py-8 sm:py-12">
 					<span className="block text-center text-base font-semibold text-[#4F46E5] mb-6">The Only Job Marketplace</span>
 					<h1 className="text-center text-4xl sm:text-5xl md:text-6xl font-bold text-[#18181B] mb-4 leading-tight">
 						Find Your Dream<br />Job with Us

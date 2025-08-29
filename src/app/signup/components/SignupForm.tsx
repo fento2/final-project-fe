@@ -57,15 +57,28 @@ export default function SignupForm() {
 
     return (
         <div className="max-w-md w-full mx-auto">
-            <div className="flex gap-2 hover:underline cursor-pointer text-black/50 w-fit" onClick={() => router.push("/")}>
-                <MoveLeft />back to home
+            {/* Fixed Header Section */}
+            <div className="sticky top-0 bg-white z-10 pb-4">
+                <div className="flex gap-2 hover:underline cursor-pointer text-black/50 w-fit mb-4" onClick={() => router.push("/")}>
+                    <MoveLeft />back to home
+                </div>
+                <h1 className="text-3xl font-extrabold mb-2">Create your account</h1>
+                <p className="text-sm text-gray-600 mb-4">
+                    Join JobListing and start exploring great opportunities with top companies.
+                </p>
             </div>
-            <h1 className="text-3xl font-extrabold mb-2">Create your account</h1>
-            <p className="text-sm text-gray-600 mb-8">
-                Join JobListing and start exploring great opportunities with top companies.
-            </p>
 
             <form onSubmit={handleSubmit} className="space-y-4">
+                <FormAuth
+                    email={email}
+                    onEmailChange={(e) => setEmail(e.target.value)}
+                    password={password}
+                    onPasswordChange={(e) => setPassword(e.target.value)}
+                    showConfirm
+                    confirmPassword={confirm}
+                    onConfirmPasswordChange={(e) => setConfirm(e.target.value)}
+                />
+
                 <RoleSelector role={role} setRole={setRole} />
 
                 {role === "company" && (
@@ -76,16 +89,6 @@ export default function SignupForm() {
                         setPhone={setPhone}
                     />
                 )}
-
-                <FormAuth
-                    email={email}
-                    onEmailChange={(e) => setEmail(e.target.value)}
-                    password={password}
-                    onPasswordChange={(e) => setPassword(e.target.value)}
-                    showConfirm
-                    confirmPassword={confirm}
-                    onConfirmPasswordChange={(e) => setConfirm(e.target.value)}
-                />
 
                 {error && <p className="text-sm text-red-600">{error}</p>}
 

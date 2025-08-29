@@ -3,6 +3,9 @@ import DiscoverySection from "./components/DiscoverySection";
 import FeatureJobSection from "./components/FeatureJob";
 import TopCompaniesSection from "./components/TopCompaniesSection";
 import JobCategories from "./components/JobCategories";
+import AboutUsSection from "./components/AboutUsSection";
+import TestimonialSection from "./components/TestimonialSection";
+import CtaSection from "./components/CtaSection";
 
 export default function Home() {
   return (
@@ -23,6 +26,15 @@ export default function Home() {
         </div>
         <div className="my-8">
           <DiscoverySection />
+        </div>
+        <div className="my-8">
+          <AboutUsSection />
+        </div>
+        <div>
+          <TestimonialSection />
+        </div>
+        <div>
+          <CtaSection />
         </div>
       </section>
 
