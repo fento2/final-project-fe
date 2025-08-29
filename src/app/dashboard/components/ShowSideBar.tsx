@@ -5,9 +5,12 @@ import { SideBar } from "./SideBar";
 
 const ShowSideBar = () => {
   const pathname = usePathname();
-  if (pathname.startsWith("/dashboard/")) {
-    return <SideBar />;
-  }
+  const hideOn = ["/dashboard"];
+
+  const shouldHide = hideOn.some((p) => pathname.startsWith(p));
+
+  if (shouldHide) return <SideBar />;
+
   return null;
 };
 export default ShowSideBar;
