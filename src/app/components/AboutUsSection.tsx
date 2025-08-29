@@ -89,7 +89,7 @@ const AboutUsSection: React.FC = () => {
                                 <div key={index} className="flex items-center space-x-3">
                                     <div className="flex-shrink-0">
                                         <svg
-                                            className="w-6 h-6 text-blue-600"
+                                            className="w-6 h-6 text-indigo-600"
                                             fill="none"
                                             stroke="currentColor"
                                             viewBox="0 0 24 24"
@@ -110,7 +110,7 @@ const AboutUsSection: React.FC = () => {
                         </div>
 
                         <div className="pt-4">
-                            <button className="text-gray-900 font-semibold text-lg hover:text-blue-600 transition-colors duration-200 border-b-2 border-gray-900 hover:border-blue-600 pb-1">
+                            <button className="text-gray-900 font-semibold text-lg hover:text-indigo-600 transition-colors duration-200 border-b-2 border-gray-900 hover:border-indigo-600 pb-1">
                                 Learn More About Us
                             </button>
                         </div>

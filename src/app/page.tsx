@@ -6,6 +6,8 @@ import JobCategories from "./components/JobCategories";
 import AboutUsSection from "./components/AboutUsSection";
 import TestimonialSection from "./components/TestimonialSection";
 import CtaSection from "./components/CtaSection";
+import BlogNewsSection from "./components/BlogNewsSection";
+import FAQSection from "./components/FAQSection";
 
 export default function Home() {
   return (
@@ -35,6 +37,12 @@ export default function Home() {
         </div>
         <div>
           <CtaSection />
+        </div>
+        <div>
+          <BlogNewsSection />
+        </div>
+        <div>
+          <FAQSection />
         </div>
       </section>
 
