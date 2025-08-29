@@ -30,13 +30,13 @@ const UserOption = ({ isCollapsed }: IUserOption) => {
     <>
       <div className="flex flex-col gap-2">
         <Link
-          href="/dashboard/user/profile"
+          href="/dashboard/profile"
           className={cn(
             "flex h-8 w-full flex-row items-center rounded-md px-2 py-1.5   transition hover:bg-muted hover:text-primary",
-            pathname?.includes("dashboard") && "bg-muted text-blue-600"
+            pathname === "/dashboard/profile" && "bg-muted text-blue-600"
           )}
         >
-          <LayoutDashboard className="h-7 w-7" />
+          <LayoutDashboard className="h-6 w-6" />
           <motion.li variants={variants}>
             {!isCollapsed && (
               <p className="ml-4 text-md font-medium">Profile</p>
@@ -44,14 +44,14 @@ const UserOption = ({ isCollapsed }: IUserOption) => {
           </motion.li>
         </Link>
         <Link
-          href="/dashboard/user/reports"
+          href="/dashboard/reports"
           className={cn(
             "flex h-8 w-full flex-row items-center rounded-md px-2 py-1.5 transition hover:bg-muted hover:text-primary",
 
-            pathname?.includes("reports") && "bg-muted text-blue-600"
+            pathname === "/dashboard/reports" && "bg-muted text-blue-600"
           )}
         >
-          <FileClock className="h-7 w-7" />
+          <FileClock className="h-6 w-6" />
           <motion.li variants={variants}>
             {!isCollapsed && (
               <div className="flex items-center gap-2">
@@ -61,13 +61,13 @@ const UserOption = ({ isCollapsed }: IUserOption) => {
           </motion.li>
         </Link>
         <Link
-          href="dashboard/user/interview"
+          href="/dashboard/interview"
           className={cn(
             "flex h-8 flex-row items-center rounded-md px-2 py-1.5 transition hover:bg-muted hover:text-primary",
-            pathname?.includes("chat") && "bg-muted text-blue-600"
+            pathname === "/dashboard/interview" && "bg-muted text-blue-600"
           )}
         >
-          <MessagesSquare className="h-7 w-7" />
+          <MessagesSquare className="h-6 w-6" />
           <motion.li variants={variants}>
             {!isCollapsed && (
               <div className="ml-4 flex items-center  gap-2">
