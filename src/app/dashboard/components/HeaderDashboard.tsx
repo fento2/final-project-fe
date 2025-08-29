@@ -37,7 +37,7 @@ const HeaderDashboard = ({ children }: IHeaderDashboard) => {
                       href={href}
                       className={`${
                         isLast
-                          ? "text-indigo-600 font-bold text-lg"
+                          ? "text-indigo-600 font-bold text-lg hover:text-indigo-800"
                           : "text-gray-600"
                       } capitalize`}
                     >
