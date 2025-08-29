@@ -1,45 +1,70 @@
 // app/jobs/[id]/page.tsx (Next.js 13+ dengan App Router)
-import { Briefcase, MapPin, Calendar, Bookmark, Share2, GraduationCap, Layers, Banknote, User } from "lucide-react";
+import { Briefcase, MapPin, Calendar, Bookmark, Share2, GraduationCap, Layers, Banknote, User, Hourglass, Check, CircleCheck } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
-export default function JobDetailPage() {
+interface JobDetailPageProps {
+    params: { slug: string };
+}
+
+export default async function JobDetailPage({ params }: JobDetailPageProps) {
+    const { slug } = await params;
+    const jobTitle = decodeURIComponent(slug);
+
     return (
         <div className="max-w-6xl mx-auto px-6 py-10">
             {/* Breadcrumb */}
             <nav className="text-sm text-gray-500 mb-6">
                 <ol className="flex space-x-2">
-                    <li><a href="/" className="hover:underline">Home</a></li>
+                    <li>
+                        <Link href="/" className="hover:underline">Home</Link>
+                    </li>
                     <li>/</li>
-                    <li><a href="/jobs" className="hover:underline">Jobs</a></li>
+                    <li>
+                        <Link href="/jobs" className="hover:underline">Jobs</Link>
+                    </li>
                     <li>/</li>
-                    <li className="text-blue-600 font-semibold">Information Technology</li>
+                    {/* <li className="text-blue-600 font-semibold">Information Technology</li> */}
+                    <li className="text-blue-600 font-semibold">{jobTitle}</li>
                 </ol>
+                <h1 className="text-4xl font-bold text-gray-900 mb-2">{jobTitle}</h1>
+                <Image
+                    src="https://images.unsplash.com/photo-1549924231-f129b911e442?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                    alt="Company"
+                    width={56}
+                    height={56}
+                    className="w-14 h-14 rounded bg-gray-100"
+                />
             </nav>
 
-            {/* Header Section */}
             <div className="flex flex-col md:flex-row md:items-start gap-6">
                 {/* Left Info */}
                 <div className="flex-1">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-2">Front-End Web Developer</h1>
-                    <div className="flex items-center space-x-2 mb-4">
-                        <img src="/company-logo.png" alt="Company" className="w-14 h-14 rounded bg-gray-100" />
-                        <div>
-                            <h2 className="text-lg font-semibold flex items-center">
-                                UXLabs Company <span className="ml-1 text-blue-500">✔</span>
+                    <div className="mb-6">
+                        {/* Baris 1: Nama company dan badge */}
+                        <div className="flex items-center gap-2 mb-1">
+                            <h2 className="text-lg font-bold text-slate-900 flex items-center">
+                                UXLabs Company
                             </h2>
-                            <div className="flex items-center space-x-2 text-gray-500 text-sm">
+                            <CircleCheck fill="blue" color="white" className="min-w-4 min-h-4" />
+                        </div>
+                        {/* Baris 2: lokasi dan gaji */}
+                        <div className="flex flex-wrap items-center gap-6 text-gray-500 text-sm mb-3">
+                            <div className="flex items-center gap-1">
                                 <MapPin className="w-4 h-4" />
                                 <span>Chicago, IL</span>
-                                <span>•</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                                <Banknote className="w-4 h-4" />
                                 <span>$100,000 - 130,000 per year</span>
                             </div>
                         </div>
-                    </div>
-
-                    {/* Tags */}
-                    <div className="flex gap-2 mb-6">
-                        <span className="px-3 py-1 text-xs font-medium bg-gray-100 rounded-full">Information Technology</span>
-                        <span className="px-3 py-1 text-xs font-medium bg-gray-100 rounded-full">Full Time</span>
-                        <span className="px-3 py-1 text-xs font-medium bg-gray-100 rounded-full">Urgently Needed</span>
+                        {/* Baris 3: tags */}
+                        <div className="flex flex-wrap gap-2">
+                            <span className="px-3 py-1 text-xs font-semibold bg-indigo-50 text-indigo-700 rounded-md">Information Technology</span>
+                            <span className="px-3 py-1 text-xs font-semibold bg-indigo-50 text-indigo-700 rounded-md">Full Time</span>
+                            <span className="px-3 py-1 text-xs font-semibold bg-indigo-50 text-indigo-700 rounded-md">Urgently Needed</span>
+                        </div>
                     </div>
 
                     {/* Job Description */}
@@ -68,10 +93,17 @@ export default function JobDetailPage() {
                     <div className="bg-white rounded-xl shadow p-6">
                         {/* Baris 1: Logo dan Nama Company */}
                         <div className="flex items-center gap-4 mb-6">
-                            <img src="/company-logo.png" alt="Company" className="w-16 h-16 rounded-lg bg-gray-100 flex-shrink-0" />
+                            <Image
+                                src="https://images.unsplash.com/photo-1549924231-f129b911e442?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                                alt="Company"
+                                width={64}
+                                height={64}
+                                className="w-16 h-16 rounded-lg bg-gray-100 flex-shrink-0"
+                            />
                             <h4 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
                                 UXLabs Company
                             </h4>
+                            <CircleCheck fill="blue" color="white" className="min-w-4 min-h-4" />
                         </div>
 
                         {/* Baris 2: Info 2 kolom dan deskripsi */}
@@ -113,32 +145,65 @@ export default function JobDetailPage() {
 
                 {/* Right Sidebar */}
                 <aside className="w-full md:w-80 flex-shrink-0">
-                    <div className="bg-white border rounded-xl p-5 shadow-sm sticky top-6">
-                        <p className="text-sm text-gray-500 mb-2">Posted February 10, 2023</p>
-                        <p className="text-sm text-gray-500 mb-4">Last activity 5 days ago</p>
-                        <button className="w-full bg-blue-600 text-white font-semibold py-2 rounded-lg hover:bg-blue-700">
-                            Apply This Job
-                        </button>
-                        <div className="flex justify-center gap-3 mt-4">
-                            <button className="p-2 border rounded-lg hover:bg-gray-100"><Bookmark className="w-5 h-5" /></button>
-                            <button className="p-2 border rounded-lg hover:bg-gray-100"><Share2 className="w-5 h-5" /></button>
+                    {/* Atas: tanggal & tombol */}
+                    <div className="flex flex-col items-stretch gap-2 mb-4">
+                        <p className="text-sm text-gray-500 text-right">Posted February 10, 2023</p>
+                        <p className="text-sm text-gray-500 text-right mb-2">Last activity 3 days ago</p>
+                        <div className="flex gap-2 mb-4">
+                            <button className="flex-1 bg-indigo-600 text-white font-semibold py-2 rounded-lg hover:bg-indigo-700 transition">
+                                Apply This Job
+                            </button>
+                            <button className="w-10 h-10 border border-indigo-200 rounded-lg flex items-center justify-center text-indigo-600 hover:bg-indigo-50 transition">
+                                <Bookmark className="w-5 h-5" />
+                            </button>
+                            <button className="w-10 h-10 border border-indigo-200 rounded-lg flex items-center justify-center text-indigo-600 hover:bg-indigo-50 transition">
+                                <Share2 className="w-5 h-5" />
+                            </button>
                         </div>
+                    </div>
 
-                        <h3 className="text-lg font-semibold mt-6 mb-4">Job Overview</h3>
-                        <ul className="space-y-3 text-sm text-gray-700">
-                            <li className="flex items-center gap-2"><Briefcase className="w-4 h-4 text-blue-600" /> Career Level: Mid-Level</li>
-                            <li className="flex items-center gap-2"><GraduationCap className="w-4 h-4 text-blue-600" /> Qualification: Bachelor’s degree in CS, Web Development</li>
-                            <li className="flex items-center gap-2"><Layers className="w-4 h-4 text-blue-600" /> Experience: 3+ years</li>
-                            <li className="flex items-center gap-2"><Calendar className="w-4 h-4 text-blue-600" /> Job Closed in: May 9, 2023</li>
+                    {/* Card Job Overview */}
+                    <div className="bg-white border border-indigo-100 rounded-xl p-6 shadow mt-4">
+                        <h3 className="text-xl font-bold mb-5 text-slate-900">Job Overview</h3>
+                        <ul className="space-y-5 text-sm text-gray-700 mb-6">
+                            <li className="flex items-start gap-3">
+                                <Briefcase className="w-6 h-6 text-indigo-500 mt-0.5" />
+                                <div>
+                                    <span className="font-semibold text-slate-900">Career Level:</span>
+                                    <div>Mid-Level</div>
+                                </div>
+                            </li>
+                            <li className="flex items-start gap-3">
+                                <GraduationCap className="min-w-6 h-6 text-indigo-500 mt-0.5" />
+                                <div>
+                                    <span className="font-semibold text-slate-900">Qualification:</span>
+                                    <div>Bachelor's degree in Computer Science, Web Development or related field</div>
+                                </div>
+                            </li>
+                            <li className="flex items-start gap-3">
+                                <Calendar className="min-w-6 h-6 text-indigo-500 mt-0.5" />
+                                <div>
+                                    <span className="font-semibold text-slate-900">Years of Experience:</span>
+                                    <div>3+ years of experience in Web Development</div>
+                                </div>
+                            </li>
+                            <li className="flex items-start gap-3">
+                                <Hourglass className="w-6 h-6 text-indigo-500 mt-0.5" />
+                                <div>
+                                    <span className="font-semibold text-slate-900">Job Closed in:</span>
+                                    <div>May 9, 2023</div>
+                                </div>
+                            </li>
                         </ul>
-
-                        <h3 className="text-lg font-semibold mt-6 mb-3">Skills Specialization:</h3>
-                        <div className="flex flex-wrap gap-2">
-                            <span className="px-3 py-1 bg-gray-100 text-sm rounded-full">Web Development</span>
-                            <span className="px-3 py-1 bg-gray-100 text-sm rounded-full">User Interface Design</span>
-                            <span className="px-3 py-1 bg-gray-100 text-sm rounded-full">Front-End Development</span>
-                            <span className="px-3 py-1 bg-gray-100 text-sm rounded-full">HTML</span>
-                            <span className="px-3 py-1 bg-gray-100 text-sm rounded-full">CSS</span>
+                        <div>
+                            <div className="font-semibold text-slate-900 text-sm mb-2">Skills Specialization:</div>
+                            <div className="flex flex-wrap gap-2">
+                                <span className="px-3 py-1 bg-indigo-50 text-indigo-700 text-xs rounded-md font-medium">Web Development</span>
+                                <span className="px-3 py-1 bg-indigo-50 text-indigo-700 text-xs rounded-md font-medium">User Interface Design</span>
+                                <span className="px-3 py-1 bg-indigo-50 text-indigo-700 text-xs rounded-md font-medium">Front-End Development</span>
+                                <span className="px-3 py-1 bg-indigo-50 text-indigo-700 text-xs rounded-md font-medium">HTML</span>
+                                <span className="px-3 py-1 bg-indigo-50 text-indigo-700 text-xs rounded-md font-medium">CSS</span>
+                            </div>
                         </div>
                     </div>
                 </aside>
