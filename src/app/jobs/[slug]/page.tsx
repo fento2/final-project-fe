@@ -9,7 +9,7 @@ interface JobDetailPageProps {
 
 export default async function JobDetailPage({ params }: JobDetailPageProps) {
     const { slug } = await params;
-    const jobTitle = decodeURIComponent(slug);
+    const jobTitle = decodeURIComponent(slug).replace(/-/g, "/");
 
     return (
         <div className="max-w-6xl mx-auto px-6 py-10">
