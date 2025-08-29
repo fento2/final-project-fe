@@ -30,7 +30,7 @@ const HeroSection = () => {
 				{/* Overlay for soft white effect*/}
 				<div className="absolute inset-0 bg-white/20 z-10" />
 
-				<div className="relative z-10 flex flex-col items-center w-full px-4 sm:px-6 py-8 sm:py-12">
+				<div className="relative z-10 flex flex-col items-center justify-center w-full h-full px-4 sm:px-6 py-12 sm:py-16 md:py-20">
 					<span className="block text-center text-base font-semibold text-[#4F46E5] mb-6">The Only Job Marketplace</span>
 					<h1 className="text-center text-4xl sm:text-5xl md:text-6xl font-bold text-[#18181B] mb-4 leading-tight">
 						Find Your Dream<br />Job with Us
@@ -38,7 +38,7 @@ const HeroSection = () => {
 					<p className="text-center text-base sm:text-lg text-[#52525B] mb-8 max-w-2xl px-2">
 						Discover your next career move with Horizon Jobs, the go-to job marketplace for job seekers and employers.
 					</p>
-					<form onSubmit={handleSubmit} className="flex flex-col md:flex-row items-center w-full max-w-5xl gap-3 sm:gap-4 mb-6 px-2">
+					<form onSubmit={handleSubmit} className="flex flex-col md:flex-row items-center w-full max-w-5xl gap-3 sm:gap-4 mb-8 px-2">
 						<div className="flex items-center bg-white rounded-lg shadow px-4 py-2 w-full md:w-[520px] border border-gray-200">
 							<Search className="w-5 h-5 text-gray-400 mr-2" />
 							<input
