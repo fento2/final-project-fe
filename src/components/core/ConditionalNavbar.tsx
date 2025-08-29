@@ -6,7 +6,7 @@ import Navbar from "@/components/core/Navbar";
 export default function ConditionalNavbar() {
   const pathname = usePathname() || "/";
 
-  const hideOn = ["/signin", "/signup", "/dashboard"];
+  const hideOn = ["/dashboard"];
 
   const shouldHide = hideOn.some((p) => pathname.startsWith(p));
 
