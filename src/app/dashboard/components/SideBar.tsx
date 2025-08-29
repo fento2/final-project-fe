@@ -20,11 +20,6 @@ const mobileVariants = {
   visible: { x: 0 },
 };
 
-const contentVariants = {
-  open: { display: "block", opacity: 1 },
-  closed: { display: "block", opacity: 1 },
-};
-
 const transitionProps = {
   type: "tween",
   ease: "easeOut",

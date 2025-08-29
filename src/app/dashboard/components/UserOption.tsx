@@ -1,5 +1,11 @@
 "use client";
-import { FileClock, LayoutDashboard, MessagesSquare } from "lucide-react";
+import {
+  FileCheck2,
+  FileClock,
+  LayoutDashboard,
+  MessagesSquare,
+  UserPenIcon,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
@@ -28,7 +34,7 @@ const UserOption = ({ isCollapsed }: IUserOption) => {
   };
   return (
     <>
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-3">
         <Link
           href="/dashboard/profile"
           className={cn(
@@ -36,7 +42,7 @@ const UserOption = ({ isCollapsed }: IUserOption) => {
             pathname === "/dashboard/profile" && "bg-muted text-blue-600"
           )}
         >
-          <LayoutDashboard className="h-6 w-6" />
+          <UserPenIcon className="h-6 w-6" />
           <motion.li variants={variants}>
             {!isCollapsed && (
               <p className="ml-4 text-md font-medium">Profile</p>
@@ -44,18 +50,19 @@ const UserOption = ({ isCollapsed }: IUserOption) => {
           </motion.li>
         </Link>
         <Link
-          href="/dashboard/reports"
+          href="/dashboard/my-applications"
           className={cn(
             "flex h-8 w-full flex-row items-center rounded-md px-2 py-1.5 transition hover:bg-muted hover:text-primary",
 
-            pathname === "/dashboard/reports" && "bg-muted text-blue-600"
+            pathname === "/dashboard/my-applications" &&
+              "bg-muted text-blue-600"
           )}
         >
-          <FileClock className="h-6 w-6" />
+          <FileCheck2 className="h-6 w-6" />
           <motion.li variants={variants}>
             {!isCollapsed && (
               <div className="flex items-center gap-2">
-                <p className="ml-4 text-md font-medium">Reports</p>
+                <p className="ml-4 text-md font-medium">My Applications</p>
               </div>
             )}
           </motion.li>
