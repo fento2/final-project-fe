@@ -1,12 +1,12 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { SessionNavBar } from "./SideBar";
+import { SideBar } from "./SideBar";
 
 const ShowSideBar = () => {
   const pathname = usePathname();
-  if (pathname.startsWith("/dashboard")) {
-    return <SessionNavBar />;
+  if (pathname.startsWith("/dashboard/")) {
+    return <SideBar />;
   }
   return null;
 };

@@ -13,7 +13,7 @@ const sidebarVariants = {
     width: "15rem",
   },
   closed: {
-    width: "3.05rem",
+    width: "4.05rem",
   },
 };
 
@@ -35,20 +35,20 @@ const staggerVariants = {
   },
 };
 
-export function SessionNavBar() {
+export function SideBar() {
   const [isCollapsed, setIsCollapsed] = useState(true);
   return (
     <motion.div
-      className={cn("sidebar left-0 z-40 h-full shrink-0 border-r fixed")}
+      className={cn(" sidebar left-0 z-40 h-full shrink-0 border-r fixed")}
       initial={isCollapsed ? "closed" : "open"}
       animate={isCollapsed ? "closed" : "open"}
       variants={sidebarVariants}
-      transition={transitionProps}
+      transition={transitionProps as any}
       onMouseEnter={() => setIsCollapsed(false)}
       onMouseLeave={() => setIsCollapsed(true)}
     >
       <motion.div
-        className={`relative z-40 flex text-muted-foreground h-full shrink-0 flex-col bg-white dark:bg-black transition-all`}
+        className={` relative z-40 flex text-muted-foreground h-full shrink-0 flex-col bg-white dark:bg-black transition-all`}
         variants={contentVariants}
       >
         <motion.ul variants={staggerVariants} className="flex h-full flex-col">
@@ -57,11 +57,12 @@ export function SessionNavBar() {
               <ProfileNavSection isCollapsed={!isCollapsed} />
             </div>
 
-            <div className=" flex h-full w-full flex-col">
+            <div className="flex h-full w-full flex-col">
               <div className="flex grow flex-col gap-4">
                 <ScrollArea className="h-16 grow p-2">
                   <div className={cn("flex w-full flex-col gap-1")}>
                     <UserOption isCollapsed={isCollapsed} />
+
                     <Separator className="w-full" />
                   </div>
                 </ScrollArea>
