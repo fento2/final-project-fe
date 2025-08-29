@@ -1,11 +1,5 @@
 "use client";
-import {
-  FileCheck2,
-  FileClock,
-  LayoutDashboard,
-  MessagesSquare,
-  UserPenIcon,
-} from "lucide-react";
+import { FileCheck2, MessagesSquare, UserPenIcon } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
