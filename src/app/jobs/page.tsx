@@ -190,7 +190,7 @@ function JobCard({ job }: { job: Job }) {
             </div>
 
             <div className="mt-6 flex items-center gap-4">
-                <button className="flex-1 px-4 py-3 bg-indigo-600 hover:bg-indigo-700 active:scale-95 transition text-white rounded-lg font-medium" onClick={() => router.push(`/jobs/${job.title}`)}>
+                <button className="flex-1 px-4 py-3 bg-indigo-600 hover:bg-indigo-700 active:scale-95 transition text-white rounded-lg font-medium" onClick={() => router.push(`/jobs/${slugify(job.title)}`)}>
                     Apply This Job
                 </button>
                 <button className="w-12 h-12 flex items-center justify-center border border-indigo-200 rounded-lg text-indigo-600 hover:bg-indigo-50">
@@ -262,6 +262,11 @@ function Pagination({
             </button>
         </div>
     );
+}
+
+function slugify(title: string) {
+    // ganti slash dan karakter bermasalah lalu encode
+    return encodeURIComponent(title.replace(/\//g, "-"));
 }
 
 export default function JobsListPage() {
