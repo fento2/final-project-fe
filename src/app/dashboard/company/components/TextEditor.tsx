@@ -18,7 +18,7 @@ export default function TextEditor({
   const modules = {
     toolbar: [
       [{ font: [] }],
-      [{ header: [1, 2, 3, false] }],
+      [{ size: ["small", false, "large", "huge"] }],
       ["bold", "italic", "underline", "strike"],
       [{ color: [] }, { background: [] }],
       [{ list: "ordered" }, { list: "bullet" }],
@@ -43,12 +43,14 @@ export default function TextEditor({
         {editing && (
           <span className="font-bold tracking-wider text-lg">Preview</span>
         )}
-        <div
-          className={`p-3 border rounded-sm ${
-            editing ? "text-black" : "text-neutral-500"
-          }`}
-        >
-          <div dangerouslySetInnerHTML={{ __html: value }} />
+        <div className={` ${editing ? "text-black" : "text-neutral-500"}`}>
+          <ReactQuill
+            value={value}
+            readOnly={true}
+            theme="snow" // atau "snow"
+            modules={{ toolbar: false }}
+            className="preview"
+          />
         </div>
       </div>
     </div>
