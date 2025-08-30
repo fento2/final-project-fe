@@ -141,7 +141,7 @@ const UserOption = ({ isCollapsed }: IUserOption) => {
               <ChevronDown
                 className={cn(
                   "h-4 w-4 transition-transform",
-                  openJobs && "rotate-180"
+                  openSkill && "rotate-180"
                 )}
               />
             </div>

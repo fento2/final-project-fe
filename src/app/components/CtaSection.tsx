@@ -2,10 +2,10 @@
 import React from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { useAuthStore } from "@/lib/zustand/AuthUIASrore";
+import { useAuthUIStore } from "@/lib/zustand/AuthUIASrore";
 
 const CtaSection: React.FC = () => {
-  const { setShowSignUp } = useAuthStore();
+  const { setShowSignUp } = useAuthUIStore();
   return (
     <section className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -52,18 +52,18 @@ const CompanyOption = ({ isCollapsed }: IUserOption) => {
           </motion.li>
         </Link>
         <Link
-          href="/dashboard/job-postings"
+          href="/dashboard/postings"
           className={cn(
             "flex h-8 w-full flex-row items-center rounded-md px-2 py-1.5 transition hover:bg-muted hover:text-primary",
 
-            pathname === "/dashboard/job-postings" && "bg-muted text-blue-600"
+            pathname === "/dashboard/postings" && "bg-muted text-blue-600"
           )}
         >
           <FilePen className="h-6 w-6" />
           <motion.li variants={variants}>
             {!isCollapsed && (
               <div className="flex items-center gap-2">
-                <p className="ml-4 text-md font-medium">Job Postings</p>
+                <p className="ml-4 text-md font-medium">Postings</p>
               </div>
             )}
           </motion.li>
