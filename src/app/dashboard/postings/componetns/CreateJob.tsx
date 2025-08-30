@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import FormJobPosting from "./FormJobPosting";
 import { useCreateJob } from "@/lib/zustand/CreateJobStore";
+import { Briefcase, ChevronRight } from "lucide-react";
 
 const CreateJob = () => {
   const { preSelection } = useCreateJob();
@@ -33,11 +34,11 @@ const CreateJob = () => {
                 variant={"ghost"}
                 className="w-full sm:w-auto border-2 border-indigo-700 text-indigo-700"
               >
-                Next
+                Next <ChevronRight />
               </Button>
             ) : (
               <Button className="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-700">
-                Post
+                Post <Briefcase />
               </Button>
             )}
           </div>

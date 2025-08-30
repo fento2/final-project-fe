@@ -1,4 +1,5 @@
 import CreateJob from "./componetns/CreateJob";
+import PreselectionTest from "./componetns/CreatePreSelection";
 
 const JobPostings = () => {
   return (
@@ -10,6 +11,7 @@ const JobPostings = () => {
         <span className="text-sm text-gray-600">Fill in the job details</span>
       </div>
       <CreateJob />
+      <PreselectionTest />
     </div>
   );
 };

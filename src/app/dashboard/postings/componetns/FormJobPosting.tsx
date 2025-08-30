@@ -30,6 +30,10 @@ const FormJobPosting = () => {
     setJobType,
     preSelection,
     setPreSelection,
+    longitude,
+    setLongitude,
+    latitude,
+    setLatitude,
   } = useCreateJob();
 
   return (
@@ -102,7 +106,14 @@ const FormJobPosting = () => {
           onChange={(e) => setLocation(e.target.value)}
           className="py-6 text-lg"
         />
-        <LocationInput />
+        <LocationInput
+          location={location}
+          latitude={latitude}
+          longitude={longitude}
+          setLocation={setLocation}
+          setLatitude={setLatitude}
+          setLongitude={setLongitude}
+        />
       </div>
 
       {/* Preselection Test */}

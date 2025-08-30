@@ -5,8 +5,8 @@ type CreateJob = {
   title: string;
   description: string;
   category: string;
-  latitude: string;
-  longitude: string;
+  latitude: number;
+  longitude: number;
   location: string;
   salary: number;
   jobType: string;
@@ -15,8 +15,8 @@ type CreateJob = {
   setTitle: (title: string) => void;
   setDescription: (description: string) => void;
   setCategory: (category: string) => void;
-  setLatitude: (latitude: string) => void;
-  setLongitude: (longitude: string) => void;
+  setLatitude: (latitude: number) => void;
+  setLongitude: (longitude: number) => void;
   setLocation: (location: string) => void;
   setSalary: (salary: number) => void;
   setJobType: (jobType: string) => void;
@@ -31,8 +31,8 @@ export const useCreateJob = create<CreateJob>()(
       title: "",
       description: "",
       category: "",
-      latitude: "",
-      longitude: "",
+      latitude: 0,
+      longitude: 0,
       location: "",
       salary: 0,
       jobType: "",
@@ -53,8 +53,8 @@ export const useCreateJob = create<CreateJob>()(
           title: "",
           description: "",
           category: "",
-          latitude: "",
-          longitude: "",
+          latitude: 0,
+          longitude: 0,
           location: "",
           salary: 0,
           jobType: "",
