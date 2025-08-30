@@ -6,7 +6,7 @@ import { Button } from "../ui/button";
 import SignUp from "./SignUp";
 import SignIn from "./SignIn";
 import MobileNav from "./MobileNav";
-import { useAuthUIStore } from "@/lib/zustand/AuthUIASrore";
+import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
 
 const Navbar: React.FC = () => {
   const pathname = usePathname();

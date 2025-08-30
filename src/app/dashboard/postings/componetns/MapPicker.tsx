@@ -11,7 +11,6 @@ import {
 } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { useCreateJob } from "@/lib/zustand/CreateJobStore";
 import axios from "axios";
 import debounce from "lodash.debounce";
 
@@ -52,26 +51,6 @@ const MapPicker = ({
     iconSize: [25, 41],
     iconAnchor: [12, 41],
   });
-
-  // Ambil lokasi user saat mount jika belum ada koordinat
-  useEffect(() => {
-    if (!latitude || !longitude) {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          async (pos) => {
-            const lat = pos.coords.latitude;
-            const lng = pos.coords.longitude;
-            setPosition([lat, lng]);
-            setLatitude(lat);
-            setLongitude(lng);
-            await fetchLocation(lat, lng);
-          },
-          () => fetchLocation(defaultPosition[0], defaultPosition[1]),
-          { enableHighAccuracy: true }
-        );
-      }
-    }
-  }, []);
 
   // Reverse geocode: lat,lng -> city
   const fetchLocation = async (lat: number, lng: number) => {

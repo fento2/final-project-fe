@@ -2,10 +2,13 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import FormJobPosting from "./FormJobPosting";
-import { useCreateJob } from "@/lib/zustand/CreateJobStore";
+import { useCreateJob } from "@/lib/zustand/createJobStore";
 import { Briefcase, ChevronRight } from "lucide-react";
 
-const CreateJob = () => {
+interface ICreateJob {
+  setNext: (next: boolean) => void;
+}
+const CreateJob = ({ setNext }: ICreateJob) => {
   const { preSelection } = useCreateJob();
 
   const handleSave = () => {
@@ -33,6 +36,7 @@ const CreateJob = () => {
               <Button
                 variant={"ghost"}
                 className="w-full sm:w-auto border-2 border-indigo-700 text-indigo-700"
+                onClick={() => setNext(true)}
               >
                 Next <ChevronRight />
               </Button>
