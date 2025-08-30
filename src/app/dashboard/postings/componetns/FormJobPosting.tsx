@@ -11,8 +11,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { JOB_CATEGORIES, JOB_TYPES } from "@/constants/job";
-import { useCreateJob } from "@/lib/zustand/CreateJobStore";
+
 import LocationInput from "./MapPicker";
+import { useCreateJob } from "@/lib/zustand/createJobStore";
 
 const FormJobPosting = () => {
   const {
@@ -41,7 +42,9 @@ const FormJobPosting = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Title */}
         <div className="space-y-2">
-          <Label htmlFor="title">Job Title</Label>
+          <Label htmlFor="title" className="text-lg">
+            Job Title
+          </Label>
           <Input
             id="title"
             value={title}
@@ -52,7 +55,9 @@ const FormJobPosting = () => {
 
         {/* Category */}
         <div className="space-y-2">
-          <Label htmlFor="category">Category</Label>
+          <Label htmlFor="category" className="text-lg">
+            Category
+          </Label>
           <Select onValueChange={setCategory} value={category}>
             <SelectTrigger className="w-full py-6 text-lg">
               <SelectValue placeholder="Select category" />
@@ -69,7 +74,9 @@ const FormJobPosting = () => {
 
         {/* Job Type */}
         <div className="space-y-2">
-          <Label htmlFor="jobType">Job Type</Label>
+          <Label htmlFor="jobType" className="text-lg">
+            Job Type
+          </Label>
           <Select onValueChange={setJobType} value={jobType}>
             <SelectTrigger className="w-full py-6 text-lg">
               <SelectValue placeholder="Select job type" />
@@ -86,7 +93,9 @@ const FormJobPosting = () => {
 
         {/* Salary */}
         <div className="space-y-2">
-          <Label htmlFor="salary">Salary</Label>
+          <Label htmlFor="salary" className="text-lg">
+            Salary
+          </Label>
           <Input
             id="salary"
             type="number"
@@ -99,12 +108,14 @@ const FormJobPosting = () => {
 
       {/* Location */}
       <div className="space-y-2">
-        <Label htmlFor="location">Location {"(City)"}</Label>
+        <Label htmlFor="location" className="text-lg">
+          Location {"(City)"}
+        </Label>
         <Input
           id="location"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
-          className="py-6 text-lg"
+          className="py-6 !text-lg"
         />
         <LocationInput
           location={location}
@@ -118,8 +129,12 @@ const FormJobPosting = () => {
 
       {/* Preselection Test */}
       <div className="flex items-center space-x-2 mt-6">
-        <Checkbox checked={preSelection} onCheckedChange={setPreSelection} />
-        <Label>Require Preselection Test</Label>
+        <Checkbox
+          checked={preSelection}
+          onCheckedChange={setPreSelection}
+          className="w-6 h-6"
+        />
+        <Label className="text-lg">Require Preselection Test</Label>
       </div>
 
       {/* Description */}

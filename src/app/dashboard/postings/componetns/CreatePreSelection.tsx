@@ -15,7 +15,7 @@ import { Label } from "@/components/ui/label";
 type Question = {
   question: string;
   options: string[]; // [A, B, C, D]
-  answer?: string; // jawaban benar: "A" | "B" | "C" | "D"
+  answer: string; // jawaban benar: "A" | "B" | "C" | "D"
 };
 
 const PreselectionTest = () => {
