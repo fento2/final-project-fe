@@ -1,3 +1,4 @@
+"use client";
 import { BriefcaseBusiness, Star, UsersRound, MapPin, Award, TrendingUp, Building } from "lucide-react";
 import Image from "next/image";
 import { Button } from "../../components/ui/button";
