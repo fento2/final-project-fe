@@ -12,12 +12,12 @@ import {
   Building,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuthStore } from "@/lib/zustand/AuthUIASrore";
+import { useAuthUIStore } from "@/lib/zustand/AuthUIASrore";
 import WithSosmed from "./WithSomed";
 import { schemaSignUp } from "@/validation/auth.validation";
 
 const SignUp = () => {
-  const { setShowSignIn, setShowSignUp } = useAuthStore();
+  const { setShowSignIn, setShowSignUp } = useAuthUIStore();
   const [role, setRole] = useState<"USER" | "COMPANY">("USER");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);

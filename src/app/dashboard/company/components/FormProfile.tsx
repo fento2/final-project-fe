@@ -1,7 +1,8 @@
+"use client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ChangeEvent } from "react";
-import DescriptionCompany from "./DescriptionCompany";
+import { ChangeEvent, useState } from "react";
+import TextEditor from "./TextEditor";
 
 interface ICompanyProfile {
   name: string;
@@ -21,6 +22,20 @@ const FormCompanyProfile = ({
   handleChange,
   editing,
 }: ICompanyProfile) => {
+  const [value, setValue] = useState(`
+    <h2><b>Judul Artikel Default</b></h2>
+    <p>
+      Ini adalah <b>default content</b> yang sudah ada sejak awal.
+      Kamu bisa mengedit langsung di editor ini.
+    </p>
+    <p>
+      Contoh paragraf kedua dengan teks <i>italic</i> dan
+      <u>underline</u>.
+    </p>
+    <blockquote>
+      “Ini contoh kutipan default.”
+    </blockquote>
+  `);
   return (
     <>
       <div>
@@ -107,7 +122,7 @@ const FormCompanyProfile = ({
           <span className="font-bold text-lg tracking-widest">
             Description Company
           </span>
-          <DescriptionCompany editing={editing} />
+          <TextEditor editing={editing} value={value} setValue={setValue} />
         </div>
       </div>
     </>

@@ -10,11 +10,9 @@ const ProfileCompany = () => {
       {/* Header */}
       <div className="mb-6">
         <h3 className="text-2xl font-bold text-black tracking-wider">
-          Personal Data
+          Company Data
         </h3>
-        <span className="text-sm text-gray-600">
-          Fill in the data according to your ID card.
-        </span>
+        <span className="text-sm text-gray-600">Fill in your company data</span>
       </div>
 
       <Tabs defaultValue="general" className="w-full">

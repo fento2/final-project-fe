@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { useAuthStore } from "@/lib/zustand/AuthUIASrore";
+import { useAuthUIStore } from "@/lib/zustand/AuthUIASrore";
 import { LayoutDashboardIcon } from "lucide-react";
 interface IMobileNav {
   setOpen: (open: boolean) => void;
@@ -8,7 +8,7 @@ interface IMobileNav {
   active: string;
 }
 const MobileNav = ({ setOpen, setActive, active }: IMobileNav) => {
-  const { setShowSignIn, setShowSignUp } = useAuthStore();
+  const { setShowSignIn, setShowSignUp } = useAuthUIStore();
   const menus = [
     { label: "Home", href: "/" },
     { label: "Jobs", href: "/jobs" },

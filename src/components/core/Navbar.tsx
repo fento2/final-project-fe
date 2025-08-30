@@ -6,12 +6,12 @@ import { Button } from "../ui/button";
 import SignUp from "./SignUp";
 import SignIn from "./SignIn";
 import MobileNav from "./MobileNav";
-import { useAuthStore } from "@/lib/zustand/AuthUIASrore";
+import { useAuthUIStore } from "@/lib/zustand/AuthUIASrore";
 
 const Navbar: React.FC = () => {
   const pathname = usePathname();
   const { showSignIn, showSignUp, setShowSignIn, setShowSignUp } =
-    useAuthStore();
+    useAuthUIStore();
   const menus = [
     { label: "Home", href: "/" },
     { label: "Jobs", href: "/jobs" },

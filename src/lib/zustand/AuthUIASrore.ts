@@ -8,7 +8,7 @@ type AuthUIState = {
 };
 
 // tanpa persist
-export const useAuthStore = create<AuthUIState>((set) => ({
+export const useAuthUIStore = create<AuthUIState>((set) => ({
   showSignIn: false,
   showSignUp: false,
 

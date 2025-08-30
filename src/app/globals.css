@@ -167,3 +167,20 @@
   content: "•";
   margin-right: 0.5em;
 }
+
+/* Di global CSS atau tailwind global file */
+.leaflet-container {
+  z-index: 10 !important; /* pastikan lebih rendah dari navbar */
+}
+
+.leaflet-pane {
+  z-index: 10 !important; 
+}
+
+.leaflet-tile-pane,
+.leaflet-marker-pane,
+.leaflet-shadow-pane,
+.leaflet-overlay-pane,
+.leaflet-popup-pane {
+  z-index: 10 !important;
+}

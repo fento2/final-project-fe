@@ -1,29 +1,20 @@
 "use client";
 
-import { useState } from "react";
 import dynamic from "next/dynamic";
 import "react-quill-new/dist/quill.snow.css";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
 interface IDescriptionCompany {
+  value: string;
+  setValue: (value: string) => void;
   editing: boolean;
 }
-export default function DescriptionCompany({ editing }: IDescriptionCompany) {
-  const [value, setValue] = useState(`
-    <h2><b>Judul Artikel Default</b></h2>
-    <p>
-      Ini adalah <b>default content</b> yang sudah ada sejak awal.
-      Kamu bisa mengedit langsung di editor ini.
-    </p>
-    <p>
-      Contoh paragraf kedua dengan teks <i>italic</i> dan
-      <u>underline</u>.
-    </p>
-    <blockquote>
-      “Ini contoh kutipan default.”
-    </blockquote>
-  `);
+export default function TextEditor({
+  editing,
+  value,
+  setValue,
+}: IDescriptionCompany) {
   const modules = {
     toolbar: [
       [{ font: [] }],
@@ -49,7 +40,9 @@ export default function DescriptionCompany({ editing }: IDescriptionCompany) {
         />
       )}
       <div className="mt-2">
-        {editing && <span className="font-bold tracking-widest">Preview</span>}
+        {editing && (
+          <span className="font-bold tracking-wider text-lg">Preview</span>
+        )}
         <div
           className={`p-3 border rounded-sm ${
             editing ? "text-black" : "text-neutral-500"
