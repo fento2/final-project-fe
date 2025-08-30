@@ -12,7 +12,7 @@ import {
   Building,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuthStore } from "@/lib/zustand/AuthUI";
+import { useAuthStore } from "@/lib/zustand/AuthUIASrore";
 import WithSosmed from "./WithSomed";
 import { schemaSignUp } from "@/validation/auth.validation";
 

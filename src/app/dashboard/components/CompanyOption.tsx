@@ -1,10 +1,17 @@
 "use client";
-import { FileClock, LayoutDashboard, MessagesSquare } from "lucide-react";
+import {
+  Building2,
+  FileCheck2,
+  FileInput,
+  FilePen,
+  MessagesSquare,
+  UserPenIcon,
+} from "lucide-react";
 import { motion } from "framer-motion";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { Separator } from "@radix-ui/react-separator";
 
 interface IUserOption {
   isCollapsed: boolean;
@@ -29,61 +36,71 @@ const CompanyOption = ({ isCollapsed }: IUserOption) => {
   };
   return (
     <>
-      <Link
-        href="/dashboard/company/profile"
-        className={cn(
-          "flex h-8 w-full flex-row items-center rounded-md px-2 py-1.5   transition hover:bg-muted hover:text-primary",
-          pathname?.includes("dashboard") && "bg-muted text-blue-600"
-        )}
-      >
-        <LayoutDashboard className="h-4 w-4" />
-        <motion.li variants={variants}>
-          {!isCollapsed && (
-            <p className="ml-2 text-sm font-medium">Dashboard</p>
+      <div className="flex flex-col gap-3">
+        <Link
+          href="/dashboard/company"
+          className={cn(
+            "flex h-8 w-full flex-row items-center rounded-md px-2 py-1.5   transition hover:bg-muted hover:text-primary",
+            pathname === "/dashboard/company" && "bg-muted text-blue-600"
           )}
-        </motion.li>
-      </Link>
-      <Link
-        href="/dashboard/company/profile"
-        className={cn(
-          "flex h-8 w-full flex-row items-center rounded-md px-2 py-1.5 transition hover:bg-muted hover:text-primary",
+        >
+          <Building2 className="h-6 w-6" />
+          <motion.li variants={variants}>
+            {!isCollapsed && (
+              <p className="ml-4 text-md font-medium">Company Profile</p>
+            )}
+          </motion.li>
+        </Link>
+        <Link
+          href="/dashboard/job-postings"
+          className={cn(
+            "flex h-8 w-full flex-row items-center rounded-md px-2 py-1.5 transition hover:bg-muted hover:text-primary",
 
-          pathname?.includes("reports") && "bg-muted text-blue-600"
-        )}
-      >
-        <FileClock className="h-4 w-4" />{" "}
-        <motion.li variants={variants}>
-          {!isCollapsed && (
-            <div className="flex items-center gap-2">
-              <p className="ml-2 text-sm font-medium">Reports</p>
-            </div>
+            pathname === "/dashboard/job-postings" && "bg-muted text-blue-600"
           )}
-        </motion.li>
-      </Link>
-      <Link
-        href="/chat"
-        className={cn(
-          "flex h-8 flex-row items-center rounded-md px-2 py-1.5 transition hover:bg-muted hover:text-primary",
-          pathname?.includes("chat") && "bg-muted text-blue-600"
-        )}
-      >
-        <MessagesSquare className="h-4 w-4" />
-        <motion.li variants={variants}>
-          {!isCollapsed && (
-            <div className="ml-2 flex items-center  gap-2">
-              <p className="text-sm font-medium">Chat</p>
-              <Badge
-                className={cn(
-                  "flex h-fit w-fit items-center gap-1.5 rounded border-none bg-blue-50 px-1.5 text-blue-600 dark:bg-blue-700 dark:text-blue-300"
-                )}
-                variant="outline"
-              >
-                BETA
-              </Badge>
-            </div>
+        >
+          <FilePen className="h-6 w-6" />
+          <motion.li variants={variants}>
+            {!isCollapsed && (
+              <div className="flex items-center gap-2">
+                <p className="ml-4 text-md font-medium">Job Postings</p>
+              </div>
+            )}
+          </motion.li>
+        </Link>
+        <Link
+          href="/dashboard/applicants"
+          className={cn(
+            "flex h-8 flex-row items-center rounded-md px-2 py-1.5 transition hover:bg-muted hover:text-primary",
+            pathname === "/dashboard/applicants" && "bg-muted text-blue-600"
           )}
-        </motion.li>
-      </Link>
+        >
+          <FileInput className="h-6 w-6" />
+          <motion.li variants={variants}>
+            {!isCollapsed && (
+              <div className="ml-4 flex items-center  gap-2">
+                <p className="text-md font-medium">Applicants</p>
+              </div>
+            )}
+          </motion.li>
+        </Link>
+        <Link
+          href="/dashboard/applications"
+          className={cn(
+            "flex h-8 flex-row items-center rounded-md px-2 py-1.5 transition hover:bg-muted hover:text-primary",
+            pathname === "/dashboard/aplications" && "bg-muted text-blue-600"
+          )}
+        >
+          <MessagesSquare className="h-6 w-6" />
+          <motion.li variants={variants}>
+            {!isCollapsed && (
+              <div className="ml-4 flex items-center gap-2">
+                <p className="text-md font-medium">Applications</p>
+              </div>
+            )}
+          </motion.li>
+        </Link>
+      </div>
     </>
   );
 };
