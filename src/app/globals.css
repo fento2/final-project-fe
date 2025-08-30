@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -119,4 +121,49 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+.ql-align-center {
+  @apply text-center;
+}
+.ql-align-right {
+  @apply text-right;
+}
+.ql-align-justify {
+  @apply text-justify;
+}
+
+
+.ql-toolbar {
+  @apply rounded-t-md border border-gray-300 bg-gray-50;
+  border-bottom: none; /* 👈 biar gak dobel sama editor */
+}
+
+.ql-container {
+  @apply rounded-b-md border border-gray-300;
+  border-top: none; /* 👈 biar nyambung mulus ke toolbar */
+}
+
+.ql-editor {
+  min-height: 200px;
+}
+
+
+.ql-editor li[data-list="ordered"] {
+  counter-increment: my-ol;
+}
+
+.ql-editor li[data-list="ordered"]::before {
+  content: counter(my-ol, decimal) ". ";
+  margin-right: 0.5em;
+}
+
+.ql-editor ol {
+  counter-reset: my-ol;
+  padding-left: 1.5rem;
+}
+
+.ql-editor li[data-list="bullet"]::before {
+  content: "•";
+  margin-right: 0.5em;
 }

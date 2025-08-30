@@ -2,7 +2,7 @@
 import React from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { useAuthStore } from "@/lib/zustand/AuthUI";
+import { useAuthStore } from "@/lib/zustand/AuthUIASrore";
 
 const CtaSection: React.FC = () => {
   const { setShowSignUp } = useAuthStore();

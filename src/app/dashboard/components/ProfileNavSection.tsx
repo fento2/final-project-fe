@@ -16,7 +16,6 @@ const ProfileNavSection = ({ isCollapsed }: IProfileNavSection) => {
             <AvatarFallback>KK</AvatarFallback>
           </Avatar>
           <span className="absolute left-6 top-0">
-            <span className="sr-only">Verified</span>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"

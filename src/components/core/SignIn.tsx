@@ -3,7 +3,7 @@ import * as React from "react";
 import { useState } from "react";
 import { LogIn, Lock, Mail, X, EyeIcon, EyeOff, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuthStore } from "@/lib/zustand/AuthUI";
+import { useAuthStore } from "@/lib/zustand/AuthUIASrore";
 import WithSosmed from "./WithSomed";
 import { schemaSignIn } from "@/validation/auth.validation";
 

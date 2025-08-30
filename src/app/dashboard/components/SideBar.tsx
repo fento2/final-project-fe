@@ -8,9 +8,9 @@ import { Separator } from "@/components/ui/separator";
 import ProfileNavSection from "./ProfileNavSection";
 import UserOption from "./UserOption";
 import HeaderDashboard from "./HeaderDashboard";
-import { Menu, LayoutDashboard, ChevronLeft } from "lucide-react";
+import { Menu, ChevronLeft } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import CompanyOption from "./CompanyOption";
 
 const sidebarVariants = {
   open: { width: "15rem" },
@@ -86,7 +86,7 @@ function SidebarContent({ isCollapsed }: { isCollapsed: boolean }) {
   return (
     <motion.div className="relative z-40 flex text-muted-foreground h-full shrink-0 flex-col transition-all">
       <motion.ul className="flex h-full flex-col">
-        <div className="flex grow flex-col items-center">
+        <div className="flex grow flex-col items-center py-2.5">
           {/* Profile Section */}
           <div className="flex h-[54px] w-full shrink-0 border-b p-2">
             <ProfileNavSection isCollapsed={!isCollapsed} />
@@ -98,6 +98,8 @@ function SidebarContent({ isCollapsed }: { isCollapsed: boolean }) {
               <ScrollArea className="h-16 grow p-2">
                 <div className={cn("flex w-full flex-col gap-1")}>
                   <UserOption isCollapsed={isCollapsed} />
+                  <Separator className="w-full" />
+                  <CompanyOption isCollapsed={isCollapsed} />
                 </div>
               </ScrollArea>
             </div>

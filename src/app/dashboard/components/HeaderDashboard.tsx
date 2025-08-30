@@ -35,7 +35,6 @@ const HeaderDashboard = ({ children }: IHeaderDashboard) => {
                 <div key={href} className="flex items-center">
                   <BreadcrumbItem>
                     <BreadcrumbLink
-                      href={href}
                       className={`${
                         isLast
                           ? "text-indigo-600 font-bold text-lg hover:text-indigo-800"
