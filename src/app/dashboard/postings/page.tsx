@@ -1,9 +1,6 @@
-"use client";
-import { useState } from "react";
 import CreateJob from "./componetns/CreateJob";
 
 const JobPostings = () => {
-  const [next, setNext] = useState(false);
   return (
     <div className="container md:pl-20 mx-auto min-h-screen px-4 py-6">
       <div className="mb-6">

@@ -129,14 +129,11 @@ const General = () => {
                   <SelectValue placeholder="Select Gender" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Male" className="text-lg">
+                  <SelectItem value="Male" className="p-4 text-lg">
                     Male
                   </SelectItem>
-                  <SelectItem value="Female" className="text-lg">
+                  <SelectItem value="Female" className="p-4 text-lg">
                     Female
-                  </SelectItem>
-                  <SelectItem value="Other" className="text-lg">
-                    Other
                   </SelectItem>
                 </SelectContent>
               </Select>

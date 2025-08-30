@@ -12,7 +12,12 @@ import {
 } from "@/components/ui/select";
 import { JOB_CATEGORIES, JOB_TYPES } from "@/constants/job";
 
-import LocationInput from "./MapPicker";
+import dynamic from "next/dynamic";
+
+const LocationInput = dynamic(() => import("./MapPicker"), {
+  ssr: false, // disable SSR
+});
+
 import { useCreateJob } from "@/lib/zustand/createJobStore";
 
 const FormJobPosting = () => {
@@ -49,7 +54,7 @@ const FormJobPosting = () => {
             id="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="py-6 text-lg"
+            className="py-6 !text-lg"
           />
         </div>
 
@@ -64,7 +69,11 @@ const FormJobPosting = () => {
             </SelectTrigger>
             <SelectContent>
               {JOB_CATEGORIES.map((cat) => (
-                <SelectItem key={cat.value} value={cat.value}>
+                <SelectItem
+                  key={cat.value}
+                  value={cat.value}
+                  className="p-4 text-lg"
+                >
                   {cat.label}
                 </SelectItem>
               ))}
@@ -83,7 +92,11 @@ const FormJobPosting = () => {
             </SelectTrigger>
             <SelectContent>
               {JOB_TYPES.map((type) => (
-                <SelectItem key={type.value} value={type.value}>
+                <SelectItem
+                  key={type.value}
+                  value={type.value}
+                  className="p-4 text-lg"
+                >
                   {type.label}
                 </SelectItem>
               ))}

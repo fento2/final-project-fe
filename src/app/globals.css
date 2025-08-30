@@ -123,14 +123,9 @@
   }
 }
 
-.ql-align-center {
-  @apply text-center;
-}
-.ql-align-right {
-  @apply text-right;
-}
-.ql-align-justify {
-  @apply text-justify;
+.ql-container.ql-bubble {
+  border: none;
+  box-shadow: none;
 }
 
 
@@ -144,29 +139,16 @@
   border-top: none; /* 👈 biar nyambung mulus ke toolbar */
 }
 
+.preview .ql-container {
+  @apply rounded-md border border-gray-300;
+  border: none;
+  
+}
+
 .ql-editor {
   min-height: 200px;
 }
 
-
-.ql-editor li[data-list="ordered"] {
-  counter-increment: my-ol;
-}
-
-.ql-editor li[data-list="ordered"]::before {
-  content: counter(my-ol, decimal) ". ";
-  margin-right: 0.5em;
-}
-
-.ql-editor ol {
-  counter-reset: my-ol;
-  padding-left: 1.5rem;
-}
-
-.ql-editor li[data-list="bullet"]::before {
-  content: "•";
-  margin-right: 0.5em;
-}
 
 /* Di global CSS atau tailwind global file */
 .leaflet-container {
