@@ -203,7 +203,7 @@ function JobCard({ job }: { job: Job }) {
     );
 }
 
-function Pagination({
+export function Pagination({
     page,
     totalPages,
     onChange,
