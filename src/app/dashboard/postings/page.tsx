@@ -1,7 +1,6 @@
 "use client";
 import { useState } from "react";
 import CreateJob from "./componetns/CreateJob";
-import PreselectionTest from "./componetns/CreatePreSelection";
 
 const JobPostings = () => {
   const [next, setNext] = useState(false);
@@ -13,7 +12,7 @@ const JobPostings = () => {
         </h3>
         <span className="text-sm text-gray-600">Fill in the job details</span>
       </div>
-      {next ? <PreselectionTest /> : <CreateJob setNext={setNext} />}
+      <CreateJob />
     </div>
   );
 };

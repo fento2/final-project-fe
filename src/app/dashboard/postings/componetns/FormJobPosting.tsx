@@ -127,22 +127,21 @@ const FormJobPosting = () => {
         />
       </div>
 
-      {/* Preselection Test */}
-      <div className="flex items-center space-x-2 mt-6">
-        <Checkbox
-          checked={preSelection}
-          onCheckedChange={setPreSelection}
-          className="w-6 h-6"
-        />
-        <Label className="text-lg">Require Preselection Test</Label>
-      </div>
-
       {/* Description */}
       <div className="mt-4">
         <Label className="font-bold text-lg tracking-widest">
           Job Description
         </Label>
         <TextEditor value={description} setValue={setDescription} editing />
+        {/* Preselection Test */}
+        <div className="flex items-center space-x-2 mt-6">
+          <Checkbox
+            checked={preSelection}
+            onCheckedChange={setPreSelection}
+            className="w-6 h-6"
+          />
+          <Label className="text-lg">Require Preselection Test</Label>
+        </div>
       </div>
     </div>
   );

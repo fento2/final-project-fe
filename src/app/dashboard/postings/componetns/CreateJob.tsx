@@ -3,12 +3,11 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import FormJobPosting from "./FormJobPosting";
 import { useCreateJob } from "@/lib/zustand/createJobStore";
-import { Briefcase, ChevronRight } from "lucide-react";
+import { Briefcase } from "lucide-react";
+import PreselectionTest from "./CreatePreSelection";
+import { Separator } from "@/components/ui/separator";
 
-interface ICreateJob {
-  setNext: (next: boolean) => void;
-}
-const CreateJob = ({ setNext }: ICreateJob) => {
+const CreateJob = () => {
   const { preSelection } = useCreateJob();
 
   const handleSave = () => {
@@ -27,24 +26,16 @@ const CreateJob = ({ setNext }: ICreateJob) => {
           </p>
         </CardHeader>
 
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4">
           <FormJobPosting />
+          <Separator className="w-full h-[0.5px]" />
+          {preSelection && <PreselectionTest />}
 
           {/* Actions */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-            {preSelection ? (
-              <Button
-                variant={"ghost"}
-                className="w-full sm:w-auto border-2 border-indigo-700 text-indigo-700"
-                onClick={() => setNext(true)}
-              >
-                Next <ChevronRight />
-              </Button>
-            ) : (
-              <Button className="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-700">
-                Post <Briefcase />
-              </Button>
-            )}
+          <div className="">
+            <Button className="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-700">
+              Post <Briefcase />
+            </Button>
           </div>
         </CardContent>
       </Card>
