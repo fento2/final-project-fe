@@ -15,7 +15,7 @@ type PreselectionTest = {
   resetQuestions: () => void;
 };
 
-export const usePreselectionTestStore = create<PreselectionTest>()(
+export const useCreatePreselectionStore = create<PreselectionTest>()(
   persist(
     (set) => ({
       questions: [],
