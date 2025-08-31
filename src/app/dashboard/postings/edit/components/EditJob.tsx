@@ -1,14 +1,16 @@
 "use client";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import FormJobPosting from "./FormJobPosting";
-import { useCreateJob } from "@/lib/zustand/createJobStore";
-import { Briefcase } from "lucide-react";
-import PreselectionTest from "./CreatePreSelection";
-import { Separator } from "@/components/ui/separator";
 
-const CreateJob = () => {
-  const { preSelection } = useCreateJob();
+import { Briefcase } from "lucide-react";
+
+import { Separator } from "@/components/ui/separator";
+import { useEditJob } from "@/lib/zustand/editJobStore";
+import EditPreselectionTest from "./EditPreselectionTest";
+import EditJobPosting from "./EditFormJobPosting";
+
+const EditJob = () => {
+  const { preSelection } = useEditJob();
 
   const handleSave = () => {
     console.log("Updated Profile:");
@@ -27,14 +29,14 @@ const CreateJob = () => {
         </CardHeader>
 
         <CardContent className="space-y-4">
-          <FormJobPosting />
+          <EditJobPosting />
           <Separator className="w-full h-[0.5px]" />
-          {preSelection && <PreselectionTest />}
+          {preSelection && <EditPreselectionTest />}
 
           {/* Actions */}
           <div className="">
             <Button className="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-700">
-              Post <Briefcase />
+              Save <Briefcase />
             </Button>
           </div>
         </CardContent>
@@ -43,4 +45,4 @@ const CreateJob = () => {
   );
 };
 
-export default CreateJob;
+export default EditJob;

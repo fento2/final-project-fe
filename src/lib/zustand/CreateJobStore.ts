@@ -11,6 +11,9 @@ type CreateJob = {
   salary: number;
   jobType: string;
   preSelection: boolean;
+  salaryPeriod: string;
+  currency: string;
+  expiredAt: string;
 
   setTitle: (title: string) => void;
   setDescription: (description: string) => void;
@@ -21,6 +24,9 @@ type CreateJob = {
   setSalary: (salary: number) => void;
   setJobType: (jobType: string) => void;
   setPreSelection: (preSelection: boolean) => void;
+  setSalaryPeriod: (salaryPeriod: string) => void;
+  setCurrency: (currency: string) => void;
+  setExpiredAt: (expiredAt: string) => void;
 
   reset: () => void;
 };
@@ -37,6 +43,9 @@ export const useCreateJob = create<CreateJob>()(
       salary: 0,
       jobType: "",
       preSelection: false,
+      salaryPeriod: "",
+      currency: "",
+      expiredAt: "",
 
       setTitle: (title) => set({ title }),
       setDescription: (description) => set({ description }),
@@ -47,6 +56,9 @@ export const useCreateJob = create<CreateJob>()(
       setSalary: (salary) => set({ salary }),
       setJobType: (jobType) => set({ jobType }),
       setPreSelection: (preSelection) => set({ preSelection }),
+      setSalaryPeriod: (salaryPeriod) => set({ salaryPeriod }),
+      setCurrency: (currency) => set({ currency }),
+      setExpiredAt: (expiredAt) => set({ expiredAt }),
 
       reset: () =>
         set({
@@ -59,6 +71,9 @@ export const useCreateJob = create<CreateJob>()(
           salary: 0,
           jobType: "",
           preSelection: false,
+          salaryPeriod: "",
+          currency: "",
+          expiredAt: "",
         }),
     }),
     {

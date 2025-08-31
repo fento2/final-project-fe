@@ -11,15 +11,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { usePreselectionTestStore } from "@/lib/zustand/preselectionStore";
+import { useCreatePreselectionStore } from "@/lib/zustand/createPreselectionStore";
 import { useState, useEffect } from "react";
 import { Plus, Trash, Trash2 } from "lucide-react";
 
 const MAX_QUESTIONS = 25;
 
-const PreselectionTest = () => {
+const CreatePreselectionTest = () => {
   const { questions, setQuestions, updateQuestion } =
-    usePreselectionTestStore();
+    useCreatePreselectionStore();
   const [currentCount, setCurrentCount] = useState(questions.length || 1);
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -188,4 +188,4 @@ const PreselectionTest = () => {
   );
 };
 
-export default PreselectionTest;
+export default CreatePreselectionTest;
