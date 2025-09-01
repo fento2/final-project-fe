@@ -1,4 +1,5 @@
-import CardJobPosting from "../../create/components/CardFormJob";
+"use client";
+import CardJobPosting from "../../components/CardFormJob";
 
 const EditPosting = () => {
   return (

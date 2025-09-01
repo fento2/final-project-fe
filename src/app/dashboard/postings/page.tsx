@@ -22,8 +22,12 @@ import {
   Plus,
   Search,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import JobsListPage from "@/app/jobs/page";
+import JobPostingsCard from "./componetns/JobsPostingsCard";
 
 const PostingsPage = () => {
+  const rounter = useRouter();
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("newest");
   const [category, setCategory] = useState("all");
@@ -130,63 +134,9 @@ const PostingsPage = () => {
       {/* Jobs Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {paginatedJobs.map((job, idx) => (
-          <Card
-            key={idx}
-            className="hover:shadow-lg transition relative p-4 flex flex-col gap-3"
-          >
-            {/* Header: Title & Company */}
-            <div className="flex items-center gap-3">
-              <div>
-                <h2 className="text-lg font-semibold">{job.title}</h2>
-                <p className="text-sm text-muted-foreground">{job.company}</p>
-              </div>
-            </div>
-
-            {/* Badge contract */}
-            <span className="bg-blue-100 text-blue-700 text-xs font-medium px-3 py-1 rounded-full w-fit">
-              {job.jobType}
-            </span>
-
-            {/* Requirements */}
-            {job.requirements && job.requirements.length > 0 && (
-              <ul className="list-disc list-inside text-sm text-muted-foreground space-y-1">
-                {job.requirements.slice(0, 3).map((req, idx) => (
-                  <li key={idx}>{req}</li>
-                ))}
-              </ul>
-            )}
-
-            {/* Category */}
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Briefcase size={20} />
-              <span>{job.category}</span>
-            </div>
-
-            {/* Location */}
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <MapPin size={20} />
-              <span>{job.location}</span>
-            </div>
-
-            {/* Salary */}
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <BanknoteIcon size={20} />
-              <span>{job.salary}</span>
-            </div>
-
-            {/* Posted & Expired */}
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <CalendarDays size={16} />
-              <span>
-                Posted: {new Date(job.createdAt).toLocaleDateString()} |
-                Expired:{" "}
-                <span className="text-red-500">
-                  {new Date(job.expiredAt).toLocaleDateString()}
-                </span>
-              </span>
-            </div>
-            <ManagePostings slug={job.slug} />
-          </Card>
+          <div key={idx}>
+            <JobPostingsCard job={job} />
+          </div>
         ))}
       </div>
 
