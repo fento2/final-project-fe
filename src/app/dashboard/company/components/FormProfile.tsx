@@ -2,7 +2,7 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ChangeEvent, useState } from "react";
-import TextEditor from "./TextEditor";
+import TextEditor from "../../components/TextEditor";
 
 interface ICompanyProfile {
   name: string;

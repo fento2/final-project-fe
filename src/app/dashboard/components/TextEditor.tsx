@@ -1,19 +1,25 @@
 "use client";
-
 import dynamic from "next/dynamic";
 import "react-quill-new/dist/quill.snow.css";
-import Quill from "quill";
 import { ClipboardList, Gift } from "lucide-react";
 import { renderToStaticMarkup } from "react-dom/server";
 
-const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
+const ReactQuill = dynamic(
+  async () => {
+    const { default: RQ } = await import("react-quill-new");
+    const Quill = (await import("quill")).default;
 
-// register custom icon
-const icons = Quill.import("ui/icons") as any;
-icons["requirement"] = renderToStaticMarkup(<ClipboardList size={18} />);
-icons["benefit"] = renderToStaticMarkup(<Gift size={18} />); // bisa ganti svg/icon
+    // register custom icons
+    const icons = Quill.import("ui/icons") as any;
+    icons["requirement"] = renderToStaticMarkup(<ClipboardList size={18} />);
+    icons["benefit"] = renderToStaticMarkup(<Gift size={18} />);
 
-interface IDescriptionCompany {
+    return RQ;
+  },
+  { ssr: false }
+);
+
+interface ITextEditor {
   value: string;
   setValue: (value: string) => void;
   editing: boolean;
@@ -27,7 +33,7 @@ export default function TextEditor({
   setValue,
   showEdit,
   profile,
-}: IDescriptionCompany) {
+}: ITextEditor) {
   const modulesDescription = {
     toolbar: {
       container: [

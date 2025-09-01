@@ -170,7 +170,7 @@ const FormPreselectionTest = () => {
               </SelectTrigger>
               <SelectContent>
                 {["A", "B", "C", "D"].map((opt) => (
-                  <SelectItem key={opt} value={opt}>
+                  <SelectItem key={opt} value={opt} className="p-4 text-lg">
                     {opt}
                   </SelectItem>
                 ))}

@@ -1,4 +1,5 @@
-import CardJobPosting from "./components/CardFormJob";
+"use client";
+import CardJobPosting from "../components/CardFormJob";
 
 const CreateNewJobPage = () => {
   return (
