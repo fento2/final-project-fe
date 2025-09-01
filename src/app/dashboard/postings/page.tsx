@@ -68,7 +68,7 @@ const PostingsPage = () => {
             Manage and review all job postings uploaded to the platform.
           </p>
         </div>
-        <Link href="/dashboard/postings/create">
+        <Link href="/dashboard/postings/manage/create">
           <Button className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2">
             <Plus className="h-4 w-4" />
             Create New Posting
