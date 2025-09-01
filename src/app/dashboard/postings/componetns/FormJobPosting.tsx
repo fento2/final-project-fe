@@ -129,6 +129,7 @@ const FormJobPosting = () => {
             setValue={isEdit ? setEditDescription : setDescription}
             editing={true}
             showEdit={false}
+            profile={false}
           />
           <div className="flex items-center space-x-2 mt-6">
             <Checkbox

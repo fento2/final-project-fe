@@ -15,24 +15,20 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { EllipsisVertical } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type Job = {
-  id: number;
-  title: string;
+  slug: string;
 };
 
-const ManagePostings = ({ job }: { job: Job }) => {
+const ManagePostings = ({ slug }: Job) => {
   const [openDelete, setOpenDelete] = useState(false);
+  const router = useRouter();
 
   const handleDelete = () => {
-    console.log("Delete job id:", job.id);
+    console.log("Delete job id:");
     setOpenDelete(false);
     // TODO: panggil API delete job
-  };
-
-  const handleEdit = () => {
-    console.log("Edit job id:", job.id);
-    // TODO: arahkan ke halaman edit / buka modal edit
   };
 
   return (
@@ -45,7 +41,12 @@ const ManagePostings = ({ job }: { job: Job }) => {
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem onClick={handleEdit} className="py-2 text-lg">
+          <DropdownMenuItem
+            onClick={() => {
+              router.push(`/dashboard/postings/edit/${slug}`);
+            }}
+            className="py-2 text-lg"
+          >
             Edit
           </DropdownMenuItem>
           <DropdownMenuItem
@@ -64,8 +65,8 @@ const ManagePostings = ({ job }: { job: Job }) => {
             <DialogTitle>Are you sure?</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            This action cannot be undone. The job posting <b>{job.title}</b>{" "}
-            will be permanently deleted.
+            This action cannot be undone. The job posting <b>{slug}</b> will be
+            permanently deleted.
           </p>
           <DialogFooter className="mt-4">
             <Button variant="outline" onClick={() => setOpenDelete(false)}>
