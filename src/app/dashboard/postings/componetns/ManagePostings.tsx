@@ -43,7 +43,7 @@ const ManagePostings = ({ slug }: Job) => {
         <DropdownMenuContent>
           <DropdownMenuItem
             onClick={() => {
-              router.push(`/dashboard/postings/edit/${slug}`);
+              router.push(`/dashboard/postings/manage/edit/${slug}`);
             }}
             className="py-2 text-lg"
           >

@@ -26,9 +26,9 @@ const menus = [
     href: "/dashboard/applicants",
   },
   {
-    title: "Applications",
+    title: "Aplications",
     icon: MessagesSquare,
-    href: "/dashboard/applications", // <- tadi typo: "aplications"
+    href: "/dashboard/aplications", // <- tadi typo: "aplications"
   },
 ];
 
@@ -43,7 +43,7 @@ const CompanyOption = ({ isCollapsed }: IUserOption) => {
   return (
     <div className="flex flex-col gap-3">
       {menus.map(({ title, icon: Icon, href }) => {
-        const isActive = pathname === href;
+        const isActive = pathname.startsWith(href);
 
         return (
           <Link
