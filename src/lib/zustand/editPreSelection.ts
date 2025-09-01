@@ -1,29 +1,31 @@
 import { create } from "zustand";
 
-interface IQuestions {
+interface IQuestion {
   question: string;
   options: string[]; // [A, B, C, D]
   answer: string; // jawaban benar: "A" | "B" | "C" | "D"
 }
 
-type PreselectionTest = {
-  questions: IQuestions[];
-  setQuestions: (questions: IQuestions[]) => void;
-  addQuestion: (question: IQuestions) => void;
-  updateQuestion: (index: number, question: IQuestions) => void;
-  resetQuestions: () => void;
+type EditPreselectionTest = {
+  editQuestions: IQuestion[];
+  setEditQuestions: (questions: IQuestion[]) => void;
+  addEditQuestion: (question: IQuestion) => void;
+  updateEditQuestion: (index: number, question: IQuestion) => void;
+  resetEditQuestions: () => void;
 };
 
-export const useEditPreselectionStore = create<PreselectionTest>()((set) => ({
-  questions: [],
-  setQuestions: (questions) => set({ questions }),
-  addQuestion: (question) =>
-    set((state) => ({ questions: [...state.questions, question] })),
-  updateQuestion: (index, question) =>
-    set((state) => {
-      const newQuestions = [...state.questions];
-      newQuestions[index] = question;
-      return { questions: newQuestions };
-    }),
-  resetQuestions: () => set({ questions: [] }),
-}));
+export const useEditPreselectionStore = create<EditPreselectionTest>()(
+  (set) => ({
+    editQuestions: [],
+    setEditQuestions: (questions) => set({ editQuestions: questions }),
+    addEditQuestion: (question) =>
+      set((state) => ({ editQuestions: [...state.editQuestions, question] })),
+    updateEditQuestion: (index, question) =>
+      set((state) => {
+        const newQuestions = [...state.editQuestions];
+        newQuestions[index] = question;
+        return { editQuestions: newQuestions };
+      }),
+    resetEditQuestions: () => set({ editQuestions: [] }),
+  })
+);

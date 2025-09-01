@@ -26,3 +26,15 @@ export const JOB_CATEGORIES = [
   { label: "Construction", value: "CONSTRUCTION" },
   { label: "Others", value: "OTHERS" },
 ];
+export const salaryPeriods = [
+  { value: "month", label: "/ Month" },
+  { value: "year", label: "/ Year" },
+  { value: "day", label: "/ Day" },
+  { value: "hour", label: "/ Hour" },
+];
+
+export const currencies = [
+  { value: "IDR", label: "Rp" },
+  { value: "USD", label: "$" },
+  { value: "EUR", label: "€" },
+];
