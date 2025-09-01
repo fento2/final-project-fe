@@ -122,7 +122,12 @@ const FormCompanyProfile = ({
           <span className="font-bold text-lg tracking-widest">
             Description Company
           </span>
-          <TextEditor editing={editing} value={value} setValue={setValue} />
+          <TextEditor
+            editing={editing}
+            value={value}
+            setValue={setValue}
+            showEdit={true}
+          />
         </div>
       </div>
     </>

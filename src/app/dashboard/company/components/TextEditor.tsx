@@ -9,11 +9,13 @@ interface IDescriptionCompany {
   value: string;
   setValue: (value: string) => void;
   editing: boolean;
+  showEdit: boolean;
 }
 export default function TextEditor({
   editing,
   value,
   setValue,
+  showEdit,
 }: IDescriptionCompany) {
   const modules = {
     toolbar: [
@@ -39,20 +41,26 @@ export default function TextEditor({
           placeholder="Write Something..."
         />
       )}
-      <div className="mt-2">
-        {editing && (
-          <span className="font-bold tracking-wider text-lg">Preview</span>
-        )}
-        <div className={` ${editing ? "text-black" : "text-neutral-500"}`}>
-          <ReactQuill
-            value={value}
-            readOnly={true}
-            theme="snow" // atau "snow"
-            modules={{ toolbar: false }}
-            className="preview"
-          />
+      {showEdit && (
+        <div className="mt-2">
+          {editing && (
+            <span className="font-bold tracking-wider text-lg">Preview</span>
+          )}
+          <div
+            className={` ${
+              editing ? "text-black" : "text-neutral-500"
+            } border rounded-lg`}
+          >
+            <ReactQuill
+              value={value}
+              readOnly={true}
+              theme="bubble"
+              modules={{ toolbar: false }}
+              className="preview"
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import CreateJob from "./components/CreateJob";
+import CardJobPosting from "../componetns/CardFormJob";
 
 const CreateNewJobPage = () => {
   return (
@@ -9,7 +9,7 @@ const CreateNewJobPage = () => {
         </h3>
         <span className="text-sm text-gray-600">Fill in the job details</span>
       </div>
-      <CreateJob />
+      <CardJobPosting />
     </div>
   );
 };
