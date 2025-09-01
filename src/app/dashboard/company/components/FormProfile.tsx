@@ -127,6 +127,7 @@ const FormCompanyProfile = ({
             value={value}
             setValue={setValue}
             showEdit={true}
+            profile={true}
           />
         </div>
       </div>
