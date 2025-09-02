@@ -10,10 +10,10 @@ type CreateJob = {
   location: string;
   salary: number;
   jobType: string;
-  preSelection: boolean;
   salaryPeriod: string;
   currency: string;
   expiredAt: string;
+  skill: string[];
 
   setTitle: (title: string) => void;
   setDescription: (description: string) => void;
@@ -23,11 +23,11 @@ type CreateJob = {
   setLocation: (location: string) => void;
   setSalary: (salary: number) => void;
   setJobType: (jobType: string) => void;
-  setPreSelection: (preSelection: boolean) => void;
   setSalaryPeriod: (salaryPeriod: string) => void;
   setCurrency: (currency: string) => void;
   setExpiredAt: (expiredAt: string) => void;
-
+  addSkill: (skill: string) => void;
+  removeSkill: (skill: string) => void;
   reset: () => void;
 };
 
@@ -42,10 +42,10 @@ export const useCreateJob = create<CreateJob>()(
       location: "",
       salary: 0,
       jobType: "",
-      preSelection: false,
       salaryPeriod: "",
       currency: "",
       expiredAt: "",
+      skill: [],
 
       setTitle: (title) => set({ title: title }),
       setDescription: (description) => set({ description: description }),
@@ -55,10 +55,19 @@ export const useCreateJob = create<CreateJob>()(
       setLocation: (location) => set({ location: location }),
       setSalary: (salary) => set({ salary: salary }),
       setJobType: (jobType) => set({ jobType: jobType }),
-      setPreSelection: (preSelection) => set({ preSelection: preSelection }),
       setSalaryPeriod: (salaryPeriod) => set({ salaryPeriod: salaryPeriod }),
       setCurrency: (currency) => set({ currency: currency }),
       setExpiredAt: (expiredAt) => set({ expiredAt: expiredAt }),
+
+      addSkill: (skill) =>
+        set((state) => ({
+          skill: [...state.skill, skill],
+        })),
+
+      removeSkill: (skill) =>
+        set((state) => ({
+          skill: state.skill.filter((s) => s !== skill),
+        })),
 
       reset: () =>
         set({
@@ -70,10 +79,10 @@ export const useCreateJob = create<CreateJob>()(
           location: "",
           salary: 0,
           jobType: "",
-          preSelection: false,
           salaryPeriod: "",
           currency: "",
           expiredAt: "",
+          skill: [],
         }),
     }),
     {

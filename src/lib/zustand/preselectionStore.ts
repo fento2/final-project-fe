@@ -9,9 +9,13 @@ interface IQuestion {
 
 type PreselectionTest = {
   questions: IQuestion[];
+  minScore: number; // <-- tambahkan
+  slug: string;
   setQuestions: (questions: IQuestion[]) => void;
   addQuestion: (question: IQuestion) => void;
   updateQuestion: (index: number, question: IQuestion) => void;
+  setMinScore: (minScore: number) => void; // <-- setter
+  setSlug: (slug: string) => void;
   resetQuestions: () => void;
 };
 
@@ -19,6 +23,8 @@ export const useCreatePreselectionStore = create<PreselectionTest>()(
   persist(
     (set) => ({
       questions: [],
+      minScore: 70, // default passing score
+      slug: "",
       setQuestions: (questions) => set({ questions }),
       addQuestion: (question) =>
         set((state) => ({ questions: [...state.questions, question] })),
@@ -28,7 +34,9 @@ export const useCreatePreselectionStore = create<PreselectionTest>()(
           newQuestions[index] = question;
           return { questions: newQuestions };
         }),
-      resetQuestions: () => set({ questions: [] }),
+      setMinScore: (minScore) => set({ minScore }), // setter
+      setSlug: (slug) => set({ slug }),
+      resetQuestions: () => set({ questions: [], minScore: 70, slug: "" }), // reset termasuk minScore
     }),
     {
       name: "preselection-test-storage", // key di localStorage

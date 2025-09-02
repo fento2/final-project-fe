@@ -21,7 +21,7 @@ type Job = {
   slug: string;
 };
 
-const ManagePostings = ({ slug }: Job) => {
+const ManagePosting = ({ slug }: Job) => {
   const [openDelete, setOpenDelete] = useState(false);
   const router = useRouter();
 
@@ -36,8 +36,8 @@ const ManagePostings = ({ slug }: Job) => {
       {/* Dropdown titik tiga */}
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="absolute right-2 top-4 hover:bg-indigo-500 hover:rounded-full p-2">
-            <EllipsisVertical />
+          <button className="absolute right-2 top-6 hover:bg-indigo-500 hover:rounded-full p-2">
+            <EllipsisVertical size={30} />
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
@@ -82,4 +82,4 @@ const ManagePostings = ({ slug }: Job) => {
   );
 };
 
-export default ManagePostings;
+export default ManagePosting;

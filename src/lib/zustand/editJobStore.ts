@@ -9,7 +9,6 @@ type EditJob = {
   editLocation: string;
   editSalary: number;
   editJobType: string;
-  editPreselection: boolean;
   editSalaryPeriod: string;
   editCurrency: string;
   editExpireAt: string;
@@ -22,7 +21,6 @@ type EditJob = {
   setEditLocation: (location: string) => void;
   setEditSalary: (salary: number) => void;
   setEditJobType: (jobType: string) => void;
-  setEditPreselection: (preSelection: boolean) => void;
   setEditSalaryPeriod: (salaryPeriod: string) => void;
   setEditCurrency: (currency: string) => void;
   setEditExpireAt: (expiredAt: string) => void;
@@ -39,7 +37,6 @@ export const useEditJob = create<EditJob>()((set) => ({
   editLocation: "",
   editSalary: 0,
   editJobType: "",
-  editPreselection: false,
   editSalaryPeriod: "",
   editCurrency: "",
   editExpireAt: "",
@@ -52,8 +49,6 @@ export const useEditJob = create<EditJob>()((set) => ({
   setEditLocation: (location) => set({ editLocation: location }),
   setEditSalary: (salary) => set({ editSalary: salary }),
   setEditJobType: (jobType) => set({ editJobType: jobType }),
-  setEditPreselection: (preSelection) =>
-    set({ editPreselection: preSelection }),
   setEditSalaryPeriod: (salaryPeriod) =>
     set({ editSalaryPeriod: salaryPeriod }),
   setEditCurrency: (currency) => set({ editCurrency: currency }),
@@ -69,7 +64,6 @@ export const useEditJob = create<EditJob>()((set) => ({
       editLocation: "",
       editSalary: 0,
       editJobType: "",
-      editPreselection: false,
       editSalaryPeriod: "",
       editCurrency: "",
       editExpireAt: "",

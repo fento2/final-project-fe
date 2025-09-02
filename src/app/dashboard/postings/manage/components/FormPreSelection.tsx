@@ -10,23 +10,33 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { useCreatePreselectionStore } from "@/lib/zustand/createPreselectionStore";
+import { useCreatePreselectionStore } from "@/lib/zustand/preselectionStore";
 import { useState, useEffect } from "react";
 import { Plus, Trash2 } from "lucide-react";
-import { useEditPreselectionStore } from "@/lib/zustand/editPreSelection";
-import { usePathname } from "next/navigation";
+import { useParams } from "next/navigation";
 
 const FormPreselectionTest = () => {
-  const { questions, setQuestions, updateQuestion } =
-    useCreatePreselectionStore();
-  const { editQuestions, setEditQuestions, updateEditQuestion } =
-    useEditPreselectionStore();
-  const pathname = usePathname();
-  const isEdit = pathname.includes("edit");
-  const pageQuestions = isEdit ? editQuestions : questions;
-  const pageSetQuestions = isEdit ? setEditQuestions : setQuestions;
-  const pageUpdateQuestions = isEdit ? updateEditQuestion : updateQuestion;
-  const [currentCount, setCurrentCount] = useState(pageQuestions.length || 1);
+  const {
+    questions,
+    setQuestions: setQuestions,
+    updateQuestion,
+    minScore,
+    setMinScore,
+    setSlug,
+    slug,
+    resetQuestions,
+  } = useCreatePreselectionStore();
+  const params = useParams();
+  const slugUrl = params.slug as string;
+
+  useEffect(() => {
+    if (slug !== slugUrl) {
+      resetQuestions();
+      setSlug(slugUrl);
+    }
+  }, [slug, slugUrl, resetQuestions, setSlug]);
+
+  const [currentCount, setCurrentCount] = useState(questions.length || 1);
   const [currentIndex, setCurrentIndex] = useState(0);
   const MAX_QUESTIONS = 25;
 
@@ -36,26 +46,24 @@ const FormPreselectionTest = () => {
   };
 
   const handleNext = () => {
-    setCurrentIndex((prev) =>
-      prev < pageQuestions.length - 1 ? prev + 1 : prev
-    );
+    setCurrentIndex((prev) => (prev < questions.length - 1 ? prev + 1 : prev));
   };
 
   // inisialisasi soal awal jika kosong
   useEffect(() => {
-    if (pageQuestions.length === 0) {
+    if (questions.length === 0) {
       const initialQuestions = Array.from({ length: currentCount }, () => ({
         question: "",
         options: ["", "", "", ""],
         answer: "",
       }));
-      pageSetQuestions(initialQuestions);
+      setQuestions(initialQuestions);
     }
   }, []);
 
   const handleQuestionChange = (index: number, value: string) => {
-    const q = { ...pageQuestions[index], question: value };
-    pageUpdateQuestions(index, q);
+    const q = { ...questions[index], question: value };
+    updateQuestion(index, q);
   };
 
   const handleOptionChange = (
@@ -63,28 +71,28 @@ const FormPreselectionTest = () => {
     oIndex: number,
     value: string
   ) => {
-    const q = { ...pageQuestions[qIndex] };
+    const q = { ...questions[qIndex] };
     q.options[oIndex] = value;
-    pageUpdateQuestions(qIndex, q);
+    updateQuestion(qIndex, q);
   };
 
   const handleAnswerChange = (qIndex: number, selected: string) => {
-    const q = { ...pageQuestions[qIndex], answer: selected };
-    pageUpdateQuestions(qIndex, q);
+    const q = { ...questions[qIndex], answer: selected };
+    updateQuestion(qIndex, q);
   };
 
   const handleAddQuestion = () => {
-    if (pageQuestions.length >= MAX_QUESTIONS) return;
+    if (questions.length >= MAX_QUESTIONS) return;
     const newQuestions = [
-      ...pageQuestions,
+      ...questions,
       { question: "", options: ["", "", "", ""], answer: "" },
     ];
-    pageSetQuestions(newQuestions);
+    setQuestions(newQuestions);
     setCurrentCount(newQuestions.length);
   };
 
   const handleSubmit = () => {
-    console.log("Preselection Questions:", pageQuestions);
+    console.log("Preselection Questions:", questions);
   };
 
   return (
@@ -100,9 +108,9 @@ const FormPreselectionTest = () => {
           <div className="md:flex-row flex flex-col-reverse gap-2">
             <Button
               onClick={() => {
-                const newQuestions = [...pageQuestions];
+                const newQuestions = [...questions];
                 newQuestions.splice(currentIndex, 1); // hapus soal
-                pageSetQuestions(newQuestions);
+                setQuestions(newQuestions);
 
                 // update currentIndex
                 if (
@@ -122,7 +130,7 @@ const FormPreselectionTest = () => {
 
             <Button
               onClick={handleAddQuestion}
-              disabled={pageQuestions.length >= MAX_QUESTIONS}
+              disabled={questions.length >= MAX_QUESTIONS}
               className="flex items-center gap-2 md:text-sm text-xs"
             >
               Add <Plus size={6} />
@@ -131,13 +139,29 @@ const FormPreselectionTest = () => {
         </div>
       </CardHeader>
 
-      {pageQuestions.length > 0 && (
+      <div className="mb-4">
+        <Label className="ml-2 text-lg">Passing Score (%)</Label>
+        <Input
+          type="number"
+          min={0}
+          max={100}
+          value={minScore}
+          onChange={(e) => setMinScore(Number(e.target.value))}
+          placeholder="Enter passing score, e.g. 70"
+          className="py-6 !text-lg"
+        />
+        <p className="text-xs text-muted-foreground ml-2">
+          Minimum score required to continue the application
+        </p>
+      </div>
+
+      {questions.length > 0 && (
         <div className="space-y-2 border-b pb-4">
           <Label className="ml-2 text-lg">
-            Question {currentIndex + 1} of {pageQuestions.length}
+            Question {currentIndex + 1} of {questions.length}
           </Label>
           <Input
-            value={pageQuestions[currentIndex].question}
+            value={questions[currentIndex].question}
             onChange={(e) => handleQuestionChange(currentIndex, e.target.value)}
             placeholder={`Enter question ${currentIndex + 1}`}
             className="py-6 !text-lg"
@@ -148,7 +172,7 @@ const FormPreselectionTest = () => {
               <div key={idx}>
                 <Label className="ml-2 text-lg">{opt}</Label>
                 <Input
-                  value={pageQuestions[currentIndex].options[idx]}
+                  value={questions[currentIndex].options[idx]}
                   onChange={(e) =>
                     handleOptionChange(currentIndex, idx, e.target.value)
                   }
@@ -162,7 +186,7 @@ const FormPreselectionTest = () => {
           <div className="mt-2">
             <Label className="ml-2 text-lg">Correct Option</Label>
             <Select
-              value={pageQuestions[currentIndex].answer}
+              value={questions[currentIndex].answer}
               onValueChange={(val) => handleAnswerChange(currentIndex, val)}
             >
               <SelectTrigger className="py-6 !text-lg">
@@ -183,12 +207,21 @@ const FormPreselectionTest = () => {
               Prev
             </Button>
 
-            <Button
-              onClick={handleNext}
-              disabled={currentIndex === questions.length - 1}
-            >
-              Next
-            </Button>
+            {currentIndex === questions.length - 1 ? (
+              <Button
+                onClick={handleNext}
+                className="bg-indigo-500 hover:bg-indigo-800"
+              >
+                Post
+              </Button>
+            ) : (
+              <Button
+                onClick={handleNext}
+                disabled={currentIndex === questions.length - 1}
+              >
+                Next
+              </Button>
+            )}
           </div>
         </div>
       )}
