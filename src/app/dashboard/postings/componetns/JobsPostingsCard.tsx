@@ -9,7 +9,7 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { Briefcase, MapPin, BanknoteIcon, CalendarDays } from "lucide-react";
-import ManagePostings from "./ManagePostings";
+import ManagePostings from "../[slug]/components/ManagePostings";
 import { useRouter } from "next/navigation";
 
 export default function JobPostingsCard({ job }: { job: any }) {

@@ -31,14 +31,12 @@ const FormJobPosting = () => {
     latitude,
     longitude,
     location,
-    preSelection,
     expiredAt,
     setDescription,
     setLatitude,
     setLongitude,
     setLocation,
     setExpiredAt,
-    setPreSelection,
   } = useCreateJob();
   const {
     editLatitude,
@@ -46,8 +44,6 @@ const FormJobPosting = () => {
     editLongitude,
     editLocation,
     editExpireAt,
-    editPreselection,
-    setEditPreselection,
     setEditLatitude,
     setEditDescription,
     setEditLongitude,
@@ -130,17 +126,8 @@ const FormJobPosting = () => {
             value={getValue(description, editDescription, pathname)}
             setValue={isEdit ? setEditDescription : setDescription}
             editing={true}
-            showEdit={false}
             profile={false}
           />
-          <div className="flex items-center space-x-2 mt-6">
-            <Checkbox
-              checked={isEdit ? editPreselection : preSelection}
-              onCheckedChange={isEdit ? setEditPreselection : setPreSelection}
-              className="w-6 h-6"
-            />
-            <Label className="text-lg">Require Preselection Test</Label>
-          </div>
         </div>
       </div>
     </div>

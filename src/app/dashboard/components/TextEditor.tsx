@@ -23,7 +23,6 @@ interface ITextEditor {
   value: string;
   setValue: (value: string) => void;
   editing: boolean;
-  showEdit: boolean;
   profile: boolean;
 }
 
@@ -31,21 +30,18 @@ export default function TextEditor({
   editing,
   value,
   setValue,
-  showEdit,
   profile,
 }: ITextEditor) {
   const modulesDescription = {
     toolbar: {
       container: [
-        [{ font: [] }],
-        [{ size: ["small", false, "large", "huge"] }],
         ["bold", "italic", "underline", "strike"],
+        ["requirement", "benefit"], // custom button
         [{ color: [] }, { background: [] }],
-        [{ list: "ordered" }, { list: "bullet" }],
+        [{ list: "bullet" }],
         [{ align: [] }],
         ["link"],
         ["clean"],
-        ["requirement", "benefit"], // custom button
       ],
       handlers: {
         requirement: function (this: any) {
@@ -65,11 +61,9 @@ export default function TextEditor({
   const modulesProfile = {
     toolbar: {
       container: [
-        [{ font: [] }],
-        [{ size: ["small", false, "large", "huge"] }],
         ["bold", "italic", "underline", "strike"],
         [{ color: [] }, { background: [] }],
-        [{ list: "ordered" }, { list: "bullet" }],
+        [{ list: "bullet" }],
         [{ align: [] }],
         ["link"],
         ["clean"],
@@ -88,26 +82,23 @@ export default function TextEditor({
           placeholder="Write Something..."
         />
       )}
-      {showEdit && (
-        <div className="mt-2">
-          {editing && (
-            <span className="font-bold tracking-wider text-lg">Preview</span>
-          )}
-          <div
-            className={`${
-              editing ? "text-black" : "text-neutral-500"
-            } border rounded-lg`}
-          >
-            <ReactQuill
-              value={value}
-              readOnly={true}
-              theme="bubble"
-              modules={{ toolbar: false }}
-              className="preview"
-            />
+
+      <div className="mt-2">
+        {!editing && (
+          <div>
+            <div
+              className={`${
+                editing ? "text-black" : "text-neutral-500"
+              } border rounded-lg`}
+            >
+              <div
+                className="quill-preview border p-4 rounded-md"
+                dangerouslySetInnerHTML={{ __html: value }}
+              />
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }

@@ -17,6 +17,7 @@ import { getValue, setValue } from "@/helper/postingsHelper";
 import { useCreateJob } from "@/lib/zustand/createJobStore";
 import { useEditJob } from "@/lib/zustand/editJobStore";
 import { usePathname } from "next/navigation";
+import TagInput from "./FieldTagSkill";
 const BasicForm = () => {
   const pathname = usePathname();
   const {
@@ -121,6 +122,8 @@ const BasicForm = () => {
           </SelectContent>
         </Select>
       </div>
+
+      <TagInput />
 
       {/* Salary */}
       <div className="md:col-span-2 flex flex-col sm:flex-row gap-2">

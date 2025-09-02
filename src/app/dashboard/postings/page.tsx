@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -11,23 +10,13 @@ import {
 } from "@/components/ui/select";
 import { PaginationDashboard } from "./componetns/PaginationDashboard";
 import { jobs } from "./data/dataDummy";
-import ManagePostings from "./componetns/ManagePostings";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import {
-  BanknoteIcon,
-  Briefcase,
-  CalendarDays,
-  MapPin,
-  Plus,
-  Search,
-} from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
-import JobsListPage from "@/app/jobs/page";
 import JobPostingsCard from "./componetns/JobsPostingsCard";
 
 const PostingsPage = () => {
-  const rounter = useRouter();
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("newest");
   const [category, setCategory] = useState("all");
