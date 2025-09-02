@@ -15,13 +15,16 @@ import { Button } from "@/components/ui/button";
 import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
 import WithSosmed from "./WithSomed";
 import { schemaSignUp } from "@/validation/auth.validation";
+import InputField from "./InputField";
+import Divider from "./Divider";
+import { apiCall } from "@/helper/apiCall";
+import { useRouter } from "next/navigation";
 
 const SignUp = () => {
+  const router = useRouter();
   const { setShowSignIn, setShowSignUp } = useAuthUIStore();
   const [role, setRole] = useState<"USER" | "COMPANY">("USER");
   const [error, setError] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [data, setData] = useState({
     role,
@@ -30,13 +33,19 @@ const SignUp = () => {
     password: "",
     confirmPassword: "",
   });
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     setError("");
     const result = schemaSignUp.safeParse(data);
     if (!result.success) {
       const message = result.error.issues[0].message;
       setError(message);
     }
+    const response = await apiCall.post("/auth/signup", {
+      data
+    });
+    alert(response.data);
+    alert("Pendaftaran akun berhasil");
+    router.push("/");
   };
 
   return (
@@ -68,7 +77,6 @@ const SignUp = () => {
         </p>
 
         {/* Input fields */}
-
         <div className="w-full flex flex-col gap-3 mb-2">
           {/* Role selection */}
           <div className="flex items-center gap-4 mb-2">
@@ -95,90 +103,47 @@ const SignUp = () => {
           </div>
 
           {/* Name */}
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-              {role === "USER" ? (
-                <User className="w-4 h-4" />
-              ) : (
-                <Building className="w-4 h-4" />
-              )}
-            </span>
-            <input
-              placeholder={role === "USER" ? "Full Name" : "Company Name"}
-              type="text"
-              value={data.name}
-              className="w-full pl-10 pr-3 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-200 bg-gray-50 text-black text-sm"
-              onChange={(e) => setData({ ...data, name: e.target.value })}
-            />
-          </div>
+          <InputField
+            name="name"
+            value={data.name}
+            placeholder={role === "USER" ? "Full Name" : "Company Name"}
+            onChange={(v) => setData({ ...data, name: v })}
+            leftIcon={role === "USER" ? <User className="w-4 h-4" /> : <Building className="w-4 h-4" />}
+          />
 
           {/* Email */}
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-              <Mail className="w-4 h-4" />
-            </span>
-            <input
-              placeholder="Email"
-              type="email"
-              value={data.email}
-              className="w-full pl-10 pr-3 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-200 bg-gray-50 text-black text-sm"
-              onChange={(e) => setData({ ...data, email: e.target.value })}
-            />
-          </div>
+          <InputField
+            type="email"
+            name="email"
+            value={data.email}
+            placeholder="Email"
+            onChange={(v) => setData({ ...data, email: v })}
+            leftIcon={<Mail className="w-4 h-4" />}
+          />
 
           {/* Password */}
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-              <Lock className="w-4 h-4" />
-            </span>
-            <input
-              placeholder="Password"
-              type={showPassword ? "text" : "password"}
-              value={data.password}
-              className="w-full pl-10 pr-10 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-200 bg-gray-50 text-black text-sm"
-              onChange={(e) => setData({ ...data, password: e.target.value })}
-            />
-            {/* Toggle password */}
-            <button
-              type="button"
-              onClick={() => setShowPassword(!showPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-            >
-              {showPassword ? (
-                <Eye className="w-4 h-4" />
-              ) : (
-                <EyeOff className="w-4 h-4" />
-              )}
-            </button>
-          </div>
+          <InputField
+            type="password"
+            name="password"
+            value={data.password}
+            placeholder="Password"
+            onChange={(v) => setData({ ...data, password: v })}
+          />
 
           {/* Confirm Password */}
-          <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-              <Lock className="w-4 h-4" />
-            </span>
-            <input
-              placeholder="Confirm Password"
-              type={showConfirmPassword ? "text" : "password"}
-              value={data.confirmPassword}
-              className="w-full pl-10 pr-10 py-2 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-200 bg-gray-50 text-black text-sm"
-              onChange={(e) =>
-                setData({ ...data, confirmPassword: e.target.value })
-              }
-            />
-            {/* Toggle confirm password */}
-            <button
-              type="button"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-            >
-              {showConfirmPassword ? (
-                <Eye className="w-4 h-4" />
-              ) : (
-                <EyeOff className="w-4 h-4" />
-              )}
-            </button>
-          </div>
+          <InputField
+            type="password"
+            name="confirmPassword"
+            value={data.confirmPassword}
+            placeholder="Confirm Password"
+            onChange={(v) => setData({ ...data, confirmPassword: v })}
+            error={
+              data.confirmPassword &&
+                data.confirmPassword !== data.password
+                ? "Password tidak sama"
+                : undefined
+            }
+          />
 
           {/* Error */}
           {error && <div className="text-red-500 text-sm">{error}</div>}
@@ -194,11 +159,7 @@ const SignUp = () => {
         </Button>
 
         {/* Divider */}
-        <div className="flex items-center w-full my-2">
-          <div className="flex-grow border-t border-dashed border-gray-200"></div>
-          <span className="mx-2 text-xs text-gray-400">Or sign up with</span>
-          <div className="flex-grow border-t border-dashed border-gray-200"></div>
-        </div>
+        <Divider name="Or sign up with" />
 
         {/* Social buttons */}
         <WithSosmed />
