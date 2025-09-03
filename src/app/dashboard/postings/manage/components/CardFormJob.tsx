@@ -2,13 +2,15 @@
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import FormJobPosting from "./FormJobPosting";
-import { Briefcase } from "lucide-react";
+import { Briefcase, RotateCcw } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { usePathname } from "next/navigation";
+import { useCreateJob } from "@/lib/zustand/createJobStore";
 
 const CardJobPosting = () => {
   const pathname = usePathname();
   const isEdit = pathname.includes("edit");
+  const { reset } = useCreateJob();
 
   const handleSave = () => {
     console.log("Updated Profile:");
@@ -31,9 +33,17 @@ const CardJobPosting = () => {
           <Separator className="w-full h-[0.5px]" />
 
           {/* Actions */}
-          <div className="">
+          <div className={`flex ${isEdit ? "justify-end" : "justify-between"}`}>
+            {!isEdit && (
+              <Button
+                className="w-full sm:w-auto bg-neutral-300 text-black hover:bg-neutral-700 hover:text-white"
+                onClick={reset}
+              >
+                Reset <RotateCcw />
+              </Button>
+            )}
             <Button className="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-700">
-              Post <Briefcase />
+              {isEdit ? "Update" : "Post"} <Briefcase />
             </Button>
           </div>
         </CardContent>

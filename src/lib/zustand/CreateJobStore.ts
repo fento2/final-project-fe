@@ -35,7 +35,8 @@ export const useCreateJob = create<CreateJob>()(
   persist(
     (set) => ({
       title: "",
-      description: "",
+      description:
+        '<p><strong>Description:</strong></p><p><br></p><p><br></p><p><br></p><p><strong>Requirements:</strong></p><ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><br></li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><br></li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><br></li></ol><p><br></p><p><br></p><p><strong>Benefits:</strong></p><ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><br></li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><br></li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><br></li></ol>',
       category: "",
       latitude: 0,
       longitude: 0,
@@ -72,7 +73,8 @@ export const useCreateJob = create<CreateJob>()(
       reset: () =>
         set({
           title: "",
-          description: "",
+          description:
+            '<p><strong>Description:</strong></p><p><br></p><p><br></p><p><br></p><p><strong>Requirements:</strong></p><ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><br></li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><br></li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><br></li></ol><p><br></p><p><br></p><p><strong>Benefits:</strong></p><ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><br></li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><br></li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><br></li></ol>',
           category: "",
           latitude: 0,
           longitude: 0,

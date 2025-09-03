@@ -5,7 +5,7 @@ import { Car, Edit2, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ManagePosting from "./components/ManagePostings";
 import { useParams } from "next/navigation";
-import FormPreselectionTest from "../manage/components/FormPreSelection";
+import FormPreselectionTest from "./components/FormPreSelection";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -14,11 +14,21 @@ import { useCreatePreselectionStore } from "@/lib/zustand/preselectionStore";
 import * as XLSX from "xlsx";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const DetailPostings = () => {
   const params = useParams();
   const { slug } = params;
   const [addPreselection, setAddPreselection] = useState(true);
+  const [sortOption, setSortOption] = useState("appliedAt"); // appliedAt / status
+  const [sortDirection, setSortDirection] = useState("desc"); // asc / desc
+  const [filterStatus, setFilterStatus] = useState("all"); // all / Pending / Accepted / Rejected
 
   const { setQuestions: setQuestions } = useCreatePreselectionStore();
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,6 +60,7 @@ const DetailPostings = () => {
     };
     reader.readAsArrayBuffer(file);
   };
+
   // dummy job detail
   const job = {
     title: "Frontend Developer",
@@ -76,30 +87,77 @@ const DetailPostings = () => {
   // dummy applicants
   const applicants = [
     {
-      id: 1,
       name: "Andi Wijaya",
       email: "andi@example.com",
       appliedAt: "2025-08-20",
       status: "Pending",
       cvUrl: "/dummy-cv/andi.pdf",
+      score: 70,
     },
     {
-      id: 2,
       name: "Budi Santoso",
       email: "budi@example.com",
       appliedAt: "2025-08-22",
       status: "Reviewed",
       cvUrl: "/dummy-cv/budi.pdf",
+      score: 80,
     },
     {
-      id: 3,
       name: "Citra Dewi",
       email: "citra@example.com",
       appliedAt: "2025-08-25",
       status: "Interview Scheduled",
       cvUrl: "/dummy-cv/citra.pdf",
+      score: 90,
+    },
+    {
+      name: "Andi Wijaya",
+      email: "andi@example.com",
+      appliedAt: "2025-08-20",
+      status: "Pending",
+      cvUrl: "/dummy-cv/andi.pdf",
+      score: 70,
+    },
+    {
+      name: "Budi Santoso",
+      email: "budi@example.com",
+      appliedAt: "2025-08-22",
+      status: "Reviewed",
+      cvUrl: "/dummy-cv/budi.pdf",
+      score: 80,
+    },
+    {
+      name: "Citra Dewi",
+      email: "citra@example.com",
+      appliedAt: "2025-08-25",
+      status: "Interview Scheduled",
+      cvUrl: "/dummy-cv/citra.pdf",
+      score: 90,
     },
   ];
+
+  const filteredApplicants = applicants.filter((app) =>
+    filterStatus === "all" ? true : app.status === filterStatus
+  );
+
+  const statusOrder: Record<string, number> = {
+    Pending: 1,
+    Accepted: 2,
+    Rejected: 3,
+  };
+
+  const sortedApplicants = [...filteredApplicants].sort((a, b) => {
+    let compare = 0;
+    if (sortOption === "appliedAt") {
+      compare =
+        new Date(a.appliedAt).getTime() - new Date(b.appliedAt).getTime();
+    } else if (sortOption === "status") {
+      compare = statusOrder[a.status] - statusOrder[b.status];
+    } else if (sortOption === "score") {
+      compare = a.score - b.score;
+    }
+    return sortDirection === "asc" ? compare : -compare;
+  });
 
   return (
     <div className="space-y-6 container mx-auto md:px-20 px-8 my-8">
@@ -113,7 +171,7 @@ const DetailPostings = () => {
             <p className="text-sm text-muted-foreground mt-1">{job.company}</p>
           </CardHeader>
 
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 overflow-y-auto max-h-[650px]">
             {/* Info Grid */}
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
@@ -216,26 +274,79 @@ const DetailPostings = () => {
             </CardContent>
           </Card>
         )}
-        {/* Applicants */}
-        <Card className="lg:col-span-1 order-3 lg:order-2">
-          <CardHeader>
-            <CardTitle>Applicants ({applicants.length})</CardTitle>
+
+        <Card className="lg:col-span-1 order-3 lg:order-2 ">
+          <CardHeader className="flex flex-col gap-4 items-center">
+            {/* Judul di tengah */}
+            <CardTitle className="text-center">
+              Applicants ({filteredApplicants.length})
+            </CardTitle>
+
+            {/* Bar filter + sort + toggle di bawah judul */}
+            <div className="flex justify-between items-center w-full">
+              {/* Kanan: Filter Status + Sort Option */}
+              <div className="flex gap-2">
+                {/* Filter Status */}
+                <Select value={filterStatus} onValueChange={setFilterStatus}>
+                  <SelectTrigger className="">
+                    <SelectValue placeholder="All Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All</SelectItem>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                    <SelectItem value="Accepted">Accepted</SelectItem>
+                    <SelectItem value="Rejected">Rejected</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Sort Option */}
+                <Select value={sortOption} onValueChange={setSortOption}>
+                  <SelectTrigger className="">
+                    <SelectValue placeholder="Sort by" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="appliedAt">Applied Date</SelectItem>
+                    <SelectItem value="status">Status</SelectItem>
+                    <SelectItem value="score">Score</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              {/* Kiri: Toggle Asc / Desc */}
+              <Button
+                variant="outline"
+                onClick={() =>
+                  setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"))
+                }
+              >
+                {sortDirection === "asc" ? "Asc ↑" : "Desc ↓"}
+              </Button>
+            </div>
           </CardHeader>
-          <CardContent>
+
+          <CardContent className="overflow-y-auto max-h-[650px]">
             <div className="space-y-4">
-              {applicants.map((app) => (
+              {sortedApplicants.map((app, idx) => (
                 <div
-                  key={app.id}
-                  className="border rounded-lg p-4 flex justify-between items-center hover:shadow-md transition-shadow"
+                  key={idx}
+                  className="border rounded-lg p-4 flex flex-col md:flex-row justify-between items-start md:items-center hover:shadow-md transition-shadow"
                 >
-                  <div>
-                    <h3 className="font-semibold">{app.name}</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {app.email} • Applied on {app.appliedAt}
+                  {/* Info Pelamar */}
+                  <div className="mb-3 md:mb-0">
+                    <h3 className="font-semibold text-lg">{app.name}</h3>
+                    <p className="text-sm text-muted-foreground">{app.email}</p>
+                    <p className="text-sm">
+                      Status: <span className="font-medium">{app.status}</span>
                     </p>
-                    <p>Status: {app.status}</p>
+                    <p className="text-sm">
+                      Score: <span className="font-medium">{app.score}</span>
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Applied on {app.appliedAt}
+                    </p>
                   </div>
-                  <div className="gap-2 flex flex-col">
+
+                  {/* Aksi */}
+                  <div className="flex gap-2 flex-wrap md:flex-col">
                     <Button variant="outline" size="sm" asChild>
                       <a
                         href={app.cvUrl}
