@@ -29,7 +29,6 @@ const SignUp = () => {
   const [data, setData] = useState({
     role,
     name: "",
-    username: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -41,8 +40,9 @@ const SignUp = () => {
       const message = result.error.issues[0].message;
       setError(message);
     }
-
-    const response = await apiCall.post("/auth/signup", data);
+    const response = await apiCall.post("/auth/signup", {
+      data
+    });
     alert(response.data);
     alert("Pendaftaran akun berhasil");
     router.push("/");
@@ -109,15 +109,6 @@ const SignUp = () => {
             placeholder={role === "USER" ? "Full Name" : "Company Name"}
             onChange={(v) => setData({ ...data, name: v })}
             leftIcon={role === "USER" ? <User className="w-4 h-4" /> : <Building className="w-4 h-4" />}
-          />
-
-          <InputField
-            type="text"
-            name="username"
-            value={data.username}
-            placeholder={"Username"}
-            onChange={(v) => setData({ ...data, username: v })}
-            leftIcon={<User className="w-4 h-4" />}
           />
 
           {/* Email */}
