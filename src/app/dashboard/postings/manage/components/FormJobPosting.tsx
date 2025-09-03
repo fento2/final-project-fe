@@ -125,7 +125,6 @@ const FormJobPosting = () => {
           <TextEditor
             value={getValue(description, editDescription, pathname)}
             setValue={isEdit ? setEditDescription : setDescription}
-            editing={true}
             profile={false}
           />
         </div>
