@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import Link from 'next/link';
 
 interface HeaderSectionProps {
     title: string;
@@ -23,14 +24,21 @@ export function HeaderSection({ title, subtitle, breadcrumb }: HeaderSectionProp
                         transition={{ duration: 0.6 }}
                         className="mb-3 sm:mb-4 text-blue-200 font-medium text-xs xs:text-sm md:text-base"
                     >
-                        {breadcrumb.map((item, index) => (
-                            <span key={index}>
-                                {index > 0 && <span className="mx-1 sm:mx-2">/</span>}
-                                <span className={index === breadcrumb.length - 1 ? "text-white font-bold" : ""}>
-                                    {item}
+                        {breadcrumb.map((item, index) => {
+                            const isLast = index === breadcrumb.length - 1;
+                            // map breadcrumb label to path
+                            const path = item === 'Home' ? '/' : item === 'Jobs' ? '/jobs' : '/jobs/companies';
+                            return (
+                                <span key={index}>
+                                    {index > 0 && <span className="mx-1 sm:mx-2">/</span>}
+                                    {isLast ? (
+                                        <span className="text-white font-bold">{item}</span>
+                                    ) : (
+                                        <Link href={path} className="hover:underline text-blue-200">{item}</Link>
+                                    )}
                                 </span>
-                            </span>
-                        ))}
+                            );
+                        })}
                     </motion.div>
                 )}
                 <motion.h1 

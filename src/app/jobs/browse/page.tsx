@@ -307,7 +307,9 @@ export default function JobsListPage() {
                         <nav className="text-sm text-indigo-600 mb-4">
                             <a href="/" className="hover:underline">Home</a>
                             <span className="mx-2 text-gray-300">/</span>
-                            <span className="text-gray-700">Jobs</span>
+                            <a href="/jobs" className="hover:underline">Jobs</a>
+                            <span className="mx-2 text-gray-300">/</span>
+                            <span className="text-gray-700">Browse</span>
                         </nav>
 
                         <h1 className="text-4xl md:text-5xl font-extrabold text-indigo-900 mb-4">Browse Through Variety of Jobs</h1>
@@ -315,48 +317,23 @@ export default function JobsListPage() {
                     </div>
                 </div>
 
-                {/* Featured Jobs & Companies (no filters) */}
-                <div className="max-w-7xl mx-auto px-6 py-8">
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-2xl font-semibold">Featured Jobs</h2>
-                        <a href="/jobs/browse" className="text-sm text-indigo-600 hover:underline">See all jobs →</a>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-10">
-                        {SAMPLE_JOBS.slice(0, 6).map((job) => (
-                            <div key={job.id} className="bg-white rounded-xl shadow p-4">
-                                <h3 className="text-lg font-semibold mb-1">{job.title}</h3>
-                                <div className="text-sm text-gray-500 mb-2">{job.company}</div>
-                                <div className="text-sm text-gray-600">{job.location} • <span className="font-medium">{job.type}</span></div>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div className="lg:col-span-3">
+                        <div className="sticky top-24">
+                            <div className="bg-white rounded-xl shadow p-6">
+                                <SidebarFilters filters={filters} onChange={setFilters} />
                             </div>
-                        ))}
+                        </div>
                     </div>
 
-                    <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-2xl font-semibold">Featured Companies</h2>
-                        <a href="/jobs/companies" className="text-sm text-indigo-600 hover:underline">See all companies →</a>
-                    </div>
+                    <div className="lg:col-span-9">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {shown.map((job) => (
+                                <JobCard key={job.id} job={job} />
+                            ))}
+                        </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                        {[
-                            { id: 'c1', name: 'Acme Corporation', loc: 'New York, NY' },
-                            { id: 'c2', name: 'Creative Solutions, Inc.', loc: 'San Francisco, CA' },
-                            { id: 'c3', name: 'App Works', loc: 'Los Angeles, CA' },
-                            { id: 'c4', name: 'Bright Future Solutions', loc: 'Chicago, IL' },
-                            { id: 'c5', name: 'Tech Works Inc.', loc: 'Austin, TX' },
-                            { id: 'c6', name: 'UX Labs', loc: 'Seattle, WA' },
-                        ].map((c) => (
-                            <div key={c.id} className="bg-white rounded-xl shadow p-4 flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600">{c.name.charAt(0)}</div>
-                                <div>
-                                    <div className="font-semibold">{c.name}</div>
-                                    <div className="text-sm text-gray-500">{c.loc}</div>
-                                </div>
-                                <div className="ml-auto">
-                                    <a href={`/jobs/companies/${c.id}`} className="text-sm text-indigo-600 hover:underline">View</a>
-                                </div>
-                            </div>
-                        ))}
+                        <Pagination page={page} totalPages={totalPages} onChange={setPage} />
                     </div>
                 </div>
             </div>
