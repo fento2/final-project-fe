@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { useAuthUIStore } from "@/lib/zustand/AuthUIASrore";
+import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
 import { LayoutDashboardIcon } from "lucide-react";
 interface IMobileNav {
   setOpen: (open: boolean) => void;
