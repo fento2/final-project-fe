@@ -7,6 +7,7 @@ import SignUp from "./SignUp";
 import SignIn from "./SignIn";
 import MobileNav from "./MobileNav";
 import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
+import AuthButtons from "./AuthButton";
 
 const Navbar: React.FC = () => {
   const pathname = usePathname();
@@ -82,9 +83,8 @@ const Navbar: React.FC = () => {
                   return undefined;
                 }}
                 onClick={() => setActive(m.label)}
-                className={`px-2 ${
-                  active === m.label ? "text-[#111827]" : "hover:text-[#111827]"
-                }`}
+                className={`px-2 ${active === m.label ? "text-[#111827]" : "hover:text-[#111827]"
+                  }`}
                 aria-current={active === m.label ? "page" : undefined}
               >
                 {m.label}
@@ -105,20 +105,7 @@ const Navbar: React.FC = () => {
 
         {/* Right side buttons */}
         <div className="flex items-center gap-2">
-          <Button
-            className="hidden md:inline-block px-5 py-2 border border-[#4F46E5] rounded-lg font-medium bg-indigo-600 text-white hover:bg-[#4F46E5] transition"
-            onClick={() => setShowSignIn(true)}
-          >
-            Sign In
-          </Button>
-
-          <span className="hidden md:inline-block w-px h-6 bg-gray-300" />
-          <Button
-            className="hidden md:inline-block px-5 py-2 border border-[#4F46E5] rounded-lg font-medium bg-transparant text-indigo-600 hover:text-white hover:bg-[#4F46E5] transition"
-            onClick={() => setShowSignUp(true)}
-          >
-            Sign Up
-          </Button>
+          <AuthButtons />
 
           {/* Mobile toggle button */}
           <button
