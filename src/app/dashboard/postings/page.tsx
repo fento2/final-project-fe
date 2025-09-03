@@ -13,7 +13,6 @@ import { jobs } from "./data/dataDummy";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus, Search } from "lucide-react";
-import { useRouter } from "next/navigation";
 import JobPostingsCard from "./componetns/JobsPostingsCard";
 
 const PostingsPage = () => {

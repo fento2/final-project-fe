@@ -22,16 +22,10 @@ const ReactQuill = dynamic(
 interface ITextEditor {
   value: string;
   setValue: (value: string) => void;
-  editing: boolean;
   profile: boolean;
 }
 
-export default function TextEditor({
-  editing,
-  value,
-  setValue,
-  profile,
-}: ITextEditor) {
+export default function TextEditor({ value, setValue, profile }: ITextEditor) {
   const modulesDescription = {
     toolbar: {
       container: [
@@ -73,32 +67,13 @@ export default function TextEditor({
   };
   return (
     <div className="my-2">
-      {editing && (
-        <ReactQuill
-          theme="snow"
-          value={value}
-          modules={profile ? modulesProfile : modulesDescription}
-          onChange={setValue}
-          placeholder="Write Something..."
-        />
-      )}
-
-      <div className="mt-2">
-        {!editing && (
-          <div>
-            <div
-              className={`${
-                editing ? "text-black" : "text-neutral-500"
-              } border rounded-lg`}
-            >
-              <div
-                className="quill-preview border p-4 rounded-md"
-                dangerouslySetInnerHTML={{ __html: value }}
-              />
-            </div>
-          </div>
-        )}
-      </div>
+      <ReactQuill
+        theme="snow"
+        value={value}
+        modules={profile ? modulesProfile : modulesDescription}
+        onChange={setValue}
+        placeholder="Write Something..."
+      />
     </div>
   );
 }

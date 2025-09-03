@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/button";
 import { useAuthUIStore } from "@/lib/zustand/AuthUIASrore";
 import WithSosmed from "./WithSomed";
 import { schemaSignIn } from "@/validation/auth.validation";
+import { apiCall } from "@/helper/apiCall";
+import { useAuthStore } from "@/lib/zustand/authStore";
+
 
 const SignIn = () => {
   const { setShowSignIn, setShowSignUp } = useAuthUIStore();
@@ -13,14 +16,33 @@ const SignIn = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const { setIsLogin, setChekLogin } = useAuthStore()
 
-  const handleSignIn = () => {
-    setError("");
-    const result = schemaSignIn.safeParse({ email, password });
-    if (!result.success) {
-      const messages = result.error.issues[0].message;
-      setError(messages);
+  const handleSignIn = async () => {
+    try {
+      setError("");
+      const result = schemaSignIn.safeParse({ email, password });
+      if (!result.success) {
+        const messages = result.error.issues[0].message;
+        setError(messages);
+      }
+
+      const { data } = await apiCall.post('/auth/sign-in', {
+        email,
+        password
+      })
+
+      if (data.success) {
+        setIsLogin(true);
+        setChekLogin(false)
+        alert("login")
+      }
+    } catch (error) {
+      console.log(error)
+      alert(error)
     }
+
+
   };
 
   return (

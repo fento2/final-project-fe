@@ -12,7 +12,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { useCreatePreselectionStore } from "@/lib/zustand/preselectionStore";
 import { useState, useEffect } from "react";
-import { Plus, Trash2 } from "lucide-react";
+import { FilePlus, Plus, Trash2 } from "lucide-react";
 import { useParams } from "next/navigation";
 
 const FormPreselectionTest = () => {
@@ -212,7 +212,7 @@ const FormPreselectionTest = () => {
                 onClick={handleNext}
                 className="bg-indigo-500 hover:bg-indigo-800"
               >
-                Post
+                Post <FilePlus />
               </Button>
             ) : (
               <Button
