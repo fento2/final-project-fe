@@ -41,17 +41,8 @@ const SignUp = () => {
       const message = result.error.issues[0].message;
       setError(message);
     }
-    const newData = {
-      role: data.role,
-      name: data.name,
-      username: data.username,
-      email: data.email,
-      password: data.password,
-    }
-    const response = await apiCall.post("/auth/signup", {
-      ...data
-      // newData
-    });
+
+    const response = await apiCall.post("/auth/signup", data);
     alert(response.data);
     alert("Pendaftaran akun berhasil");
     router.push("/");
