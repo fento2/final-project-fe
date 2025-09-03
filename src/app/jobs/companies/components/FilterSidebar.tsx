@@ -23,20 +23,20 @@ export function FilterSidebar({
     companiesData,
 }: FilterSidebarProps) {
     return (
-        <div className="bg-white rounded-2xl p-6 shadow-sm border-0 sticky top-6">
-            <div className="flex items-center justify-between mb-6">
-                <h2 className="font-bold text-gray-800 text-lg">Filters</h2>
+        <div className="bg-white rounded-2xl p-4 sm:p-6 shadow-sm border-0 lg:sticky lg:top-6">
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+                <h2 className="font-bold text-gray-800 text-base sm:text-lg">Filters</h2>
                 <Button
                     variant="ghost"
                     size="sm"
                     onClick={onClearFilters}
-                    className="text-indigo-600 hover:text-indigo-700"
+                    className="text-indigo-600 hover:text-indigo-700 text-xs sm:text-sm"
                 >
                     Clear All
                 </Button>
             </div>
             
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
                 {/* Industry Filter */}
                 <div>
                     <h3 className="font-semibold text-gray-700 mb-3">Industry</h3>

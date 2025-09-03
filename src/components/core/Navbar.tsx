@@ -9,6 +9,7 @@ import MobileNav from "./MobileNav";
 import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
 import AuthButtons from "./AuthButton";
 
+
 const Navbar: React.FC = () => {
   const pathname = usePathname();
   const { showSignIn, showSignUp, setShowSignIn, setShowSignUp } =

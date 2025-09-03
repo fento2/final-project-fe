@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { MoreHorizontal, Plus, X } from "lucide-react";
-import { Pagination } from "@/app/jobs/page";
+import { Pagination } from "@/app/jobs/browse/page";
 import Image from "next/image";
 import { Label } from "@/components/ui/label";
 
