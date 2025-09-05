@@ -1,48 +1,57 @@
 "use client";
 import * as React from "react";
 import { useState } from "react";
-import { LogIn, Lock, Mail, X, EyeIcon, EyeOff, Eye } from "lucide-react";
+import { LogIn, Lock, Mail, X, EyeOff, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
 import WithSosmed from "./WithSomed";
 import { schemaSignIn } from "@/validation/auth.validation";
 import { apiCall } from "@/helper/apiCall";
 import { useAuthStore } from "@/lib/zustand/authStore";
-
-
+import { Dots_v2 } from "../ui/spinner";
+import axios from "axios";
+import { useToast } from "../basic-toast";
+import { Checkbox } from "../ui/checkbox";
+import { Label } from "../ui/label";
 const SignIn = () => {
   const { setShowSignIn, setShowSignUp } = useAuthUIStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const { setIsLogin, setChekLogin } = useAuthStore()
-
+  const [loading, setLoading] = useState(false)
+  const [remember, setRemember] = useState(false)
+  const toast = useToast()
+  const { setIsLogin, setChekLogin, setAuth } = useAuthStore()
   const handleSignIn = async () => {
     try {
       setError("");
-      const result = schemaSignIn.safeParse({ email, password });
+      const result = schemaSignIn.safeParse({ email, password, remember });
       if (!result.success) {
         const messages = result.error.issues[0].message;
-        setError(messages);
+        return setError(messages);
       }
-
       const { data } = await apiCall.post('/auth/sign-in', {
         email,
-        password
+        password,
+        remember
       })
-
       if (data.success) {
         setIsLogin(true);
-        setChekLogin(false)
-        alert("login")
+        setAuth(data.email, data.role)
+        setShowSignIn(false)
+        toast.success(data.message)
+        console.log(data)
       }
-    } catch (error) {
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        toast.error(error.response?.data.message)
+      }
       console.log(error)
-      alert(error)
+    } finally {
+      setChekLogin(false)
+      setLoading(false)
     }
-
-
   };
 
   return (
@@ -52,6 +61,10 @@ const SignIn = () => {
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={() => setShowSignIn(false)}
       />
+      {loading && <div className="absolute z-50 flex justify-center h-screen w-full">
+        <Dots_v2 />
+
+      </div>}
 
       {/* Card */}
       <div className="relative w-full max-w-sm bg-white rounded-3xl shadow-xl p-8 flex flex-col items-center border border-gray-200 text-black z-10">
@@ -119,6 +132,15 @@ const SignIn = () => {
             </button>
             {error && <span className="text-red-500 text-xs">{error}</span>}
           </div>
+          <div className="flex items-center space-x-2">
+            <Checkbox id="remember"
+              checked={remember}
+              onCheckedChange={(val) => setRemember(val === true)} />
+            <Label htmlFor="remember" className="text-sm text-gray-900 dark:text-gray-300"
+            >
+              Remember me
+            </Label>
+          </div>
         </div>
 
         {/* Sign in button */}
@@ -156,5 +178,4 @@ const SignIn = () => {
     </div>
   );
 };
-
 export default SignIn;

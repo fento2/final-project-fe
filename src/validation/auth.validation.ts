@@ -3,6 +3,7 @@ import { z } from "zod";
 export const schemaSignIn = z.object({
   email: z.email("Invalid email address"),
   password: z.string().nonempty("Password required"),
+  remember: z.boolean(),
 });
 
 const passwordSchema = z
@@ -18,7 +19,7 @@ export const schemaSignUp = z
   .object({
     name: z.string().nonempty("Name required"),
     role: z.enum(["USER", "ORGANIZER"], "Invalid Role"),
-    username: z.string().nonempty(),
+    username: z.string().nonempty("username required"),
     email: z.email("Invalid email address"),
     password: passwordSchema,
     confirmPassword: z.string().nonempty("Confirm Password required"),

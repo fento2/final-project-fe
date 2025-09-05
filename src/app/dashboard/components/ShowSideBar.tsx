@@ -11,17 +11,17 @@ const ShowSideBar = () => {
   const { isLogin, checkLogin } = useAuthStore()
   const router = useRouter()
 
-  const shouldHide = hideOn.some((p) => pathname.startsWith(p));
+  const showSide = hideOn.some((p) => pathname.startsWith(p));
+
 
   useEffect(() => {
-    if (shouldHide && checkLogin && !isLogin) {
+    if (showSide && !isLogin && !checkLogin) {
       router.replace('/')
     }
-  }, [shouldHide, isLogin, checkLogin]);
+  }, [isLogin, checkLogin])
 
 
-
-  if (shouldHide) return < SideBar />
+  if (showSide) return < SideBar />
 
 
 

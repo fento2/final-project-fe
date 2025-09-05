@@ -6,21 +6,20 @@ import { useAuthStore } from "@/lib/zustand/authStore";
 import { apiCall } from "@/helper/apiCall";
 
 export default function ConditionalNavbar() {
-  const { setIsLogin, setChekLogin, setLogOut } = useAuthStore()
+  const { setIsLogin, setChekLogin, setLogOut, setAuth } = useAuthStore()
   const keepLogin = async () => {
     try {
-      const { data } = await apiCall.get("/auth/keep-login", {
-
-      })
+      const { data } = await apiCall.get("/auth/keep-login")
       if (data.success) {
         setIsLogin(true)
-      } else {
-        setIsLogin(false)
+        setAuth(data.email, data.role)
+        console.log(data)
       }
     } catch (error) {
-      setIsLogin(false)
+      setLogOut()
+      console.log(error)
     } finally {
-      setChekLogin(true) // selalu dijalankan, tanda pengecekan selesai
+      setChekLogin(false)
     }
   }
 
