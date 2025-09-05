@@ -27,50 +27,50 @@ export default function AuthButtons() {
                 setLogOut()
             }
         } catch (error) {
-
+            setLogOut()
         }
     }
 
-    if (!isLogin && checkLogin) {
+    if (isLogin && !checkLogin) {
         return (
-            <div className="flex items-center gap-3">
-                <Button
-                    className="hidden md:inline-block px-5 py-2 border border-[#4F46E5] rounded-lg font-medium bg-indigo-600 text-white hover:bg-[#4F46E5] transition"
-                    onClick={() => setShowSignIn(true)}
-                >
-                    Sign In
-                </Button>
-
-                <span className="hidden md:inline-block w-px h-6 bg-gray-300" />
-
-                <Button
-                    className="hidden md:inline-block px-5 py-2 border border-[#4F46E5] rounded-lg font-medium bg-transparent text-indigo-600 hover:text-white hover:bg-[#4F46E5] transition"
-                    onClick={() => setShowSignUp(true)}
-                >
-                    Sign Up
-                </Button>
-            </div>
+            <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                    <Button className="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-[#4F46E5]">
+                        Profile
+                    </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                    <DropdownMenuItem onClick={() => {
+                        router.push('/dashboard/profile')
+                    }}>
+                        My Profile
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleLogOut()}
+                    >
+                        Logout
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
         );
     }
 
     return (
-        <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-                <Button className="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-[#4F46E5]">
-                    Profile
-                </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => {
-                    router.push('/dashboard/profile')
-                }}>
-                    My Profile
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleLogOut()}
-                >
-                    Logout
-                </DropdownMenuItem>
-            </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-3">
+            <Button
+                className="hidden md:inline-block px-5 py-2 border border-[#4F46E5] rounded-lg font-medium bg-indigo-600 text-white hover:bg-[#4F46E5] transition"
+                onClick={() => setShowSignIn(true)}
+            >
+                Sign In
+            </Button>
+
+            <span className="hidden md:inline-block w-px h-6 bg-gray-300" />
+
+            <Button
+                className="hidden md:inline-block px-5 py-2 border border-[#4F46E5] rounded-lg font-medium bg-transparent text-indigo-600 hover:text-white hover:bg-[#4F46E5] transition"
+                onClick={() => setShowSignUp(true)}
+            >
+                Sign Up
+            </Button>
+        </div>
     );
 }

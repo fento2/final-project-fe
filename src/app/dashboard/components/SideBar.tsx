@@ -11,6 +11,7 @@ import HeaderDashboard from "./HeaderDashboard";
 import { Menu, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import CompanyOption from "./CompanyOption";
+import { useAuthStore } from "@/lib/zustand/authStore";
 
 const sidebarVariants = {
   open: { width: "15rem" },
@@ -31,6 +32,7 @@ const transitionProps = {
 export function SideBar() {
   const [isCollapsed, setIsCollapsed] = useState(true); // desktop
   const [showSideBar, setShowSideBar] = useState(false); // mobile
+
 
   return (
     <>
@@ -83,6 +85,7 @@ export function SideBar() {
 }
 
 function SidebarContent({ isCollapsed }: { isCollapsed: boolean }) {
+  const { role } = useAuthStore()
   return (
     <motion.div className="relative z-40 flex text-muted-foreground h-full shrink-0 flex-col transition-all">
       <motion.ul className="flex h-full flex-col">
@@ -97,9 +100,19 @@ function SidebarContent({ isCollapsed }: { isCollapsed: boolean }) {
             <div className="flex grow flex-col gap-4">
               <ScrollArea className="h-16 grow p-2">
                 <div className={cn("flex w-full flex-col gap-1")}>
-                  <UserOption isCollapsed={isCollapsed} />
-                  <Separator className="w-full" />
-                  <CompanyOption isCollapsed={isCollapsed} />
+                  {
+                    role === 'USER' &&
+                    <>
+                      <UserOption isCollapsed={isCollapsed} />
+                      <Separator className="w-full" />
+                    </>
+                  }
+                  {role === 'COMPANY' &&
+                    <>
+                      <CompanyOption isCollapsed={isCollapsed} />
+                      <Separator className="w-full" />
+                    </>
+                  }
                 </div>
               </ScrollArea>
             </div>
