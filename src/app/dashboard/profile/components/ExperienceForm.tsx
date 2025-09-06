@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -21,7 +20,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import { Plus } from "lucide-react";
-import UniversityAutocomplete from "./FormUnivAutoComplete";
+import CompanyAutocomplete from "./FormCompanyComplete";
 
 const months = [
     "January", "February", "March", "April", "May", "June",
@@ -29,96 +28,66 @@ const months = [
 ];
 
 const years = Array.from({ length: 50 }, (_, i) => new Date().getFullYear() - i);
-const EducationForm = () => {
+
+const ExperienceForm = () => {
     const [form, setForm] = useState({
-        university: "",
-        degree: "",
-        fieldOfStudy: "",
+        company: "",
+        position: "",
         startMonth: "",
         startYear: "",
         endMonth: "",
         endYear: "",
         description: "",
     });
-    const [suggestions, setSuggestions] = useState<string[]>([]);
-    const [showSuggestions, setShowSuggestions] = useState(false);
+
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
         const { name, value } = e.target;
-        setForm(prev => ({ ...prev, [name]: value }));
+        setForm((prev) => ({ ...prev, [name]: value }));
+    };
 
-        if (name === "university" && value.length > 0) {
-            fetchUniversities(value);
-        } else {
-            setShowSuggestions(false);
-        }
-    };
     const handleSelect = (name: string, value: string) => {
-        setForm(prev => ({ ...prev, [name]: value }));
+        setForm((prev) => ({ ...prev, [name]: value }));
     };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         console.log(form);
-        setShowSuggestions(false);
-    };
-    const fetchUniversities = async (query: string) => {
-        try {
-            const res = await axios.get(`http://universities.hipolabs.com/search?name=${query}`);
-            const names = res.data.map((u: any) => u.name);
-            setSuggestions(names.slice(0, 5));
-            setShowSuggestions(true);
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    const handleSuggestionClick = (name: string) => {
-        setForm(prev => ({ ...prev, university: name }));
-        setShowSuggestions(false);
     };
 
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button variant="default"><Plus /> Add Education</Button>
+                <Button variant="default"><Plus /> Add Experience</Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
-                    <DialogTitle>Add Education</DialogTitle>
+                    <DialogTitle>Add Work Experience</DialogTitle>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit} className="space-y-4 relative">
+                <form onSubmit={handleSubmit} className="space-y-4">
+                    {/* Company */}
+
                     <div className="space-y-1">
-                        <Label htmlFor="university">University</Label>
-                        <UniversityAutocomplete
-                            value={form.university}
-                            onChange={(val) => setForm(prev => ({ ...prev, university: val }))}
-                        />
-                    </div>
-                    {/* Degree */}
-                    <div className="space-y-1">
-                        <Label htmlFor="degree">Degree</Label>
-                        <Input
-                            id="degree"
-                            name="degree"
-                            placeholder="e.g. Bachelor's"
-                            value={form.degree}
-                            onChange={handleChange}
-                            className="py-6 !text-lg placeholder:text-gray-400"
+                        <Label htmlFor="company">Company</Label>
+                        <CompanyAutocomplete
+                            value={form.company}
+                            onChange={(val) => setForm(prev => ({ ...prev, company: val }))}
                         />
                     </div>
 
-                    {/* Field of Study */}
+
+                    {/* Position */}
                     <div className="space-y-1">
-                        <Label htmlFor="fieldOfStudy">Field of Study</Label>
+                        <Label htmlFor="position">Position</Label>
                         <Input
-                            id="fieldOfStudy"
-                            name="fieldOfStudy"
-                            placeholder="e.g. Computer Science"
-                            value={form.fieldOfStudy}
+                            id="position"
+                            name="position"
+                            placeholder="e.g. Software Engineer"
+                            value={form.position}
                             onChange={handleChange}
-                            className="py-6 !text-lg placeholder:text-gray-400"
+                            className="py-6 !text-lg"
                         />
                     </div>
 
@@ -127,19 +96,26 @@ const EducationForm = () => {
                         <Label>Start Date</Label>
                         <div className="flex gap-2">
                             <Select onValueChange={(val) => handleSelect("startMonth", val)}>
-                                <SelectTrigger className="w-1/2 text-lg py-6">
+                                <SelectTrigger className="w-1/2 py-6 text-lg">
                                     <SelectValue placeholder="Month" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {months.map((m, i) => <SelectItem key={i} value={m} className="p-4 text-lg">{m}</SelectItem>)}
+                                    {months.map((m, i) => (
+                                        <SelectItem key={i} value={m}
+                                            className="p-4 text-lg">{m}</SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
+
                             <Select onValueChange={(val) => handleSelect("startYear", val)}>
-                                <SelectTrigger className="w-1/2 text-lg py-6">
+                                <SelectTrigger className="w-1/2 py-6 text-lg">
                                     <SelectValue placeholder="Year" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {years.map(y => <SelectItem key={y} value={y.toString()} className="p-4 text-lg">{y}</SelectItem>)}
+                                    {years.map((y) => (
+                                        <SelectItem key={y} value={y.toString()}
+                                            className="p-4 text-lg">{y}</SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>
@@ -154,15 +130,22 @@ const EducationForm = () => {
                                     <SelectValue placeholder="Month" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {months.map((m, i) => <SelectItem key={i} value={m} className="p-4 text-lg">{m}</SelectItem>)}
+                                    {months.map((m, i) => (
+                                        <SelectItem key={i} value={m}
+                                            className="text-lg p-4">{m}</SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
+
                             <Select onValueChange={(val) => handleSelect("endYear", val)}>
                                 <SelectTrigger className="w-1/2 text-lg py-6">
                                     <SelectValue placeholder="Year" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {years.map(y => <SelectItem key={y} value={y.toString()} className="p-4 text-lg">{y}</SelectItem>)}
+                                    {years.map((y) => (
+                                        <SelectItem key={y} value={y.toString()}
+                                            className="text-lg p-4">{y}</SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>
@@ -174,20 +157,20 @@ const EducationForm = () => {
                         <Textarea
                             id="description"
                             name="description"
-                            placeholder="Describe your activities, achievements, or focus..."
+                            placeholder="Describe your role, responsibilities, and achievements..."
                             rows={4}
                             value={form.description}
                             onChange={handleChange}
-                            className="!text-lg placeholder:text-gray-400"
+                            className="!text-lg"
                         />
                     </div>
 
                     {/* Submit */}
-                    <Button type="submit" className="bg-indigo-500 w-full">Save</Button>
+                    <Button type="submit" className="w-full bg-indigo-500">Save</Button>
                 </form>
             </DialogContent>
         </Dialog>
     );
 };
 
-export default EducationForm;
+export default ExperienceForm;
