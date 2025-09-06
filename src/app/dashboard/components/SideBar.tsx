@@ -12,6 +12,7 @@ import { Menu, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import CompanyOption from "./CompanyOption";
 import { useAuthStore } from "@/lib/zustand/authStore";
+import DeveloperOption from "./DeveloperOption";
 
 const sidebarVariants = {
   open: { width: "15rem" },
@@ -110,6 +111,13 @@ function SidebarContent({ isCollapsed }: { isCollapsed: boolean }) {
                   {role === 'COMPANY' &&
                     <>
                       <CompanyOption isCollapsed={isCollapsed} />
+                      <Separator className="w-full" />
+                    </>
+                  }
+                  {
+                    role === "DEVELOPER" &&
+                    <>
+                      <DeveloperOption isCollapsed={isCollapsed} />
                       <Separator className="w-full" />
                     </>
                   }
