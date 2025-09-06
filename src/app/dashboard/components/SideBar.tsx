@@ -15,7 +15,7 @@ import { useAuthStore } from "@/lib/zustand/authStore";
 import DeveloperOption from "./DeveloperOption";
 
 const sidebarVariants = {
-  open: { width: "15rem" },
+  open: { width: "18rem" },
   closed: { width: "4.05rem" },
 };
 
@@ -68,7 +68,7 @@ export function SideBar() {
         onMouseEnter={() => setIsCollapsed(false)}
         onMouseLeave={() => setIsCollapsed(true)}
       >
-        <SidebarContent isCollapsed={isCollapsed} />
+        <SidebarContent isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
       </motion.div>
 
       {/* Sidebar Mobile (slide-in) */}
@@ -79,13 +79,13 @@ export function SideBar() {
         variants={mobileVariants}
         transition={transitionProps as any}
       >
-        <SidebarContent isCollapsed={false} />
+        <SidebarContent isCollapsed={false} setIsCollapsed={setIsCollapsed} />
       </motion.div>
     </>
   );
 }
 
-function SidebarContent({ isCollapsed }: { isCollapsed: boolean }) {
+function SidebarContent({ isCollapsed, setIsCollapsed }: { isCollapsed: boolean, setIsCollapsed: (val: boolean) => void }) {
   const { role } = useAuthStore()
   return (
     <motion.div className="relative z-40 flex text-muted-foreground h-full shrink-0 flex-col transition-all">
@@ -93,7 +93,7 @@ function SidebarContent({ isCollapsed }: { isCollapsed: boolean }) {
         <div className="flex grow flex-col items-center py-2.5">
           {/* Profile Section */}
           <div className="flex h-[54px] w-full shrink-0 border-b p-2">
-            <ProfileNavSection isCollapsed={!isCollapsed} />
+            <ProfileNavSection isCollapsed={!isCollapsed} setIsCollapsed={setIsCollapsed} />
           </div>
 
           {/* Main User Options */}

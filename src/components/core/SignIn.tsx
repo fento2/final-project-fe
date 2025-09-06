@@ -13,6 +13,7 @@ import axios from "axios";
 import { useToast } from "../basic-toast";
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
+import { useRouter } from "next/navigation";
 const SignIn = () => {
   const { setShowSignIn, setShowSignUp } = useAuthUIStore();
   const [email, setEmail] = useState("");
@@ -23,9 +24,11 @@ const SignIn = () => {
   const [remember, setRemember] = useState(false)
   const toast = useToast()
   const { setIsLogin, setChekLogin, setAuth } = useAuthStore()
+  const router = useRouter()
   const handleSignIn = async () => {
     try {
       setError("");
+      setIsLogin(true);
       const result = schemaSignIn.safeParse({ email, password, remember });
       if (!result.success) {
         const messages = result.error.issues[0].message;
@@ -37,8 +40,7 @@ const SignIn = () => {
         remember
       })
       if (data.success) {
-        setIsLogin(true);
-        setAuth(data.email, data.role)
+        setAuth(data.email || data.data.email, data.role || data.data.role)
         setShowSignIn(false)
         toast.success(data.message)
         console.log(data)
@@ -127,7 +129,12 @@ const SignIn = () => {
           </div>
 
           <div className="w-full flex justify-between items-center text-sm">
-            <button className="text-xs hover:underline font-medium">
+            <button className="text-xs hover:underline font-medium"
+              onClick={() => {
+                router.push('/forget-password')
+                setShowSignIn(false)
+              }
+              }>
               Forgot password?
             </button>
             {error && <span className="text-red-500 text-xs">{error}</span>}
