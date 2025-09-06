@@ -29,7 +29,7 @@ export default function ConditionalNavbar() {
   }, [])
   const pathname = usePathname() || "/";
 
-  const hideOn = ["/dashboard"];
+  const hideOn = ["/dashboard", "/verify"];
 
   const shouldHide = hideOn.some((p) => pathname.startsWith(p));
 

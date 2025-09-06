@@ -21,12 +21,14 @@ import { Dots_v2 } from "../ui/spinner";
 import { useToast } from "../basic-toast";
 import RadioButtonSignUp from "./RadioButtonSignUp";
 import axios from "axios";
+import ModalCheckEmail from "./ModalCheckEmail";
 const SignUp = () => {
   const router = useRouter();
   const { setShowSignIn, setShowSignUp } = useAuthUIStore();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false)
   const toast = useToast()
+  const [checkEmail, setCheckEmail] = useState(false)
   const [dataSignUp, setDataSignUp] = useState({
     role: 'USER',
     name: "",
@@ -47,12 +49,12 @@ const SignUp = () => {
       const { confirmPassword, ...payload } = dataSignUp
       const { data } = await apiCall.post("/auth/signup", payload);
       if (data.success) {
-        toast.success(data.message)
-        router.push("/")
+        setCheckEmail(true)
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message)
+
       }
       console.log(error)
     } finally {
@@ -71,6 +73,7 @@ const SignUp = () => {
 
       </div>
       }
+      <ModalCheckEmail open={checkEmail} setOpen={setCheckEmail} />
       {/* Card */}
       <div className="relative w-full max-w-sm bg-white rounded-3xl shadow-xl p-8 flex flex-col items-center border border-gray-200 text-black z-10">
         {/* Close button */}
@@ -96,6 +99,7 @@ const SignUp = () => {
           {/* Name */}
           <InputField
             name="name"
+            type='text'
             value={dataSignUp.name}
             placeholder={dataSignUp.role === "USER" ? "Full Name" : "Company Name"}
             onChange={(v) => setDataSignUp({ ...dataSignUp, name: v })}
@@ -104,6 +108,7 @@ const SignUp = () => {
           {/* username */}
           <InputField
             name="username"
+            type='text'
             value={dataSignUp.username}
             placeholder="Usernmae"
             onChange={(v) => setDataSignUp({ ...dataSignUp, username: v })}

@@ -28,3 +28,20 @@ export const schemaSignUp = z
     message: "Passwords do not match",
     path: ["confirmPassword"], // kasih error ke field confirmPassword
   });
+
+export const schemaForgetPassword = z.object({
+  email: z.email("Invalid email address"),
+});
+
+export const schemaResetPassword = z
+  .object({
+    newPassword: z
+      .string()
+      .min(8, { message: "New password must be at least 8 characters" }),
+
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"], // error ditampilkan di confirmPassword
+  });

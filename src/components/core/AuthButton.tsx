@@ -5,13 +5,14 @@ import {
     DropdownMenuTrigger,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/lib/zustand/authStore";
 import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
 import { apiCall } from "@/helper/apiCall";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { UserCircle2 } from "lucide-react";
+import { LogOut, UserCircle2 } from "lucide-react";
 import { toTitleCase } from "@/helper/toTitleCase";
 
 export default function AuthButtons() {
@@ -28,7 +29,7 @@ export default function AuthButtons() {
                 setLogOut()
             }
         } catch (error) {
-            setLogOut()
+            console.log(error)
         }
     }
 
@@ -46,7 +47,7 @@ export default function AuthButtons() {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="max-w-70">
                     {/* Avatar + Email */}
-                    <div className="flex items-center gap-3 px-4 py-3">
+                    <div className="flex items-center gap-3 px-2 py-3">
                         <Avatar className="w-12 h-12 rounded-full shadow">
                             <AvatarImage src="https://originui.com/avatar-80-07.jpg" alt="User" />
                             <AvatarFallback>
@@ -54,7 +55,7 @@ export default function AuthButtons() {
                             </AvatarFallback>
                         </Avatar>
                         <div className="flex flex-col ">
-                            <span className="truncate font-semibold text-gray-900 dark:text-white">
+                            <span className="truncate font-semibold text-gray-900 dark:text-white max-w-48">
                                 {email}
                             </span>
                             <span className="truncate text-sm text-gray-500 dark:text-gray-400">
@@ -66,13 +67,25 @@ export default function AuthButtons() {
                     <div className="border-t border-gray-200 my-2" />
 
                     {/* Menu Items */}
-                    <DropdownMenuItem onClick={() => router.push("/dashboard")}>
+
+                    <DropdownMenuItem
+                        onClick={() => router.push("/dashboard")}
+                        className="text-lg"
+                    >
                         Dashboard
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleLogOut()}>
+                    {/* Separator */}
+                    <DropdownMenuSeparator />
+                    {/* Logout */}
+                    <DropdownMenuItem
+                        onClick={handleLogOut}
+                        className="text-lg flex items-center gap-2 text-red-500 py-2"
+                    >
+                        <LogOut className="w-5 h-5" />
                         Logout
                     </DropdownMenuItem>
                 </DropdownMenuContent>
+
             </DropdownMenu>
 
 
