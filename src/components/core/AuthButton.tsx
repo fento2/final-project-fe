@@ -1,6 +1,4 @@
 "use client";
-
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
@@ -12,10 +10,13 @@ import { useAuthStore } from "@/lib/zustand/authStore";
 import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
 import { apiCall } from "@/helper/apiCall";
 import { useRouter } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { UserCircle2 } from "lucide-react";
+import { toTitleCase } from "@/helper/toTitleCase";
 
 export default function AuthButtons() {
     const { setShowSignIn, setShowSignUp } = useAuthUIStore()
-    const { isLogin, checkLogin, setLogOut } = useAuthStore()
+    const { isLogin, checkLogin, setLogOut, email, role } = useAuthStore()
     const router = useRouter()
 
     const handleLogOut = async () => {
@@ -34,23 +35,47 @@ export default function AuthButtons() {
     if (isLogin && !checkLogin) {
         return (
             <DropdownMenu>
+                <div className="border-r border-neutral-400 border h-10 mr-2" />
                 <DropdownMenuTrigger asChild>
-                    <Button className="px-5 py-2 bg-indigo-600 text-white rounded-lg hover:bg-[#4F46E5]">
-                        Profile
-                    </Button>
+                    <div className="flex items-center cursor-pointer">
+                        <Avatar className="w-10 h-10">
+                            <AvatarImage src="https://originui.com/avatar-80-07.jpg" alt="User" />
+                            <AvatarFallback>U</AvatarFallback>
+                        </Avatar>
+                    </div>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent>
-                    <DropdownMenuItem onClick={() => {
-                        router.push('/dashboard/profile')
-                    }}>
-                        My Profile
+                <DropdownMenuContent className="max-w-70">
+                    {/* Avatar + Email */}
+                    <div className="flex items-center gap-3 px-4 py-3">
+                        <Avatar className="w-12 h-12 rounded-full shadow">
+                            <AvatarImage src="https://originui.com/avatar-80-07.jpg" alt="User" />
+                            <AvatarFallback>
+                                <UserCircle2 className="w-6 h-6 text-gray-400" />
+                            </AvatarFallback>
+                        </Avatar>
+                        <div className="flex flex-col ">
+                            <span className="truncate font-semibold text-gray-900 dark:text-white">
+                                {email}
+                            </span>
+                            <span className="truncate text-sm text-gray-500 dark:text-gray-400">
+                                {toTitleCase(role)}
+                            </span>
+                        </div>
+                    </div>
+                    {/* Divider */}
+                    <div className="border-t border-gray-200 my-2" />
+
+                    {/* Menu Items */}
+                    <DropdownMenuItem onClick={() => router.push("/dashboard")}>
+                        Dashboard
                     </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleLogOut()}
-                    >
+                    <DropdownMenuItem onClick={() => handleLogOut()}>
                         Logout
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
+
+
         );
     }
 

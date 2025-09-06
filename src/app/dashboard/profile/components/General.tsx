@@ -5,43 +5,43 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BadgeCheck, Edit2 } from "lucide-react";
+import { BadgeCheck, Edit2, UserCircle2 } from "lucide-react";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import FormProfile from "./FormProfile";
-
+import { fetchUUpdateProfile, UpdateProfileProps } from "@/fetch/profile.fetch";
+import axios from "axios";
+import { useToast } from "@/components/basic-toast";
 const General = () => {
-  const [profile, setProfile] = useState({
-    name: "Fendry Tonrate",
-    username: "fendrytonrate",
-    email: "fendry@example.com",
-    phone: "08123456789",
-    gender: "Male",
-    birthdate: "2000-01-01",
-    avatar: "/default-avatar.png",
+  const [profile, setProfile] = useState<UpdateProfileProps>({
+    name: "",
+    username: "asdasd",
+    email: "asdada",
+    phone: "",
+    gender: "",
+    birthDate: "",
+    avatar: "",
   });
-
   const [editing, setEditing] = useState(false);
-
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('')
+  const toast = useToast()
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setProfile({ ...profile, [e.target.name]: e.target.value });
   };
-
-  const handleSave = () => {
-    setEditing(false);
-    console.log("Updated Profile:", profile);
-    // TODO: call API update profile di sini
-  };
+  const handleSave = async () => {
+    const res = await fetchUUpdateProfile(profile, setError, setLoading)
+    if (axios.isAxiosError(error)) {
+      toast.error(error.response?.data.message)
+    }
+    setProfile(profile)
+  }
 
   return (
-    <div className="mx-auto min-h-screen py-6">
+    <div className="mx-auto py-6">
       {/* Card */}
       <Card className="">
         <CardHeader
@@ -64,7 +64,7 @@ const General = () => {
                   className="rounded-full object-cover"
                 />
                 <AvatarFallback className="rounded-full bg-indigo-200 text-indigo-800">
-                  {profile.name[0]}
+                  <UserCircle2 size={250} />
                 </AvatarFallback>
               </Avatar>
 
@@ -99,9 +99,9 @@ const General = () => {
               <span className="text-gray-500 font-bold tracking-tighter">
                 Status
               </span>
-              <div className="flex gap-2 border-2 bg-transparent border-indigo-700 px-3 py-1 items-center text-indigo-500 font-bold rounded-full">
+              {<div className="flex gap-2 border-2 bg-transparent border-indigo-700 px-3 py-1 items-center text-indigo-500 font-bold rounded-full">
                 Verified <BadgeCheck className="text-indigo-800 w-5 h-5" />
-              </div>
+              </div>}
             </div>
           </div>
 
@@ -115,7 +115,7 @@ const General = () => {
           />
 
           {/* Gender + Birthdate */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 -mt-4">
             <div className="space-y-2">
               <Label className="text-lg">Gender</Label>
               <Select
@@ -144,7 +144,7 @@ const General = () => {
               <Input
                 type="date"
                 name="birthdate"
-                value={profile.birthdate}
+                value={profile.birthDate}
                 onChange={handleChange}
                 disabled={!editing}
                 className="py-6 !text-lg"
@@ -184,5 +184,4 @@ const General = () => {
     </div>
   );
 };
-
 export default General;

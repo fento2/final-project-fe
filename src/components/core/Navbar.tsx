@@ -1,116 +1,69 @@
 "use client";
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Button } from "../ui/button";
+import AuthButtons from "./AuthButton";
+import MobileNav from "./MobileNav";
 import SignUp from "./SignUp";
 import SignIn from "./SignIn";
-import MobileNav from "./MobileNav";
 import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
-import AuthButtons from "./AuthButton";
 
+const menus = [
+  { label: "Home", href: "/" },
+  { label: "Jobs", href: "/jobs" },
+  { label: "About", href: "/about" },
+  { label: "Services", href: "/services" },
+  { label: "Blog", href: "/blog" },
+  { label: "Contact", href: "/contact" },
+];
 
 const Navbar: React.FC = () => {
   const pathname = usePathname();
-  const { showSignIn, showSignUp, setShowSignIn, setShowSignUp } =
-    useAuthUIStore();
-  const menus = [
-    { label: "Home", href: "/" },
-    { label: "Jobs", href: "/jobs" },
-    { label: "About", href: "/about" },
-    { label: "Services", href: "/services" },
-    { label: "Blog", href: "/blog" },
-    { label: "Contact", href: "/contact" },
-  ];
-  const [active, setActive] = useState<string>(
-    () => menus.find((m) => m.href === pathname)?.label ?? "Home"
+  const { showSignIn, showSignUp } = useAuthUIStore();
+  const [active, setActive] = useState(
+    menus.find((m) => m.href === pathname)?.label ?? "Home"
   );
-  const [open, setOpen] = useState<boolean>(false);
-  const navRef = useRef<HTMLUListElement | null>(null);
-  const menuRefs = useRef<Record<string, HTMLElement | null>>({});
-  const [underlineStyle, setUnderlineStyle] = useState<{
-    left: number;
-    width: number;
-  }>({ left: 0, width: 0 });
-
-  const updateUnderline = (key = active) => {
-    const el = menuRefs.current[key];
-    const parent = navRef.current;
-    if (!el || !parent) return;
-    const elRect = el.getBoundingClientRect();
-    const parentRect = parent.getBoundingClientRect();
-    setUnderlineStyle({
-      left: elRect.left - parentRect.left,
-      width: elRect.width,
-    });
-  };
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     setActive(menus.find((m) => m.href === pathname)?.label ?? "Home");
-    updateUnderline();
-    const onResize = () => updateUnderline();
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   return (
     <nav className="w-full bg-white py-6 sticky top-0 z-50 shadow-xl">
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center gap-4">
-          <Link
-            href="/"
-            onClick={() => {
-              setActive("Home");
-              setOpen(false);
-            }}
-          >
-            <img src="/images/logo.png" alt="logo" className="w-36 h-auto" />
-          </Link>
-        </div>
+        <Link href="/" onClick={() => setActive("Home")}>
+          <img src="/images/logo.png" alt="logo" className="w-36" />
+        </Link>
 
         {/* Desktop menu */}
-        <ul
-          ref={navRef}
-          className="hidden md:flex gap-8 items-center text-sm font-medium text-gray-600 relative"
-        >
+        <ul className="hidden lg:flex gap-8 items-center text-sm font-medium text-gray-600">
           {menus.map((m) => (
-            <li key={m.label} className="pb-4 text-[#111827]">
+            <li key={m.label}>
               <Link
                 href={m.href}
-                ref={(el) => {
-                  menuRefs.current[m.label] = el;
-                  return undefined;
-                }}
                 onClick={() => setActive(m.label)}
-                className={`px-2 ${active === m.label ? "text-[#111827]" : "hover:text-[#111827]"
+                className={`relative px-2 py-1 transition-colors duration-200 ${active === m.label
+                  ? "text-[#4F46E5] after:absolute after:left-0 after:bottom-0 after:w-full after:h-1 after:bg-[#4F46E5] after:rounded-full"
+                  : "text-gray-600 hover:text-[#4F46E5] hover:after:absolute hover:after:left-0 hover:after:bottom-0 hover:after:w-full hover:after:h-1 hover:after:bg-[#4F46E5] hover:after:rounded-full"
                   }`}
-                aria-current={active === m.label ? "page" : undefined}
               >
                 {m.label}
               </Link>
             </li>
           ))}
-
-          {/* moving underline */}
-          <span
-            aria-hidden
-            style={{
-              left: underlineStyle.left,
-              width: underlineStyle.width,
-            }}
-            className="absolute bottom-0 h-1 bg-[#4F46E5] rounded-full transition-left transition-all duration-300 ease-out"
-          />
         </ul>
 
-        {/* Right side buttons */}
+        {/* Right side */}
         <div className="flex items-center gap-2">
-          <AuthButtons />
+          <div className="lg:flex items-center gap-2 hidden">
+            <AuthButtons />
+          </div>
 
-          {/* Mobile toggle button */}
+          {/* Mobile toggle */}
           <button
-            className="md:hidden p-2 rounded-md border"
+            className="lg:hidden p-2 rounded-md border"
             aria-expanded={open}
             aria-label="Toggle menu"
             onClick={() => setOpen((v) => !v)}
@@ -132,20 +85,14 @@ const Navbar: React.FC = () => {
         </div>
 
         {/* Mobile menu */}
-        {open && (
-          <>
-            <MobileNav
-              setOpen={setOpen}
-              setActive={setActive}
-              active={active}
-            />
-          </>
-        )}
+        {open && <MobileNav setOpen={setOpen} setActive={setActive} active={active} />}
       </div>
+
       {/* Modals */}
       {showSignIn && <SignIn />}
       {showSignUp && <SignUp />}
     </nav>
   );
 };
+
 export default Navbar;

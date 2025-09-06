@@ -3,6 +3,13 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import General from "./components/General";
 import Security from "./components/Security";
+import CardEducation from "./components/CardEducation";
+import ExperienceCard from "./components/CardExperience";
+import EducationForm from "./components/EducationForm";
+import ExperienceForm from "./components/ExperienceForm";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Briefcase, GraduationCap } from "lucide-react";
+;
 
 const ProfileUser = () => {
   return (
@@ -10,35 +17,138 @@ const ProfileUser = () => {
       {/* Header */}
       <div className="mb-6">
         <h3 className="text-2xl font-bold text-black tracking-wider">
-          Personal Data
+          Profile Settings
         </h3>
         <span className="text-sm text-gray-600">
-          Fill in the data according to your ID card.
+          Manage your personal data, education, experience, and account security.
         </span>
       </div>
 
       <Tabs defaultValue="general" className="w-full">
         {/* Tabs List */}
-        <TabsList className=" w-full">
-          <TabsTrigger value="general" className="">
-            General
-          </TabsTrigger>
-          <TabsTrigger value="security" className="">
-            Security
-          </TabsTrigger>
+        <TabsList className="w-full">
+          <TabsTrigger value="general">General</TabsTrigger>
+          <TabsTrigger value="security">Security</TabsTrigger>
         </TabsList>
 
-        {/* General → Personal Data */}
+        {/* General → Personal Data, Education, Experience */}
         <TabsContent value="general" className="">
-          <General />
+          {/* Personal Data */}
+          <section>
+            <h3 className="text-xl font-semibold text-black">Personal Data</h3>
+            <span className="text-sm text-gray-600">
+              Fill in the data according to your ID card.
+            </span>
+            <div className="mt-4">
+              <General />
+            </div>
+          </section>
+
+          <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Education */}
+            <div>
+              <Card className="mt-4 space-y-4">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-xl font-semibold text-indigo-500 flex items-center gap-2"><GraduationCap />Education</h3>
+                      <span className="text-sm text-gray-600">
+                        Add your academic background and qualifications.
+                      </span>
+                    </div>
+                    <EducationForm />
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4 overflow-y-auto max-h-[600px]">
+                  <CardEducation
+                    university="Harvard University"
+                    degree="Bachelor's"
+                    fieldOfStudy="Computer Science"
+                    startMonth="September"
+                    startYear="2019"
+                    endMonth="June"
+                    endYear="2023"
+                    description="Focused on software engineering, participated in hackathons, and research projects."
+                  />
+                  <CardEducation
+                    university="Harvard University"
+                    degree="Bachelor's"
+                    fieldOfStudy="Computer Science"
+                    startMonth="September"
+                    startYear="2019"
+                    endMonth="June"
+                    endYear="2023"
+                    description="Focused on software engineering, participated in hackathons, and research projects."
+                  />
+                  <CardEducation
+                    university="Harvard University"
+                    degree="Bachelor's"
+                    fieldOfStudy="Computer Science"
+                    startMonth="September"
+                    startYear="2019"
+                    endMonth="June"
+                    endYear="2023"
+                    description="Focused on software engineering, participated in hackathons, and research projects."
+                  />
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Experience */}
+            <div>
+              <Card className="mt-4 space-y-4">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h3 className="text-xl font-semibold text-indigo-500 flex items-center gap-2"><Briefcase /> Experience</h3>
+                      <span className="text-sm text-gray-600">
+                        Add your work history and achievements.
+                      </span>
+                    </div>
+                    <ExperienceForm />
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-4 overflow-y-auto max-h-[600px]">
+                  <ExperienceCard
+                    company="Google"
+                    position="Frontend Developer"
+                    startMonth="January"
+                    startYear="2021"
+                    endMonth="June"
+                    endYear="2023"
+                    description="Worked on developing scalable UI components, improved Lighthouse score, and collaborated with cross-functional teams."
+                  />
+                  <ExperienceCard
+                    company="Google"
+                    position="Frontend Developer"
+                    startMonth="January"
+                    startYear="2021"
+                    endMonth="June"
+                    endYear="2023"
+                    description="Worked on developing scalable UI components, improved Lighthouse score, and collaborated with cross-functional teams."
+                  />
+                  <ExperienceCard
+                    company="Google"
+                    position="Frontend Developer"
+                    startMonth="January"
+                    startYear="2021"
+                    endMonth="June"
+                    endYear="2023"
+                    description="Worked on developing scalable UI components, improved Lighthouse score, and collaborated with cross-functional teams."
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          </section>
+
         </TabsContent>
 
         {/* Security Settings */}
-        <TabsContent value="security" className="">
+        <TabsContent value="security">
           <Security />
         </TabsContent>
       </Tabs>
-    </div>
+    </div >
   );
 };
 
