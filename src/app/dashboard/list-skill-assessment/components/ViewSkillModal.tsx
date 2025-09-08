@@ -2,9 +2,12 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { apiCall } from "@/helper/apiCall";
 import { SkillAssessment } from "@/types/skillAssessment";
-import { useCallback, useState } from "react";
+import { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
+import TableQuestionPreview from "./TableQuestionsPreview";
+import { ParsedQuestion } from "../types/questionAssessment";
 
 interface Props {
     isOpen: boolean;
@@ -12,71 +15,110 @@ interface Props {
     item: SkillAssessment | null;
 }
 
-interface ParsedQuestion {
-    id?: string | number;
-    question: string;
-    option_a?: string;
-    option_b?: string;
-    option_c?: string;
-    option_d?: string;
-    answer?: string;
-    [key: string]: any;
-}
-
 export default function ViewSkillModal({ isOpen, onClose, item }: Props) {
     const [serverError, setServerError] = useState("");
     const [questions, setQuestions] = useState<ParsedQuestion[]>([]);
+    const [originalQuestions, setOriginalQuestions] = useState<ParsedQuestion[]>([]);
     const [fileName, setFileName] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(false);
+    const [replaceAll, setReplaceAll] = useState<boolean>(false);
+    const assessmentId = (item as any)?.assessment_id;
 
     const resetState = () => {
         setQuestions([]);
         setFileName("");
         setServerError("");
+        setReplaceAll(false);
     };
 
-    const handleFileChange = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-        setServerError("");
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
-        if (!file) {
-            resetState();
-            return;
-        }
+        if (!file) return;
         setFileName(file.name);
 
-        try {
-            const data = await file.arrayBuffer();
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+            const data = new Uint8Array(evt.target?.result as ArrayBuffer);
             const workbook = XLSX.read(data, { type: "array" });
-            const firstSheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[firstSheetName];
-            const json: any[] = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-            // Normalisasi keys (lowercase + trim)
-            const normalized = json.map((row, idx) => {
-                const obj: ParsedQuestion = { id: idx + 1, question: "" };
-                Object.keys(row).forEach(k => {
-                    const nk = k.toString().trim().toLowerCase();
-                    obj[nk] = row[k];
-                });
-                // Fallback jika kolom 'question' berbeda nama (misal 'soal')
-                if (!obj.question) {
-                    obj.question = obj["soal"] || obj["pertanyaan"] || "";
-                }
-                return obj;
-            }).filter(r => r.question?.toString().trim() !== "");
+            const existingIds = originalQuestions.map(q => q.assessment_question_id);
+            const parsedQuestions: ParsedQuestion[] = (jsonData as any[]).map((val, idx) => {
+                const q: ParsedQuestion = {
+                    assessment_question_id: existingIds[idx],
+                    question: val["Question"] || val["question"] || "",
+                    option_a: val["Option_A"] || val["option_a"] || "",
+                    option_b: val["Option_B"] || val["option_b"] || "",
+                    option_c: val["Option_C"] || val["option_c"] || "",
+                    option_d: val["Option_D"] || val["option_d"] || "",
+                    correct_option: (val["correct_option"] || val["Correct_Option"] || val["Answer"] || val["answer"] || "").toString().toUpperCase(),
+                };
+                return q;
+            });
 
-            setQuestions(normalized);
-        } catch (err: any) {
-            console.error(err);
-            setServerError("Gagal membaca file. Pastikan format XLSX benar.");
-            resetState();
-        }
-    }, []);
+            setQuestions(parsedQuestions);
+        };
+        reader.readAsArrayBuffer(file);
+    };
 
-    const handleSubmit = async () => {
+    const fetchQuestions = async () => {
         try {
+            setLoading(true);
+            setServerError("");
+            const res = await apiCall.get(`/questions/${assessmentId}`);
+            const body = res.data;
+            const list = Array.isArray(body) ? body : body?.data ?? [];
+            const parsed: ParsedQuestion[] = (list as any[]).map((q: any, idx: number) => ({
+                assessment_question_id: q.assessment_question_id ?? idx + 1,
+                question: q.question,
+                option_a: q.option_a,
+                option_b: q.option_b,
+                option_c: q.option_c,
+                option_d: q.option_d,
+                correct_option: q.correct_option,
+            }));
+            setQuestions(parsed);
+            setOriginalQuestions(parsed);
+        } catch (err: any) {
+            setServerError(err.message || "Error mengambil questions");
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
+        if (!isOpen || !item) return;
+        resetState();
+        if (!assessmentId) return;
+        fetchQuestions();
+    }, [isOpen, item]);
+
+    const handleSubmit = async (e?: React.FormEvent) => {
+        e?.preventDefault();
+        try {
+            setServerError("");
+
+            if (replaceAll) {
+                await apiCall.delete(`/questions/${assessmentId}`);
+                await apiCall.post(`/questions/${assessmentId}`, questions.map(q => {
+                    const { assessment_question_id, ...data } = q;
+                    return data;
+                }))
+            } else {
+                const hasAnyId = questions.some(q => q.assessment_question_id);
+                if (hasAnyId) {
+                    await apiCall.put(`/questions/${assessmentId}`, questions);
+                } else {
+                    await apiCall.post(`/questions/${assessmentId}`, questions);
+                }
+            }
+
+            await fetchQuestions();
+            setFileName("");
         } catch (error: any) {
-            setServerError(error.response.data.message)
+            setServerError(error?.response?.data?.message || "Gagal menyimpan questions");
         }
     }
 
@@ -94,63 +136,51 @@ export default function ViewSkillModal({ isOpen, onClose, item }: Props) {
 
                 <div className="grid gap-1">
                     <Label>Questions Input</Label>
-                    <Input type="file" accept=".xlsx, .xls" onChange={handleFileChange} />
+                    <Input type="file" accept=".xlsx,.xls" onChange={handleFileChange} />
+                    <Label className="text-xs text-muted-foreground opacity-75">
+                        Upload the test questions in Excel format (.xlsx or .xls)
+                    </Label>
+                    {originalQuestions.length > 0 && (
+                        <label className="flex items-center gap-2 text-xs mt-1 cursor-pointer select-none">
+                            <input
+                                type="checkbox"
+                                checked={replaceAll}
+                                onChange={(e) => setReplaceAll(e.target.checked)}
+                            />
+                            <span>Replace all existing questions (delete then insert)</span>
+                        </label>
+                    )}
                     {fileName && (
                         <div className="text-xs text-gray-600 flex items-center gap-2">
                             <span>File: {fileName}</span>
-                            <Button
-                                type="button"
-                                variant="outline"
-                                className="h-6 px-2 text-xs"
+                            <Button type="button" variant="outline" className="h-6 px-2 text-xs"
                                 onClick={() => {
-                                    resetState();
+                                    setFileName("");
+                                    setQuestions(originalQuestions);
                                 }}
                             >
-                                Reset
+                                Cancel Upload
                             </Button>
                         </div>
                     )}
                 </div>
 
                 {serverError && <p className="mt-2 text-sm text-red-500">{serverError}</p>}
+                {loading && <p className="text-sm text-gray-500">Memuat data questions...</p>}
+                {!loading && questions.length === 0 && <p className="text-sm text-gray-500 italic">Belum ada question. Upload file untuk menambahkan.</p>}
 
                 {questions.length > 0 && (
                     <div className="grid gap-3">
                         <h3 className="text-sm font-semibold">Preview Questions ({questions.length})</h3>
-                        <div className="relative rounded-md border overflow-x-auto max-h-[50vh] overflow-y-auto">
-                            <table className="w-full text-sm">
-                                <thead className="bg-gray-100 sticky top-0 z-10">
-                                    <tr className="text-left">
-                                        <th className="p-2 w-10">#</th>
-                                        <th className="p-2">Question</th>
-                                        <th className="p-2">A</th>
-                                        <th className="p-2">B</th>
-                                        <th className="p-2">C</th>
-                                        <th className="p-2">D</th>
-                                        <th className="p-2">Answer</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {questions.map((q, i) => (
-                                        <tr key={i} className="border-t hover:bg-gray-50">
-                                            <td className="p-2 text-xs text-gray-500">{i + 1}</td>
-                                            <td className="p-2">{q.question}</td>
-                                            <td className="p-2">{q.option_a}</td>
-                                            <td className="p-2">{q.option_b}</td>
-                                            <td className="p-2">{q.option_c}</td>
-                                            <td className="p-2">{q.option_d}</td>
-                                            <td className="p-2 font-medium">{q.answer}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                        <TableQuestionPreview questions={questions} />
                     </div>
                 )}
 
                 <div className="flex justify-end gap-3">
                     <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-                    <Button type="submit" className="bg-green-600 hover:bg-green-700">Submit</Button>
+                    <Button type="submit" className="bg-green-600 hover:bg-green-700" disabled={!fileName && questions === originalQuestions}>
+                        {replaceAll ? "Replace" : "Save"}
+                    </Button>
                 </div>
             </form>
         </div>
