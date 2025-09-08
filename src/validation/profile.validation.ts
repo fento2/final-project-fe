@@ -9,7 +9,6 @@ export const schemaUpdateProfileUser = z.object({
   profile_picture: z.any().optional(), // bisa undefined kalau tidak ganti foto
   address: z.string(),
 });
-
 export const schemaCreateEducation = z
   .object({
     university: z.string().min(1, "University is required"),
@@ -17,18 +16,25 @@ export const schemaCreateEducation = z
     fieldOfStudy: z.string().min(1, "Field of study is required"),
     startMonth: z.enum(months),
     startYear: z.number(),
-    endMonth: z.enum(months),
-    endYear: z.number(),
+    endMonth: z.enum(months).optional(),
+    endYear: z.number().optional(),
     description: z.string().optional(),
+  })
+  .refine((data) => !(data.endMonth && !data.endYear), {
+    message: "End year must be provided if end month is set",
+    path: ["endYear"],
   })
   .transform((data) => ({
     university: data.university,
     degree: data.degree,
     fieldOfStudy: data.fieldOfStudy,
     startDate: convertMonthYearToDate(data.startMonth, data.startYear),
-    endDate: convertMonthYearToDate(data.endMonth, data.endYear),
+    endDate:
+      data.endMonth && data.endYear
+        ? convertMonthYearToDate(data.endMonth, data.endYear)
+        : null,
     description: data.description,
   }))
-  .refine((data) => data.startDate! <= data.endDate!, {
+  .refine((data) => !data.endDate || data.startDate! <= data.endDate!, {
     message: "Start date must be before end date",
   });
