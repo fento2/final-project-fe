@@ -162,7 +162,7 @@ const SignUp = () => {
         <Divider name="Or sign up with" />
 
         {/* Social buttons */}
-        <WithSosmed />
+        <WithSosmed role={dataSignUp.role} setLoading={setLoading} url="sign-up" />
 
         {/* Link to Sign in */}
         <p className="text-sm text-gray-600 mt-6">

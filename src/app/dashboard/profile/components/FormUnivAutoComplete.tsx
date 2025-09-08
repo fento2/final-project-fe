@@ -63,7 +63,7 @@ const UniversityAutocomplete = ({ value, onChange }: Props) => {
     };
 
     return (
-        <div className="relative w-full max-w-md flex items-center gap-2 border rounded-md">
+        <div className="relative w-full flex items-center gap-2 border rounded-md">
             {/* Logo di samping input */}
             {selectedUniversity?.domain && (
                 <img

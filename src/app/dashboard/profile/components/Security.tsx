@@ -6,6 +6,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Lock, Eye, EyeOff } from "lucide-react";
+import Link from "next/link";
+import { schemaChangePassword } from "@/validation/auth.validation";
+import { useToast } from "@/components/basic-toast";
+import { apiCall } from "@/helper/apiCall";
 
 const Security = () => {
   const [form, setForm] = useState({
@@ -13,17 +17,36 @@ const Security = () => {
     newPassword: "",
     confirmPassword: "",
   });
-
   const [showPassword, setShowPassword] = useState({
     current: false,
     new: false,
     confirm: false,
   });
-
+  const toast = useToast()
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
-
+  const onBtChangePassword = async () => {
+    try {
+      console.log('run')
+      const result = schemaChangePassword.safeParse(form)
+      if (!result.success) {
+        const messages = result.error.issues[0].message;
+        return toast.error(messages)
+      }
+      const payload = {
+        currentPassword: form.currentPassword,
+        newPassword: form.newPassword
+      }
+      const { data } = await apiCall.post('/auth/change-password', payload)
+      if (data.success) {
+        toast.success(data.message)
+      }
+      console.log(data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
   return (
     <div className="mx-auto min-h-screen py-6">
       {/* Card */}
@@ -129,12 +152,16 @@ const Security = () => {
                 </button>
               </div>
             </div>
+            <Link href={'/forget-password'}>
+              <span className="hover:underline cursor-pointer">Forget Password</span>
+            </Link>
           </div>
 
           {/* Actions */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <Button
-              onClick={() => console.log("Change password:", form)}
+              onClick={onBtChangePassword}
+              type="button"
               className="w-full sm:w-auto flex items-center gap-2"
             >
               <Lock className="w-4 h-4" />

@@ -6,7 +6,7 @@ import ShowSideBar from "./dashboard/components/ShowSideBar";
 import ConditionalNavbar from "@/components/core/ConditionalNavbar";
 import ConditionalFooter from "@/components/core/ConditionalFooter";
 import { ToastProvider } from "@/components/basic-toast";
-
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,11 +33,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ShowSideBar />
-        <ConditionalNavbar />
-        <ToastProvider />
-        {children}
-        <ConditionalFooter />
+        <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
+          <ShowSideBar />
+          <ConditionalNavbar />
+          <ToastProvider />
+
+          {children}
+          <ConditionalFooter />
+        </GoogleOAuthProvider>
       </body>
     </html>
   );

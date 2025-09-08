@@ -40,8 +40,7 @@ const FormProfile = ({
               type="text"
               name="username"
               value={username}
-              onChange={handleChange}
-              disabled={!editing}
+              disabled={true}
               className="py-6 !text-lg"
             />
           </div>
@@ -55,8 +54,7 @@ const FormProfile = ({
               type="email"
               name="email"
               value={email}
-              onChange={handleChange}
-              disabled={!editing}
+              disabled={true}
               className="py-6 !text-lg"
             />
           </div>
@@ -69,6 +67,7 @@ const FormProfile = ({
               onChange={handleChange}
               disabled={!editing}
               className="py-6 !text-lg"
+              placeholder="Input your phone number"
             />
           </div>
         </div>

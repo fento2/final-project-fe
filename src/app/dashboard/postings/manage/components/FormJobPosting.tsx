@@ -18,8 +18,8 @@ import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import BasicForm from "./BasicForm";
-import { useCreateJob } from "@/lib/zustand/createJobStore";
-import { useEditJob } from "@/lib/zustand/editJobStore";
+import { useCreateJobStore } from "@/lib/zustand/createJobStore";
+import { useEditJobStore } from "@/lib/zustand/editJobStore";
 import { usePathname } from "next/navigation";
 import { getValue, setValue } from "@/helper/postingsHelper";
 
@@ -37,7 +37,7 @@ const FormJobPosting = () => {
     setLongitude,
     setLocation,
     setExpiredAt,
-  } = useCreateJob();
+  } = useCreateJobStore();
   const {
     editLatitude,
     editDescription,
@@ -49,7 +49,7 @@ const FormJobPosting = () => {
     setEditLongitude,
     setEditLocation,
     setEditExpireAt,
-  } = useEditJob();
+  } = useEditJobStore();
 
   return (
     <div className="space-y-6">

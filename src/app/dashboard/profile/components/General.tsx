@@ -1,47 +1,65 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BadgeCheck, Edit2, UserCircle2 } from "lucide-react";
+import { BadgeCheck } from "lucide-react";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
 import FormProfile from "./FormProfile";
-import { fetchUUpdateProfile, UpdateProfileProps } from "@/fetch/profile.fetch";
-import axios from "axios";
+import { updateProfileRoleUserFetch, getProfilRoleUserFetch } from "@/fetch/profile.fetch";
 import { useToast } from "@/components/basic-toast";
+import ButtonProfile from "./ButtonProfile";
+import { format } from "date-fns";
+import { Dots_v2 } from "@/components/ui/spinner";
+import ProfilePicture from "./AvatarAndStatus";
 const General = () => {
-  const [profile, setProfile] = useState<UpdateProfileProps>({
+  const [profile, setProfile] = useState({
     name: "",
-    username: "asdasd",
-    email: "asdada",
+    username: "",
+    email: "",
     phone: "",
     gender: "",
     birthDate: "",
-    avatar: "",
+    address: "",
+    profile_picture: "",
   });
+  const [uploadPicture, setUploadPicture] = useState<File | null>(null)
   const [editing, setEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('')
-  const toast = useToast()
+  const toast = useToast();
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     setProfile({ ...profile, [e.target.name]: e.target.value });
   };
   const handleSave = async () => {
-    const res = await fetchUUpdateProfile(profile, setError, setLoading)
-    if (axios.isAxiosError(error)) {
-      toast.error(error.response?.data.message)
+    const payload = {
+      name: profile.name,
+      phone: profile.phone,
+      gender: profile.gender,
+      birthDate: profile.birthDate,
+      address: profile.address,
+      profile_picture: uploadPicture
     }
-    setProfile(profile)
+    const res = await updateProfileRoleUserFetch(toast, payload, setLoading);
+    if (res) {
+      getData()
+      setEditing(false)
+    }
   }
-
+  const getData = async () => {
+    const data = await getProfilRoleUserFetch(toast)
+    if (data) {
+      setProfile({ ...data, gender: data.gender ? data.gender : undefined, phone: data.phone ? data.phone : undefined, birthDate: format(new Date(data.birthDate), 'yyyy-MM-dd') })
+    }
+  }
+  useEffect(() => {
+    getData()
+  }, [])
   return (
-    <div className="mx-auto py-6">
+    <div className="mx-auto py-6 relative">
       {/* Card */}
       <Card className="">
         <CardHeader
@@ -53,47 +71,19 @@ const General = () => {
             Your main account details that will be visible on your profile
           </p>
         </CardHeader>
+        {loading && <div className="absolute top-0 z-50 flex justify-center h-screen w-full">
+          <Dots_v2 />
+
+        </div>}
         <CardContent className="space-y-6">
           {/* Avatar + Status */}
           <div className="flex flex-col sm:flex-row gap-6 sm:items-center relative">
-            <div className="relative w-28 h-28 mx-auto sm:mx-0">
-              <Avatar className="w-28 h-28 rounded-full">
-                <AvatarImage
-                  src={profile.avatar}
-                  alt={profile.name}
-                  className="rounded-full object-cover"
-                />
-                <AvatarFallback className="rounded-full bg-indigo-200 text-indigo-800">
-                  <UserCircle2 size={250} />
-                </AvatarFallback>
-              </Avatar>
-
-              {editing && (
-                <Label
-                  htmlFor="avatar-upload"
-                  className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 rounded-full cursor-pointer hover:bg-black/60 transition"
-                >
-                  <Edit2 className="w-5 h-5 text-white mb-1" />
-                  <span className="text-white text-xs font-medium">
-                    Upload Foto
-                  </span>
-                  <Input
-                    id="avatar-upload"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        const imgUrl = URL.createObjectURL(file);
-                        setProfile({ ...profile, avatar: imgUrl });
-                      }
-                    }}
-                  />
-                </Label>
-              )}
-            </div>
-
+            <ProfilePicture
+              profile={profile}
+              editing={editing}
+              setProfile={setProfile}
+              setUploadPicture={setUploadPicture}
+            />
             {/* Status */}
             <div className="flex flex-col gap-2 items-center sm:items-start">
               <span className="text-gray-500 font-bold tracking-tighter">
@@ -104,7 +94,6 @@ const General = () => {
               </div>}
             </div>
           </div>
-
           <FormProfile
             name={profile.name}
             username={profile.username}
@@ -113,7 +102,6 @@ const General = () => {
             handleChange={handleChange}
             editing={editing}
           />
-
           {/* Gender + Birthdate */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 -mt-4">
             <div className="space-y-2">
@@ -129,21 +117,20 @@ const General = () => {
                   <SelectValue placeholder="Select Gender" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Male" className="p-4 text-lg">
+                  <SelectItem value="MALE" className="p-4 text-lg">
                     Male
                   </SelectItem>
-                  <SelectItem value="Female" className="p-4 text-lg">
+                  <SelectItem value="FEMALE" className="p-4 text-lg">
                     Female
                   </SelectItem>
                 </SelectContent>
               </Select>
             </div>
-
             <div className="space-y-2">
               <Label className="text-lg">Date of Birth</Label>
               <Input
                 type="date"
-                name="birthdate"
+                name="birthDate"
                 value={profile.birthDate}
                 onChange={handleChange}
                 disabled={!editing}
@@ -151,34 +138,20 @@ const General = () => {
               />
             </div>
           </div>
-
-          {/* Actions */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-            {editing ? (
-              <>
-                <Button
-                  onClick={handleSave}
-                  className="bg-indigo-500 text-white w-full sm:w-auto"
-                >
-                  Save
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => setEditing(false)}
-                  className="w-full sm:w-auto"
-                >
-                  Cancel
-                </Button>
-              </>
-            ) : (
-              <Button
-                onClick={() => setEditing(true)}
-                className="w-full sm:w-auto"
-              >
-                Edit Profile
-              </Button>
-            )}
+          <div className="space-y-2 -mt-4">
+            <Label className="text-lg">Address</Label>
+            <Input
+              type="text"
+              name="address"
+              value={profile.address}
+              onChange={handleChange}
+              disabled={!editing}
+              className="py-6 !text-lg"
+              placeholder="Enter your address"
+            />
           </div>
+          {/* Actions */}
+          <ButtonProfile editing={editing} setEditing={setEditing} handleSave={handleSave} getData={getData} />
         </CardContent>
       </Card>
     </div>
