@@ -73,7 +73,7 @@ export function SideBar() {
 
       {/* Sidebar Mobile (slide-in) */}
       <motion.div
-        className="md:hidden fixed top-0 left-0 z-50 h-full w-60 bg-white dark:bg-black shadow-2xl"
+        className="md:hidden fixed top-0 left-0 z-50 h-full bg-white dark:bg-black shadow-2xl w-70"
         initial="hidden"
         animate={showSideBar ? "visible" : "hidden"}
         variants={mobileVariants}

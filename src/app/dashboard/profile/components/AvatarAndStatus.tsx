@@ -39,7 +39,7 @@ const ProfilePicture = ({
                         alt={profile.name}
                         className="rounded-full object-cover"
                     />
-                    <AvatarFallback className="rounded-full bg-indigo-200 text-indigo-800">
+                    <AvatarFallback className="rounded-full text-indigo-500">
                         <UserCircle2 size={250} />
                     </AvatarFallback>
                 </Avatar>
