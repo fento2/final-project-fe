@@ -43,7 +43,7 @@ export const schemaResetPassword = z
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords do not match",
-    path: ["confirmPassword"], // error ditampilkan di confirmPassword
+    path: ["confirmPassword"],
   });
 
 export const schemaChangePassword = z
@@ -54,5 +54,5 @@ export const schemaChangePassword = z
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
     message: "Passwords do not match",
-    path: ["confirmPassword"], // akan menandai field confirmPassword kalau error
+    path: ["confirmPassword"],
   });

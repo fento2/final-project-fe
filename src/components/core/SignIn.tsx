@@ -40,7 +40,7 @@ const SignIn = () => {
         remember
       })
       if (data.success) {
-        setAuth(data.email || data.data.email, data.role || data.data.role)
+        setAuth(data.data.email, data.data.role, data.data.profile_picture)
         setShowSignIn(false)
         setIsLogin(true);
         toast.success(data.message)

@@ -62,7 +62,7 @@ const Navbar: React.FC = () => {
           </div>
 
           {/* Mobile toggle */}
-          <button
+          {!open && <button
             className="lg:hidden p-2 rounded-md border"
             aria-expanded={open}
             aria-label="Toggle menu"
@@ -78,10 +78,10 @@ const Navbar: React.FC = () => {
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                d={open ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
+                d={"M4 6h16M4 12h16M4 18h16"}
               />
             </svg>
-          </button>
+          </button>}
         </div>
 
         {/* Mobile menu */}

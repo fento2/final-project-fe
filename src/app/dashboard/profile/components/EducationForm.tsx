@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -23,7 +22,9 @@ import { GraduationCap, Plus } from "lucide-react";
 import UniversityAutocomplete from "./FormUnivAutoComplete";
 import { useRouter, useSearchParams } from "next/navigation";
 import { months, years } from "@/helper/profileHelper";
-
+import { addEducationFetch } from "@/fetch/profile.fetch";
+import { useToast } from "@/components/basic-toast";
+import { Dots_v2 } from "@/components/ui/spinner";
 const EducationForm = () => {
     const [form, setForm] = useState({
         university: "",
@@ -38,6 +39,8 @@ const EducationForm = () => {
     const searchParams = useSearchParams();
     const router = useRouter();
     const [open, setOpen] = useState(false);
+    const toast = useToast()
+    const [loading, setLoading] = useState(false)
     // Sync open state dengan query
     useEffect(() => {
         if (searchParams.get("education") === "create") {
@@ -59,7 +62,6 @@ const EducationForm = () => {
             router.replace("/dashboard/profile");
         }
     };
-
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
@@ -73,6 +75,7 @@ const EducationForm = () => {
     };
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        await addEducationFetch(toast, form, setLoading)
         console.log(form);
     };
     return (
@@ -90,6 +93,10 @@ const EducationForm = () => {
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4 relative">
+                    {loading && <div className="absolute z-50 flex justify-center h-screen w-full">
+                        <Dots_v2 />
+
+                    </div>}
                     <div className="space-y-1">
                         <Label htmlFor="university">University</Label>
                         <UniversityAutocomplete

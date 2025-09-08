@@ -9,80 +9,90 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/lib/zustand/authStore";
 import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
-import { apiCall } from "@/helper/apiCall";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { LogOut, UserCircle2 } from "lucide-react";
 import { toTitleCase } from "@/helper/toTitleCase";
+import { motion, AnimatePresence } from "framer-motion";
+import { handleLogOut } from "@/helper/handleLogout";
 
 export default function AuthButtons() {
-    const { setShowSignIn, setShowSignUp } = useAuthUIStore()
-    const { isLogin, checkLogin, setLogOut, email, role } = useAuthStore()
-    const router = useRouter()
-
-    const handleLogOut = async () => {
-        try {
-            const { data } = await apiCall.get('/auth/logout')
-            if (data.success) {
-                setLogOut()
-            }
-        } catch (error) {
-            console.log(error)
-        }
-    }
+    const { setShowSignIn, setShowSignUp } = useAuthUIStore();
+    const { isLogin, profile_picture, setLogOut, email, role } = useAuthStore();
+    const router = useRouter();
 
     if (isLogin) {
         return (
             <DropdownMenu>
-                <div className="border-r border-neutral-400 border h-10 mr-2" />
-                <DropdownMenuTrigger asChild>
-                    <div className="flex items-center cursor-pointer">
-                        <Avatar className="w-10 h-10">
-                            <AvatarImage src="https://originui.com/avatar-80-07.jpg" alt="User" />
-                            <AvatarFallback>U</AvatarFallback>
-                        </Avatar>
-                    </div>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent className="max-w-70">
-                    {/* Avatar + Email */}
-                    <div className="flex items-center gap-3 px-2 py-3">
-                        <Avatar className="w-12 h-12 rounded-full shadow">
-                            <AvatarImage src="https://originui.com/avatar-80-07.jpg" alt="User" />
-                            <AvatarFallback>
-                                <UserCircle2 className="w-6 h-6 text-gray-400" />
-                            </AvatarFallback>
-                        </Avatar>
-                        <div className="flex flex-col ">
-                            <span className="truncate font-semibold text-gray-900 dark:text-white max-w-48">
-                                {email}
-                            </span>
-                            <span className="truncate text-sm text-gray-500 dark:text-gray-400">
-                                {toTitleCase(role)}
-                            </span>
+                <div className="relative">
+                    <div className="w-0.5 h-10 bg-neutral-400 absolute top-0 right-16" />
+                    <DropdownMenuTrigger asChild>
+                        <div className="flex items-center cursor-pointer">
+                            <Avatar className="w-10 h-10 shadow-lg">
+                                <AvatarImage src={profile_picture} alt="User" />
+                                <AvatarFallback>
+                                    <UserCircle2 className="text-indigo-500" size={40} />
+                                </AvatarFallback>
+                            </Avatar>
                         </div>
-                    </div>
-                    {/* Divider */}
-                    <div className="border-t border-gray-200 my-2" />
+                    </DropdownMenuTrigger>
 
-                    {/* Menu Items */}
+                    <AnimatePresence>
+                        <DropdownMenuContent asChild>
+                            <motion.div
+                                initial={{ opacity: 0, y: -10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ duration: 0.2 }}
+                                className="max-w-xs p-2 shadow-xl bg-white dark:bg-gray-800 rounded-lg"
+                            >
+                                {/* Avatar + Email */}
+                                <div className="flex items-center gap-3 px-4 py-3">
+                                    <Avatar className="w-16 h-16 shadow-lg">
+                                        <AvatarImage src={profile_picture} alt="User" />
+                                        <AvatarFallback>
+                                            <UserCircle2 className="text-indigo-500" size={48} />
+                                        </AvatarFallback>
+                                    </Avatar>
+                                    <div className="flex flex-col">
+                                        <span className="truncate font-semibold text-gray-900 dark:text-white max-w-full">
+                                            {email}
+                                        </span>
+                                        <span className="truncate text-sm text-gray-500 dark:text-gray-400">
+                                            {toTitleCase(role)}
+                                        </span>
+                                    </div>
+                                </div>
 
-                    <DropdownMenuItem
-                        onClick={() => router.push("/dashboard")}
-                        className="text-lg"
-                    >
-                        Dashboard
-                    </DropdownMenuItem>
-                    {/* Separator */}
-                    <DropdownMenuSeparator />
-                    {/* Logout */}
-                    <DropdownMenuItem
-                        onClick={handleLogOut}
-                        className="text-lg flex items-center gap-2 text-red-500 py-2"
-                    >
-                        <LogOut className="w-5 h-5" />
-                        Logout
-                    </DropdownMenuItem>
-                </DropdownMenuContent>
+                                <DropdownMenuSeparator className="my-2" />
+
+                                {/* Menu Items dengan hover animasi */}
+                                <div className="flex flex-col gap-1">
+                                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                        <DropdownMenuItem
+                                            onClick={() => router.push("/dashboard")}
+                                            className="text-lg px-4 py-2 rounded-md"
+                                        >
+                                            Dashboard
+                                        </DropdownMenuItem>
+                                    </motion.div>
+
+                                    <DropdownMenuSeparator className="w-full" />
+
+                                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                        <DropdownMenuItem
+                                            onClick={() => handleLogOut(setLogOut)}
+                                            className="text-lg flex items-center gap-2 text-red-500 px-4 py-2 rounded-md"
+                                        >
+                                            <LogOut className="w-5 h-5" />
+                                            Logout
+                                        </DropdownMenuItem>
+                                    </motion.div>
+                                </div>
+                            </motion.div>
+                        </DropdownMenuContent>
+                    </AnimatePresence>
+                </div>
             </DropdownMenu>
         );
     }

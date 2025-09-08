@@ -1,5 +1,8 @@
 import { apiCall } from "@/helper/apiCall";
-import { schemaUpdateProfileUser } from "@/validation/profile.validation";
+import {
+  schemaCreateEducation,
+  schemaUpdateProfileUser,
+} from "@/validation/profile.validation";
 import axios from "axios";
 
 //role user profile
@@ -44,15 +47,12 @@ export const updateProfileRoleUserFetch = async (
     if (payload.profile_picture instanceof File) {
       formData.append("profile_picture", payload.profile_picture);
     }
-    // Cek payload di console
-    console.log(payload);
-
     const { data } = await apiCall.patch(
       `/account/update-profile/user`,
       formData
     );
     if (data.success) {
-      toast.success("success");
+      toast.success(data.message);
       return data;
     }
   } catch (error: unknown) {
@@ -62,7 +62,6 @@ export const updateProfileRoleUserFetch = async (
     setLoading(false);
   }
 };
-
 export const getProfilRoleUserFetch = async (toast: {
   success: (title: string, description?: string | undefined) => string;
   error: (title: string, description?: string | undefined) => string;
@@ -82,19 +81,51 @@ export const getProfilRoleUserFetch = async (toast: {
     }
     console.log(error);
     return null;
-  } finally {
   }
 };
-//education
 
-export const addEducation = async (toast: {
-  success: (title: string, description?: string | undefined) => string;
-  error: (title: string, description?: string | undefined) => string;
-  warning: (title: string, description?: string | undefined) => string;
-  info: (title: string, description?: string | undefined) => string;
-}) => {
+//education
+interface EducationFormProps {
+  university: string;
+  degree: string;
+  fieldOfStudy: string;
+  startMonth: string;
+  startYear: string;
+  endMonth: string;
+  endYear: string;
+  description: string;
+}
+export const addEducationFetch = async (
+  toast: {
+    success: (title: string, description?: string) => string;
+    error: (title: string, description?: string) => string;
+    warning: (title: string, description?: string) => string;
+    info: (title: string, description?: string) => string;
+  },
+  data: EducationFormProps,
+  setLoading: (laoding: boolean) => void
+) => {
   try {
+    setLoading(true);
+    const result = schemaCreateEducation.safeParse({
+      ...data,
+      startYear: Number(data.startYear),
+      endYear: Number(data.endYear),
+    });
+    if (!result.success) {
+      const messages = result.error.issues[0].message;
+      toast.error(messages);
+      return;
+    } else {
+      const { data } = await apiCall.post("/education/create", result.data);
+      if (data.success) {
+        toast.success(data.message);
+      }
+      console.log("ini lolos", result.data, "ini data dati be", data);
+    }
   } catch (error) {
-    console.log(error);
+    console.log("ini error", error);
+  } finally {
+    setLoading(false);
   }
 };
