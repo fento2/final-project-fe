@@ -23,9 +23,7 @@ export default function AuthButtons() {
     const handleLogOut = async () => {
         try {
             const { data } = await apiCall.get('/auth/logout')
-
             if (data.success) {
-                alert(data.message)
                 setLogOut()
             }
         } catch (error) {
@@ -33,7 +31,7 @@ export default function AuthButtons() {
         }
     }
 
-    if (isLogin && !checkLogin) {
+    if (isLogin) {
         return (
             <DropdownMenu>
                 <div className="border-r border-neutral-400 border h-10 mr-2" />
@@ -85,10 +83,7 @@ export default function AuthButtons() {
                         Logout
                     </DropdownMenuItem>
                 </DropdownMenuContent>
-
             </DropdownMenu>
-
-
         );
     }
 

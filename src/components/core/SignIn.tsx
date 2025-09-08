@@ -23,12 +23,12 @@ const SignIn = () => {
   const [loading, setLoading] = useState(false)
   const [remember, setRemember] = useState(false)
   const toast = useToast()
-  const { setIsLogin, setChekLogin, setAuth } = useAuthStore()
+  const { setIsLogin, setAuth } = useAuthStore()
   const router = useRouter()
   const handleSignIn = async () => {
     try {
       setError("");
-      setIsLogin(true);
+      setLoading(true)
       const result = schemaSignIn.safeParse({ email, password, remember });
       if (!result.success) {
         const messages = result.error.issues[0].message;
@@ -42,6 +42,7 @@ const SignIn = () => {
       if (data.success) {
         setAuth(data.email || data.data.email, data.role || data.data.role)
         setShowSignIn(false)
+        setIsLogin(true);
         toast.success(data.message)
         console.log(data)
       }
@@ -51,7 +52,6 @@ const SignIn = () => {
       }
       console.log(error)
     } finally {
-      setChekLogin(false)
       setLoading(false)
     }
   };
@@ -166,7 +166,7 @@ const SignIn = () => {
         </div>
 
         {/* Social buttons */}
-        <WithSosmed />
+        <WithSosmed setLoading={setLoading} url='sign-in' remember={remember} />
 
         {/* Link ke Sign up */}
         <p className="text-sm text-gray-600 mt-6">

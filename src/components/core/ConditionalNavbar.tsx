@@ -5,8 +5,11 @@ import Navbar from "@/components/core/Navbar";
 import { useAuthStore } from "@/lib/zustand/authStore";
 import { apiCall } from "@/helper/apiCall";
 
+
 export default function ConditionalNavbar() {
   const { setIsLogin, setChekLogin, setLogOut, setAuth } = useAuthStore()
+
+
   const keepLogin = async () => {
     try {
       const { data } = await apiCall.get("/auth/keep-login")
@@ -24,9 +27,11 @@ export default function ConditionalNavbar() {
   }
 
 
+
   useEffect(() => {
     keepLogin()
   }, [])
+
   const pathname = usePathname() || "/";
 
   const hideOn = ["/dashboard", "/verify"];

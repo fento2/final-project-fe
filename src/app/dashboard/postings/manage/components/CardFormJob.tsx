@@ -5,12 +5,12 @@ import FormJobPosting from "./FormJobPosting";
 import { Briefcase, RotateCcw } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { usePathname } from "next/navigation";
-import { useCreateJob } from "@/lib/zustand/createJobStore";
+import { useCreateJobStore } from "@/lib/zustand/createJobStore";
 
 const CardJobPosting = () => {
   const pathname = usePathname();
   const isEdit = pathname.includes("edit");
-  const { reset } = useCreateJob();
+  const { reset } = useCreateJobStore();
 
   const handleSave = () => {
     console.log("Updated Profile:");

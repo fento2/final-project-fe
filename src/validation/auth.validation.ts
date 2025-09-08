@@ -45,3 +45,14 @@ export const schemaResetPassword = z
     message: "Passwords do not match",
     path: ["confirmPassword"], // error ditampilkan di confirmPassword
   });
+
+export const schemaChangePassword = z
+  .object({
+    currentPassword: z.string().min(1, "Old password is required"),
+    newPassword: passwordSchema,
+    confirmPassword: z.string().min(1, "Confirm password is required"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"], // akan menandai field confirmPassword kalau error
+  });
