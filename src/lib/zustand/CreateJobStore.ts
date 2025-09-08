@@ -31,7 +31,7 @@ type CreateJob = {
   reset: () => void;
 };
 
-export const useCreateJob = create<CreateJob>()(
+export const useCreateJobStore = create<CreateJob>()(
   persist(
     (set) => ({
       title: "",

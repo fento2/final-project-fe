@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -30,6 +31,10 @@ const months = [
 const years = Array.from({ length: 50 }, (_, i) => new Date().getFullYear() - i);
 
 const ExperienceForm = () => {
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const [open, setOpen] = useState(false);
+
     const [form, setForm] = useState({
         company: "",
         position: "",
@@ -39,6 +44,15 @@ const ExperienceForm = () => {
         endYear: "",
         description: "",
     });
+
+    // Sinkronisasi state modal dengan query
+    useEffect(() => {
+        if (searchParams.get("experience") === "create") {
+            setOpen(true);
+        } else {
+            setOpen(false);
+        }
+    }, [searchParams]);
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -54,10 +68,23 @@ const ExperienceForm = () => {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         console.log(form);
+        // Hapus query saat submit
+        setOpen(false);
+        router.replace("/dashboard/profile");
+    };
+
+    // Saat modal dibuka/ditutup
+    const handleOpenChange = (value: boolean) => {
+        setOpen(value);
+        if (value) {
+            router.replace("/dashboard/profile?experience=create");
+        } else {
+            router.replace("/dashboard/profile");
+        }
     };
 
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
                 <Button variant="default"><Plus /> Add Experience</Button>
             </DialogTrigger>
@@ -68,7 +95,6 @@ const ExperienceForm = () => {
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {/* Company */}
-
                     <div className="space-y-1">
                         <Label htmlFor="company">Company</Label>
                         <CompanyAutocomplete
@@ -76,7 +102,6 @@ const ExperienceForm = () => {
                             onChange={(val) => setForm(prev => ({ ...prev, company: val }))}
                         />
                     </div>
-
 
                     {/* Position */}
                     <div className="space-y-1">
@@ -101,20 +126,17 @@ const ExperienceForm = () => {
                                 </SelectTrigger>
                                 <SelectContent>
                                     {months.map((m, i) => (
-                                        <SelectItem key={i} value={m}
-                                            className="p-4 text-lg">{m}</SelectItem>
+                                        <SelectItem key={i} value={m} className="p-4 text-lg">{m}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
-
                             <Select onValueChange={(val) => handleSelect("startYear", val)}>
                                 <SelectTrigger className="w-1/2 py-6 text-lg">
                                     <SelectValue placeholder="Year" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {years.map((y) => (
-                                        <SelectItem key={y} value={y.toString()}
-                                            className="p-4 text-lg">{y}</SelectItem>
+                                        <SelectItem key={y} value={y.toString()} className="p-4 text-lg">{y}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
@@ -126,25 +148,22 @@ const ExperienceForm = () => {
                         <Label>End Date</Label>
                         <div className="flex gap-2">
                             <Select onValueChange={(val) => handleSelect("endMonth", val)}>
-                                <SelectTrigger className="w-1/2 text-lg py-6">
+                                <SelectTrigger className="w-1/2 py-6 text-lg">
                                     <SelectValue placeholder="Month" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {months.map((m, i) => (
-                                        <SelectItem key={i} value={m}
-                                            className="text-lg p-4">{m}</SelectItem>
+                                        <SelectItem key={i} value={m} className="p-4 text-lg">{m}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
-
                             <Select onValueChange={(val) => handleSelect("endYear", val)}>
-                                <SelectTrigger className="w-1/2 text-lg py-6">
+                                <SelectTrigger className="w-1/2 py-6 text-lg">
                                     <SelectValue placeholder="Year" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {years.map((y) => (
-                                        <SelectItem key={y} value={y.toString()}
-                                            className="text-lg p-4">{y}</SelectItem>
+                                        <SelectItem key={y} value={y.toString()} className="p-4 text-lg">{y}</SelectItem>
                                     ))}
                                 </SelectContent>
                             </Select>
@@ -165,7 +184,6 @@ const ExperienceForm = () => {
                         />
                     </div>
 
-                    {/* Submit */}
                     <Button type="submit" className="w-full bg-indigo-500">Save</Button>
                 </form>
             </DialogContent>

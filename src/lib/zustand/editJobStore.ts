@@ -28,7 +28,7 @@ type EditJob = {
   reset: () => void;
 };
 
-export const useEditJob = create<EditJob>()((set) => ({
+export const useEditJobStore = create<EditJob>()((set) => ({
   editTitle: "",
   editDescription: "",
   editCategory: "",

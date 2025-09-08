@@ -14,10 +14,11 @@ import {
   salaryPeriods,
 } from "@/constants/jobConstant";
 import { getValue, setValue } from "@/helper/postingsHelper";
-import { useCreateJob } from "@/lib/zustand/createJobStore";
-import { useEditJob } from "@/lib/zustand/editJobStore";
+import { useCreateJobStore } from "@/lib/zustand/createJobStore";
+import { useEditJobStore } from "@/lib/zustand/editJobStore";
 import { usePathname } from "next/navigation";
-import TagInput from "./FieldTagSkill";
+import FieldSkill from "./FieldSkill";
+import { toTitleCase } from "@/helper/toTitleCase";
 const BasicForm = () => {
   const pathname = usePathname();
   const {
@@ -33,7 +34,7 @@ const BasicForm = () => {
     setCurrency,
     setCategory,
     setJobType,
-  } = useCreateJob();
+  } = useCreateJobStore();
   const {
     editTitle,
     editCategory,
@@ -47,7 +48,7 @@ const BasicForm = () => {
     setEditCurrency,
     setEditCategory,
     setEditJobType,
-  } = useEditJob();
+  } = useEditJobStore();
 
   return (
     <>
@@ -82,13 +83,13 @@ const BasicForm = () => {
             <SelectValue placeholder="Select category" />
           </SelectTrigger>
           <SelectContent>
-            {JOB_CATEGORIES.map((cat) => (
+            {JOB_CATEGORIES.map((cat, idx) => (
               <SelectItem
-                key={cat.value}
+                key={idx}
                 value={cat.value}
                 className="p-4 text-lg"
               >
-                {cat.label}
+                {toTitleCase(cat.label)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -110,20 +111,20 @@ const BasicForm = () => {
             <SelectValue placeholder="Select job type" />
           </SelectTrigger>
           <SelectContent>
-            {JOB_TYPES.map((type) => (
+            {JOB_TYPES.map((type, idx) => (
               <SelectItem
-                key={type.value}
+                key={idx}
                 value={type.value}
                 className="p-4 text-lg"
               >
-                {type.label}
+                {toTitleCase(type.label)}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
       </div>
 
-      <TagInput />
+      <FieldSkill />
 
       {/* Salary */}
       <div className="md:col-span-2 flex flex-col sm:flex-row gap-2">

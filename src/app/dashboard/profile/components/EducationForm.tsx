@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -20,15 +19,11 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { Plus } from "lucide-react";
+import { GraduationCap, Plus } from "lucide-react";
 import UniversityAutocomplete from "./FormUnivAutoComplete";
+import { useRouter, useSearchParams } from "next/navigation";
+import { months, years } from "@/helper/profileHelper";
 
-const months = [
-    "January", "February", "March", "April", "May", "June",
-    "July", "August", "September", "October", "November", "December",
-];
-
-const years = Array.from({ length: 50 }, (_, i) => new Date().getFullYear() - i);
 const EducationForm = () => {
     const [form, setForm] = useState({
         university: "",
@@ -40,52 +35,58 @@ const EducationForm = () => {
         endYear: "",
         description: "",
     });
-    const [suggestions, setSuggestions] = useState<string[]>([]);
-    const [showSuggestions, setShowSuggestions] = useState(false);
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const [open, setOpen] = useState(false);
+    // Sync open state dengan query
+    useEffect(() => {
+        if (searchParams.get("education") === "create") {
+            setOpen(true);
+        } else {
+            setOpen(false);
+        }
+    }, [searchParams]);
+    // Update query saat klik tombol Add
+    const handleAddClick = () => {
+        router.replace("/dashboard/profile?education=create");
+    };
+    // Hapus query saat modal ditutup
+    const handleOpenChange = (value: boolean) => {
+        setOpen(value);
+        if (value) {
+            router.replace("/dashboard/profile?education=create");
+        } else {
+            router.replace("/dashboard/profile");
+        }
+    };
+
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
     ) => {
         const { name, value } = e.target;
         setForm(prev => ({ ...prev, [name]: value }));
-
         if (name === "university" && value.length > 0) {
-            fetchUniversities(value);
-        } else {
-            setShowSuggestions(false);
         }
     };
     const handleSelect = (name: string, value: string) => {
         setForm(prev => ({ ...prev, [name]: value }));
     };
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         console.log(form);
-        setShowSuggestions(false);
     };
-    const fetchUniversities = async (query: string) => {
-        try {
-            const res = await axios.get(`http://universities.hipolabs.com/search?name=${query}`);
-            const names = res.data.map((u: any) => u.name);
-            setSuggestions(names.slice(0, 5));
-            setShowSuggestions(true);
-        } catch (error) {
-            console.error(error);
-        }
-    };
-
-    const handleSuggestionClick = (name: string) => {
-        setForm(prev => ({ ...prev, university: name }));
-        setShowSuggestions(false);
-    };
-
     return (
-        <Dialog>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
-                <Button variant="default"><Plus /> Add Education</Button>
+                <Button variant="default" onClick={handleAddClick}>
+                    <Plus /> Add Education
+                </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
-                    <DialogTitle>Add Education</DialogTitle>
+                    <DialogTitle className="flex items-center gap-2">
+                        <GraduationCap /> Add Education
+                    </DialogTitle>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit} className="space-y-4 relative">
