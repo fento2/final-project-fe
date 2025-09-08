@@ -20,14 +20,24 @@ const menus = [
 const Navbar: React.FC = () => {
   const pathname = usePathname();
   const { showSignIn, showSignUp } = useAuthUIStore();
-  const [active, setActive] = useState(
-    menus.find((m) => m.href === pathname)?.label ?? "Home"
-  );
   const [open, setOpen] = useState(false);
+  const findActiveMenu = (pathname: string) => {
+    const matched = menus.filter((m) => pathname.startsWith(m.href));
+
+    if (matched.length === 0) return "Home";
+
+
+    return matched.reduce((prev, curr) =>
+      curr.href.length > prev.href.length ? curr : prev
+    ).label;
+  };
+
+  const [active, setActive] = useState(findActiveMenu(pathname));
 
   useEffect(() => {
-    setActive(menus.find((m) => m.href === pathname)?.label ?? "Home");
+    setActive(findActiveMenu(pathname));
   }, [pathname]);
+
 
   return (
     <nav className="w-full bg-white py-6 sticky top-0 z-50 shadow-xl">

@@ -51,7 +51,7 @@ export default function AuthButtons() {
                                     <Avatar className="w-16 h-16 shadow-lg">
                                         <AvatarImage src={profile_picture} alt="User" />
                                         <AvatarFallback>
-                                            <UserCircle2 className="text-indigo-500" size={48} />
+                                            <UserCircle2 className="text-indigo-500" size={70} />
                                         </AvatarFallback>
                                     </Avatar>
                                     <div className="flex flex-col">

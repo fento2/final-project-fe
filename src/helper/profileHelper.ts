@@ -1,3 +1,6 @@
+import dayjs from "dayjs";
+
+// education form
 export const months = [
   "January",
   "February",
@@ -11,7 +14,7 @@ export const months = [
   "October",
   "November",
   "December",
-];
+] as const;
 
 const currentYear = new Date().getFullYear();
 export const years = Array.from({ length: 61 }, (_, i) => currentYear - 50 + i);
@@ -32,4 +35,29 @@ export const convertMonthYearToDate = (
   );
   if (monthIndex === -1) return null; // jika nama bulan salah
   return new Date(year, monthIndex, 1); // tanggal 1 di bulan itu
+};
+
+export const convertDateToMonthYear = (date: Date) => {
+  if (!date) return { month: "", year: 0 };
+
+  const day = dayjs(date);
+  const monthIndex = day.month(); // 0-11
+  const year = day.year();
+
+  return {
+    month: months[monthIndex],
+    year,
+  };
+};
+
+//initialstate education form
+export const initialStateEducationForm = {
+  university: "",
+  degree: "",
+  fieldOfStudy: "",
+  startMonth: "",
+  startYear: "",
+  endMonth: "",
+  endYear: "",
+  description: "",
 };

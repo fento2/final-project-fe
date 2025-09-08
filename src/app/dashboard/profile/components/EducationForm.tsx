@@ -2,13 +2,6 @@
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -21,30 +14,37 @@ import {
 import { GraduationCap, Plus } from "lucide-react";
 import UniversityAutocomplete from "./FormUnivAutoComplete";
 import { useRouter, useSearchParams } from "next/navigation";
-import { months, years } from "@/helper/profileHelper";
-import { addEducationFetch } from "@/fetch/profile.fetch";
+import { createEducationFetch, getEducationDetailFetch } from "@/fetch/profile.fetch";
 import { useToast } from "@/components/basic-toast";
 import { Dots_v2 } from "@/components/ui/spinner";
+import { useEducationStore } from "@/lib/zustand/educationStorage";
+import DateForm from "./DateForm";
+
 const EducationForm = () => {
-    const [form, setForm] = useState({
-        university: "",
-        degree: "",
-        fieldOfStudy: "",
-        startMonth: "",
-        startYear: "",
-        endMonth: "",
-        endYear: "",
-        description: "",
-    });
+    const {
+        university,
+        degree,
+        fieldOfStudy,
+        startMonth,
+        startYear,
+        endMonth,
+        endYear,
+        description,
+        setField,
+        reset
+    } = useEducationStore();
     const searchParams = useSearchParams();
     const router = useRouter();
+    const toast = useToast();
     const [open, setOpen] = useState(false);
-    const toast = useToast()
-    const [loading, setLoading] = useState(false)
+    const [loading, setLoading] = useState(false);
     // Sync open state dengan query
     useEffect(() => {
         if (searchParams.get("education") === "create") {
             setOpen(true);
+        } else if (searchParams.get('education') === 'edit') {
+            handleGetDetailEducation()
+            setOpen(true)
         } else {
             setOpen(false);
         }
@@ -60,24 +60,30 @@ const EducationForm = () => {
             router.replace("/dashboard/profile?education=create");
         } else {
             router.replace("/dashboard/profile");
+            reset(); // reset store
         }
     };
-    const handleChange = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) => {
-        const { name, value } = e.target;
-        setForm(prev => ({ ...prev, [name]: value }));
-        if (name === "university" && value.length > 0) {
-        }
-    };
-    const handleSelect = (name: string, value: string) => {
-        setForm(prev => ({ ...prev, [name]: value }));
-    };
+
+    const handleGetDetailEducation = async () => {
+        const education_id = searchParams.get('id')
+        await getEducationDetailFetch(education_id || '', setField)
+    }
+
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        await addEducationFetch(toast, form, setLoading)
-        console.log(form);
+        await createEducationFetch(toast, {
+            university,
+            degree,
+            fieldOfStudy,
+            startMonth,
+            startYear,
+            endMonth,
+            endYear,
+            description
+        }, setLoading, reset);
     };
+
     return (
         <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
@@ -95,15 +101,17 @@ const EducationForm = () => {
                 <form onSubmit={handleSubmit} className="space-y-4 relative">
                     {loading && <div className="absolute z-50 flex justify-center h-screen w-full">
                         <Dots_v2 />
-
                     </div>}
+
+                    {/* University */}
                     <div className="space-y-1">
                         <Label htmlFor="university">University</Label>
                         <UniversityAutocomplete
-                            value={form.university}
-                            onChange={(val) => setForm(prev => ({ ...prev, university: val }))}
+                            value={university}
+                            onChange={(val) => setField("university", val)}
                         />
                     </div>
+
                     {/* Degree */}
                     <div className="space-y-1">
                         <Label htmlFor="degree">Degree</Label>
@@ -111,8 +119,8 @@ const EducationForm = () => {
                             id="degree"
                             name="degree"
                             placeholder="e.g. Bachelor's"
-                            value={form.degree}
-                            onChange={handleChange}
+                            value={degree}
+                            onChange={(e) => setField("degree", e.target.value)}
                             className="py-6 !text-lg placeholder:text-gray-400"
                         />
                     </div>
@@ -124,58 +132,12 @@ const EducationForm = () => {
                             id="fieldOfStudy"
                             name="fieldOfStudy"
                             placeholder="e.g. Computer Science"
-                            value={form.fieldOfStudy}
-                            onChange={handleChange}
+                            value={fieldOfStudy}
+                            onChange={(e) => setField("fieldOfStudy", e.target.value)}
                             className="py-6 !text-lg placeholder:text-gray-400"
                         />
                     </div>
-
-                    {/* Start Date */}
-                    <div className="space-y-1">
-                        <Label>Start Date</Label>
-                        <div className="flex gap-2">
-                            <Select onValueChange={(val) => handleSelect("startMonth", val)}>
-                                <SelectTrigger className="w-1/2 text-lg py-6">
-                                    <SelectValue placeholder="Month" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {months.map((m, i) => <SelectItem key={i} value={m} className="p-4 text-lg">{m}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
-                            <Select onValueChange={(val) => handleSelect("startYear", val)}>
-                                <SelectTrigger className="w-1/2 text-lg py-6">
-                                    <SelectValue placeholder="Year" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {years.map(y => <SelectItem key={y} value={y.toString()} className="p-4 text-lg">{y}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-
-                    {/* End Date */}
-                    <div className="space-y-1">
-                        <Label>End Date</Label>
-                        <div className="flex gap-2">
-                            <Select onValueChange={(val) => handleSelect("endMonth", val)}>
-                                <SelectTrigger className="w-1/2 text-lg py-6">
-                                    <SelectValue placeholder="Month" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {months.map((m, i) => <SelectItem key={i} value={m} className="p-4 text-lg">{m}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
-                            <Select onValueChange={(val) => handleSelect("endYear", val)}>
-                                <SelectTrigger className="w-1/2 text-lg py-6">
-                                    <SelectValue placeholder="Year" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {years.map(y => <SelectItem key={y} value={y.toString()} className="p-4 text-lg">{y}</SelectItem>)}
-                                </SelectContent>
-                            </Select>
-                        </div>
-                    </div>
-
+                    <DateForm startMonth={startMonth} startYear={startYear} endMonth={endMonth} endYear={endYear} setField={setField} />
                     {/* Description */}
                     <div className="space-y-1">
                         <Label htmlFor="description">Description</Label>
@@ -184,13 +146,12 @@ const EducationForm = () => {
                             name="description"
                             placeholder="Describe your activities, achievements, or focus..."
                             rows={4}
-                            value={form.description}
-                            onChange={handleChange}
+                            value={description}
+                            onChange={(e) => setField("description", e.target.value)}
                             className="!text-lg placeholder:text-gray-400"
                         />
                     </div>
 
-                    {/* Submit */}
                     <Button type="submit" className="bg-indigo-500 w-full">Save</Button>
                 </form>
             </DialogContent>

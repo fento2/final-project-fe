@@ -9,9 +9,12 @@ import EducationForm from "./components/EducationForm";
 import ExperienceForm from "./components/ExperienceForm";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Briefcase, GraduationCap } from "lucide-react";
-;
+import { useAuthRole } from "@/helper/authRole";
+
+
 
 const ProfileUser = () => {
+  useAuthRole('USER')
   return (
     <div className="container md:pl-20 mx-auto min-h-screen px-4 py-6">
       {/* Header */}
@@ -60,36 +63,7 @@ const ProfileUser = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4 overflow-y-auto max-h-[600px]">
-                  <CardEducation
-                    university="Harvard University"
-                    degree="Bachelor's"
-                    fieldOfStudy="Computer Science"
-                    startMonth="September"
-                    startYear="2019"
-                    endMonth="June"
-                    endYear="2023"
-                    description="Focused on software engineering, participated in hackathons, and research projects."
-                  />
-                  <CardEducation
-                    university="Harvard University"
-                    degree="Bachelor's"
-                    fieldOfStudy="Computer Science"
-                    startMonth="September"
-                    startYear="2019"
-                    endMonth="June"
-                    endYear="2023"
-                    description="Focused on software engineering, participated in hackathons, and research projects."
-                  />
-                  <CardEducation
-                    university="Harvard University"
-                    degree="Bachelor's"
-                    fieldOfStudy="Computer Science"
-                    startMonth="September"
-                    startYear="2019"
-                    endMonth="June"
-                    endYear="2023"
-                    description="Focused on software engineering, participated in hackathons, and research projects."
-                  />
+                  <CardEducation />
                 </CardContent>
               </Card>
             </div>
@@ -109,33 +83,7 @@ const ProfileUser = () => {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-4 overflow-y-auto max-h-[600px]">
-                  <ExperienceCard
-                    company="Google"
-                    position="Frontend Developer"
-                    startMonth="January"
-                    startYear="2021"
-                    endMonth="June"
-                    endYear="2023"
-                    description="Worked on developing scalable UI components, improved Lighthouse score, and collaborated with cross-functional teams."
-                  />
-                  <ExperienceCard
-                    company="Google"
-                    position="Frontend Developer"
-                    startMonth="January"
-                    startYear="2021"
-                    endMonth="June"
-                    endYear="2023"
-                    description="Worked on developing scalable UI components, improved Lighthouse score, and collaborated with cross-functional teams."
-                  />
-                  <ExperienceCard
-                    company="Google"
-                    position="Frontend Developer"
-                    startMonth="January"
-                    startYear="2021"
-                    endMonth="June"
-                    endYear="2023"
-                    description="Worked on developing scalable UI components, improved Lighthouse score, and collaborated with cross-functional teams."
-                  />
+                  <ExperienceCard />
                 </CardContent>
               </Card>
             </div>
