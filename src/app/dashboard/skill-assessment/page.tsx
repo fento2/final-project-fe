@@ -1,114 +1,130 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { apiCall } from "@/helper/apiCall";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
-export default function SkillAssessmentPage() {
-    // contoh data
-    const total = 50;
-    const [current, setCurrent] = useState(45);
-    const [answers, setAnswers] = useState<Record<number, string | null>>({});
-    const [timeLeft, setTimeLeft] = useState(90 * 60); // detik (90 menit)
+interface SkillAssessment {
+    assessment_id: number;
+    skill_name: string;
+    description?: string;
+}
+
+export default function SkillAssessmentListPage() {
+    const router = useRouter();
+    const [data, setData] = useState<SkillAssessment[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
+    const fetchData = async () => {
+        try {
+            setLoading(true);
+            setError("");
+            const res = await apiCall.get("/skillAssessments");
+            setData(res.data?.data || res.data || []);
+        } catch (e: any) {
+            setError(
+                e?.response?.data?.message || e?.message || "Failed to load data"
+            );
+        } finally {
+            setLoading(false);
+        }
+    }
 
     useEffect(() => {
-        const t = setInterval(() => {
-            setTimeLeft((s) => (s > 0 ? s - 1 : 0));
-        }, 1000);
-        return () => clearInterval(t);
+        fetchData();
     }, []);
 
-    const formatTime = (s: number) => {
-        const hh = Math.floor(s / 3600)
-            .toString()
-            .padStart(2, "0");
-        const mm = Math.floor((s % 3600) / 60)
-            .toString()
-            .padStart(2, "0");
-        const ss = Math.floor(s % 60)
-            .toString()
-            .padStart(2, "0");
-        return `${hh}:${mm}:${ss}`;
+    const toSlug = (a: SkillAssessment) => {
+        const kebab = a.skill_name
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/^-+|-+$/g, "");
+        return `${a.assessment_id}-${kebab}`;
     };
 
-    const handleAnswer = (opt: string) => {
-        setAnswers((a) => ({ ...a, [current]: opt }));
-    };
+    // const handleStart = (item: SkillAssessment) => router.push(`/dashboard/skill-assessment/${toSlug(item)}/take`);
+    const handleView = (item: SkillAssessment) => router.push(`/dashboard/skill-assessment/${toSlug(item)}`);
 
-    const handleNext = () => {
-        setCurrent((c) => Math.min(total, c + 1));
-    };
+    const skeletons = Array.from({ length: 4 });
 
     return (
-        <div className="min-h-screen w-full flex flex-col bg-gray-50 py-8">
-            <div className="container mx-auto px-4">
-                {/* Header */}
-                <div className="flex items-start justify-between mb-6">
-                    <h1 className="text-3xl font-bold">Sistem Ujian Online</h1>
-                    <div className="text-sm text-gray-700">
-                        <div className="inline-block bg-white px-4 py-2 rounded shadow">
-                            Sisa waktu: <span className="font-medium">{formatTime(timeLeft)}</span>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Identity */}
-                <div className="bg-white rounded-xl shadow p-6 mb-6 flex items-start justify-between">
-                    <div className="space-y-1">
-                        <p className="text-sm text-gray-600">Mata Kuliah: <span className="font-semibold">Algoritma - UTS</span></p>
-                        <p className="text-lg font-semibold">Muhammad Kahfi Yulian Prakarsa</p>
-                    </div>
-                </div>
-
-                {/* Main area */}
-                <div className="">
-                    <div className="lg:col-span-2">
-                        <div className="bg-white rounded-xl shadow p-6 mb-4">
-                            <div className="mb-4">
-                                <div className="text-sm text-gray-500">Soal {current}/{total}</div>
-                                <h2 className="text-lg font-semibold mt-2">Apa hasil dari 2 + 2 ?</h2>
-                            </div>
-
-                            <form>
-                                <div className="space-y-3 mb-4">
-                                    {["A. 3", "B. 4", "C. 5", "D. 22"].map((opt, idx) => {
-                                        const key = ["A", "B", "C", "D"][idx];
-                                        return (
-                                            <label
-                                                key={key}
-                                                className="flex items-center gap-3 p-3 rounded hover:bg-gray-50 cursor-pointer"
-                                            >
-                                                <input
-                                                    type="radio"
-                                                    name="answer"
-                                                    checked={answers[current] === key}
-                                                    onChange={() => handleAnswer(key)}
-                                                    className="form-radio h-4 w-4 text-blue-600"
-                                                />
-                                                <span className="text-sm">{opt}</span>
-                                            </label>
-                                        );
-                                    })}
-                                </div>
-
-                                <div className="flex gap-3 justify-end">
-                                    {
-                                        current < total ? (
-                                            <button
-                                                type="button"
-                                                onClick={handleNext}
-                                                className="px-4 py-2 bg-gray-100 rounded shadow-sm cursor-pointer hover:bg-gray-300 active:scale-95"
-                                            >
-                                                Berikutnya
-                                            </button>
-                                        ) : (
-                                            <button type="button" className="px-4 py-2 bg-indigo-600 text-white rounded shadow-sm cursor-pointer hover:bg-indigo-800 active:scale-95">Submit Ujian</button>
-                                        )
-                                    }
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+        <div className="p-4 pl-20 space-y-6">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <h1 className="text-2xl font-bold tracking-tight">
+                    Skill Assessments
+                </h1>
+                <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={loading}
+                    onClick={fetchData}
+                >
+                    {loading ? "Loading..." : "Refresh"}
+                </Button>
             </div>
-        </div>
+
+            {error && (
+                <div className="text-sm rounded-md border border-red-200 bg-red-50 px-3 py-2 text-red-600">
+                    {error}
+                </div>
+            )}
+
+            <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {loading &&
+                    data.length === 0 &&
+                    skeletons.map((_, i) => (
+                        <div
+                            key={i}
+                            className="overflow-hidden rounded-xl border bg-white shadow-md animate-pulse"
+                        >
+                            <div className="h-40 w-full bg-gray-200" />
+                            <div className="p-4 space-y-3">
+                                <div className="h-4 w-3/4 bg-gray-200 rounded" />
+                                <div className="h-3 w-1/2 bg-gray-200 rounded" />
+                                <div className="h-8 w-full bg-gray-200 rounded" />
+                            </div>
+                        </div>
+                    ))
+                }
+
+                {data.map((item) => (
+                    <Card
+                        key={item.assessment_id}
+                        className="flex flex-col pt-0 overflow-hidden rounded-xl border shadow-md hover:shadow-lg transition-shadow"
+                        onClick={() => handleView(item)}
+                    >
+                        <CardHeader className="p-0">
+                            <div className="relative w-full h-40">
+                                <Image
+                                    src="https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1200&auto=format&fit=crop"
+                                    alt={item.skill_name}
+                                    fill
+                                    className="object-cover"
+                                />
+                            </div>
+                        </CardHeader>
+
+                        <CardContent className="">
+                            <h2 className="text-base font-semibold line-clamp-1">
+                                {item.skill_name}
+                            </h2>
+                            <p className="text-sm text-gray-600 line-clamp-3">
+                                {item.description || "No description provided."}
+                            </p>
+                        </CardContent>
+
+                        <CardFooter>
+                            <Button size="sm" onClick={() => handleView(item)} className="w-full" >
+                                Detail
+                            </Button>
+                        </CardFooter>
+                    </Card>
+                ))}
+            </div>
+        </div >
     );
 }
