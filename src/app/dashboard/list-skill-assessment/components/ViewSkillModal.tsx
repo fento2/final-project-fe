@@ -6,22 +6,13 @@ import { apiCall } from "@/helper/apiCall";
 import { SkillAssessment } from "@/types/skillAssessment";
 import { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
+import TableQuestionPreview from "./TableQuestionsPreview";
+import { ParsedQuestion } from "../types/questionAssessment";
 
 interface Props {
     isOpen: boolean;
     onClose: () => void;
     item: SkillAssessment | null;
-}
-
-interface ParsedQuestion {
-    id?: string | number;
-    question: string;
-    option_a?: string;
-    option_b?: string;
-    option_c?: string;
-    option_d?: string;
-    correct_option?: string;
-    [key: string]: any;
 }
 
 export default function ViewSkillModal({ isOpen, onClose, item }: Props) {
@@ -31,13 +22,13 @@ export default function ViewSkillModal({ isOpen, onClose, item }: Props) {
     const [fileName, setFileName] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
     const [replaceAll, setReplaceAll] = useState<boolean>(false);
-
     const assessmentId = (item as any)?.assessment_id;
 
     const resetState = () => {
         setQuestions([]);
         setFileName("");
         setServerError("");
+        setReplaceAll(false);
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,11 +44,10 @@ export default function ViewSkillModal({ isOpen, onClose, item }: Props) {
             const worksheet = workbook.Sheets[sheetName];
             const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-            const existingIds = originalQuestions.map(q => q.id);
-
+            const existingIds = originalQuestions.map(q => q.assessment_question_id);
             const parsedQuestions: ParsedQuestion[] = (jsonData as any[]).map((val, idx) => {
                 const q: ParsedQuestion = {
-                    id: existingIds[idx],
+                    assessment_question_id: existingIds[idx],
                     question: val["Question"] || val["question"] || "",
                     option_a: val["Option_A"] || val["option_a"] || "",
                     option_b: val["Option_B"] || val["option_b"] || "",
@@ -81,7 +71,7 @@ export default function ViewSkillModal({ isOpen, onClose, item }: Props) {
             const body = res.data;
             const list = Array.isArray(body) ? body : body?.data ?? [];
             const parsed: ParsedQuestion[] = (list as any[]).map((q: any, idx: number) => ({
-                id: q.assessment_question_id ?? idx + 1,
+                assessment_question_id: q.assessment_question_id ?? idx + 1,
                 question: q.question,
                 option_a: q.option_a,
                 option_b: q.option_b,
@@ -102,13 +92,8 @@ export default function ViewSkillModal({ isOpen, onClose, item }: Props) {
         if (!isOpen || !item) return;
         resetState();
         if (!assessmentId) return;
-
         fetchQuestions();
     }, [isOpen, item]);
-
-    useEffect(() => {
-        console.log(questions);
-    }, [questions])
 
     const handleSubmit = async (e?: React.FormEvent) => {
         e?.preventDefault();
@@ -118,13 +103,12 @@ export default function ViewSkillModal({ isOpen, onClose, item }: Props) {
             if (replaceAll) {
                 await apiCall.delete(`/questions/${assessmentId}`);
                 await apiCall.post(`/questions/${assessmentId}`, questions.map(q => {
-                    const { id, ...rest } = q;
-                    return rest;
-                }));
+                    const { assessment_question_id, ...data } = q;
+                    return data;
+                }))
             } else {
-                const hasAnyId = questions.some(q => q.id);
+                const hasAnyId = questions.some(q => q.assessment_question_id);
                 if (hasAnyId) {
-                    console.log("RUN INI");
                     await apiCall.put(`/questions/${assessmentId}`, questions);
                 } else {
                     await apiCall.post(`/questions/${assessmentId}`, questions);
@@ -169,10 +153,7 @@ export default function ViewSkillModal({ isOpen, onClose, item }: Props) {
                     {fileName && (
                         <div className="text-xs text-gray-600 flex items-center gap-2">
                             <span>File: {fileName}</span>
-                            <Button
-                                type="button"
-                                variant="outline"
-                                className="h-6 px-2 text-xs"
+                            <Button type="button" variant="outline" className="h-6 px-2 text-xs"
                                 onClick={() => {
                                     setFileName("");
                                     setQuestions(originalQuestions);
@@ -186,52 +167,18 @@ export default function ViewSkillModal({ isOpen, onClose, item }: Props) {
 
                 {serverError && <p className="mt-2 text-sm text-red-500">{serverError}</p>}
                 {loading && <p className="text-sm text-gray-500">Memuat data questions...</p>}
-                {!loading && questions.length === 0 && (
-                    <p className="text-sm text-gray-500 italic">Belum ada question. Upload file untuk menambahkan.</p>
-                )}
+                {!loading && questions.length === 0 && <p className="text-sm text-gray-500 italic">Belum ada question. Upload file untuk menambahkan.</p>}
 
                 {questions.length > 0 && (
                     <div className="grid gap-3">
                         <h3 className="text-sm font-semibold">Preview Questions ({questions.length})</h3>
-                        <div className="relative rounded-md border overflow-x-auto max-h-[50vh] overflow-y-auto">
-                            <table className="w-full text-sm">
-                                <thead className="bg-gray-100 sticky top-0 z-10">
-                                    <tr className="text-left">
-                                        <th className="p-2 w-10">#</th>
-                                        <th className="p-2">Question</th>
-                                        <th className="p-2">A</th>
-                                        <th className="p-2">B</th>
-                                        <th className="p-2">C</th>
-                                        <th className="p-2">D</th>
-                                        <th className="p-2">Answer</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {questions.map((q, i) => (
-                                        <tr key={i} className="border-t hover:bg-gray-50">
-                                            {/* <td className="p-2 text-xs text-gray-500">{i + 1}</td> */}
-                                            <td className="p-2 text-xs text-gray-500">{q.id || i + 1}</td>
-                                            <td className="p-2">{q.question}</td>
-                                            <td className="p-2">{q.option_a}</td>
-                                            <td className="p-2">{q.option_b}</td>
-                                            <td className="p-2">{q.option_c}</td>
-                                            <td className="p-2">{q.option_d}</td>
-                                            <td className="p-2 font-medium">{q.correct_option?.toUpperCase()}</td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                        <TableQuestionPreview questions={questions} />
                     </div>
                 )}
 
                 <div className="flex justify-end gap-3">
                     <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-                    <Button
-                        type="submit"
-                        className="bg-green-600 hover:bg-green-700"
-                        disabled={!fileName && questions === originalQuestions}
-                    >
+                    <Button type="submit" className="bg-green-600 hover:bg-green-700" disabled={!fileName && questions === originalQuestions}>
                         {replaceAll ? "Replace" : "Save"}
                     </Button>
                 </div>

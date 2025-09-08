@@ -24,7 +24,6 @@ const ListSKillAssessmentPage = () => {
             setError("");
             const res = await apiCall.get("/skillAssessments");
             setData(res.data?.data || res.data || []);
-            // setData(dummyData);
         } catch (e: any) {
             setError(e.response?.data?.message || "Failed to load data");
         } finally {
@@ -36,13 +35,10 @@ const ListSKillAssessmentPage = () => {
         fetchData();
     }, []);
 
-    const handleView = (id: number) => {
-        console.log("view", id);
-    };
-
     const handleDelete = async (id: number) => {
         if (!confirm("Delete this assessment?")) return;
         try {
+            await apiCall.delete(`/questions/${id}`)
             await apiCall.delete(`/skillAssessments/${id}`);
             setData(d => d.filter(item => item.assessment_id !== id));
         } catch (e: any) {
@@ -132,7 +128,7 @@ const ListSKillAssessmentPage = () => {
                                         {formatDateID(item.updatedAt)}
                                     </td>
                                     <td className="px-2 py-1">
-                                        <div className="flex flex-wrap items-center gap-1">
+                                        <div className="grid lg:flex lg:flex-wrap items-center gap-1">
                                             <Button
                                                 onClick={() => { setSelected(item); setShowView(true); }}
                                                 className="p-1 bg-gray-600 hover:bg-gray-700"
