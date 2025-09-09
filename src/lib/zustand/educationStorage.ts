@@ -9,7 +9,6 @@ export type EducationState = {
   endMonth: string;
   endYear: string;
   description: string;
-  isEditing: boolean; // tambah isEditing
 
   // generic setter
   setField: (field: keyof Omit<EducationState, "setField">, value: any) => void;
@@ -41,6 +40,5 @@ export const useEducationStore = create<EducationState>((set) => ({
       endMonth: initial?.endMonth || "",
       endYear: initial?.endYear || "",
       description: initial?.description || "",
-      isEditing: initial?.isEditing || false,
     }),
 }));

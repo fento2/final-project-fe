@@ -1,7 +1,6 @@
 "use client";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import TextEditor from "../../../components/TextEditor";
 import dynamic from "next/dynamic";
 const MapPicker = dynamic(() => import("../../componetns/MapPicker"), {
@@ -50,6 +49,7 @@ const FormJobPosting = () => {
     setEditLocation,
     setEditExpireAt,
   } = useEditJobStore();
+
 
   return (
     <div className="space-y-6">
@@ -120,7 +120,7 @@ const FormJobPosting = () => {
         {/* Description */}
         <div className="md:col-span-2 mt-4">
           <Label className="font-bold text-lg tracking-widest">
-            Job Description
+            About This Job
           </Label>
           <TextEditor
             value={getValue(description, editDescription, pathname)}

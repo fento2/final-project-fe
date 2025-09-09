@@ -2,9 +2,11 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import General from "./components/General";
-import Security from "../profile/components/Security";
+import Security from "../components/Security";
+import { useAuthRole } from "@/helper/authRole";
 
 const ProfileCompany = () => {
+  useAuthRole('COMPANY')
   return (
     <div className="container md:pl-20 mx-auto min-h-screen px-4 py-6">
       {/* Header */}

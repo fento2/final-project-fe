@@ -7,30 +7,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  currencies,
-  JOB_CATEGORIES,
-  JOB_TYPES,
-  salaryPeriods,
-} from "@/constants/jobConstant";
 import { getValue, setValue } from "@/helper/postingsHelper";
 import { useCreateJobStore } from "@/lib/zustand/createJobStore";
 import { useEditJobStore } from "@/lib/zustand/editJobStore";
 import { usePathname } from "next/navigation";
 import FieldSkill from "./FieldSkill";
 import { toTitleCase } from "@/helper/toTitleCase";
+import { useGeneralDataStore } from "@/lib/zustand/generalData";
 const BasicForm = () => {
   const pathname = usePathname();
   const {
     title,
     category,
     salary,
-    jobType,
-    salaryPeriod,
+    job_type: jobType,
+    periodSalary: salaryPeriod,
     currency,
     setTitle,
     setSalary,
-    setSalaryPeriod,
+    setPeriodSalary: setSalaryPeriod,
     setCurrency,
     setCategory,
     setJobType,
@@ -49,6 +44,9 @@ const BasicForm = () => {
     setEditCategory,
     setEditJobType,
   } = useEditJobStore();
+
+
+  const { categories, jobTypes, currencies, periodSalary } = useGeneralDataStore()
 
   return (
     <>
@@ -83,13 +81,13 @@ const BasicForm = () => {
             <SelectValue placeholder="Select category" />
           </SelectTrigger>
           <SelectContent>
-            {JOB_CATEGORIES.map((cat, idx) => (
+            {categories.map((cat, idx) => (
               <SelectItem
                 key={idx}
-                value={cat.value}
+                value={cat}
                 className="p-4 text-lg"
               >
-                {toTitleCase(cat.label)}
+                {toTitleCase(cat)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -111,13 +109,13 @@ const BasicForm = () => {
             <SelectValue placeholder="Select job type" />
           </SelectTrigger>
           <SelectContent>
-            {JOB_TYPES.map((type, idx) => (
+            {jobTypes.map((type, idx) => (
               <SelectItem
                 key={idx}
-                value={type.value}
+                value={type}
                 className="p-4 text-lg"
               >
-                {toTitleCase(type.label)}
+                {toTitleCase(type)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -162,13 +160,16 @@ const BasicForm = () => {
               <SelectValue placeholder="/ Month" />
             </SelectTrigger>
             <SelectContent>
-              {salaryPeriods.map((period) => (
+              {periodSalary.map((period, idx) => (
                 <SelectItem
-                  key={period.value}
-                  value={period.value}
+                  key={idx}
+                  value={period}
                   className="text-lg p-4"
                 >
-                  {period.label}
+                  <span>
+                    / <span className="italic">{toTitleCase(period)}</span>
+                  </span>
+
                 </SelectItem>
               ))}
             </SelectContent>
@@ -190,11 +191,13 @@ const BasicForm = () => {
             <SelectContent>
               {currencies.map((cur) => (
                 <SelectItem
-                  key={cur.value}
-                  value={cur.value}
+                  key={cur}
+                  value={cur}
                   className="text-lg p-4"
                 >
-                  {cur.label}
+                  <span>
+                    <span className="italic">{toTitleCase(cur)}</span>
+                  </span>
                 </SelectItem>
               ))}
             </SelectContent>

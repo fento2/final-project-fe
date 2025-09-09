@@ -9,11 +9,11 @@ type CreateJob = {
   longitude: number;
   location: string;
   salary: number;
-  jobType: string;
-  salaryPeriod: string;
+  job_type: string;
+  periodSalary: string;
   currency: string;
   expiredAt: string;
-  skill: string[];
+  skills: string[];
 
   setTitle: (title: string) => void;
   setDescription: (description: string) => void;
@@ -22,12 +22,12 @@ type CreateJob = {
   setLongitude: (longitude: number) => void;
   setLocation: (location: string) => void;
   setSalary: (salary: number) => void;
-  setJobType: (jobType: string) => void;
-  setSalaryPeriod: (salaryPeriod: string) => void;
+  setJobType: (job_type: string) => void;
+  setPeriodSalary: (periodSalary: string) => void;
   setCurrency: (currency: string) => void;
   setExpiredAt: (expiredAt: string) => void;
-  addSkill: (skill: string) => void;
-  removeSkill: (skill: string) => void;
+  addSkill: (skills: string) => void;
+  removeSkill: (skills: string) => void;
   reset: () => void;
 };
 
@@ -42,11 +42,11 @@ export const useCreateJobStore = create<CreateJob>()(
       longitude: 0,
       location: "",
       salary: 0,
-      jobType: "",
-      salaryPeriod: "",
+      job_type: "",
+      periodSalary: "",
       currency: "",
       expiredAt: "",
-      skill: [],
+      skills: [],
 
       setTitle: (title) => set({ title: title }),
       setDescription: (description) => set({ description: description }),
@@ -55,19 +55,19 @@ export const useCreateJobStore = create<CreateJob>()(
       setLongitude: (longitude) => set({ longitude: longitude }),
       setLocation: (location) => set({ location: location }),
       setSalary: (salary) => set({ salary: salary }),
-      setJobType: (jobType) => set({ jobType: jobType }),
-      setSalaryPeriod: (salaryPeriod) => set({ salaryPeriod: salaryPeriod }),
+      setJobType: (jobType) => set({ job_type: jobType }),
+      setPeriodSalary: (salaryPeriod) => set({ periodSalary: salaryPeriod }),
       setCurrency: (currency) => set({ currency: currency }),
       setExpiredAt: (expiredAt) => set({ expiredAt: expiredAt }),
 
       addSkill: (skill) =>
         set((state) => ({
-          skill: [...state.skill, skill],
+          skills: [...state.skills, skill],
         })),
 
       removeSkill: (skill) =>
         set((state) => ({
-          skill: state.skill.filter((s) => s !== skill),
+          skills: state.skills.filter((s) => s !== skill),
         })),
 
       reset: () =>
@@ -80,11 +80,11 @@ export const useCreateJobStore = create<CreateJob>()(
           longitude: 0,
           location: "",
           salary: 0,
-          jobType: "",
-          salaryPeriod: "",
+          job_type: "",
+          periodSalary: "",
           currency: "",
           expiredAt: "",
-          skill: [],
+          skills: [],
         }),
     }),
     {

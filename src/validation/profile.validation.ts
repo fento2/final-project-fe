@@ -9,7 +9,7 @@ export const schemaUpdateProfileUser = z.object({
   profile_picture: z.any().optional(), // bisa undefined kalau tidak ganti foto
   address: z.string(),
 });
-export const schemaCreateEducation = z
+export const schemaEducation = z
   .object({
     university: z.string().min(1, "University is required"),
     degree: z.string().min(1, "Degree is required"),

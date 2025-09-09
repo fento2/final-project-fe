@@ -13,7 +13,7 @@ import { useToast } from "@/components/basic-toast";
 import ButtonProfile from "./ButtonProfile";
 import { format } from "date-fns";
 import { Dots_v2 } from "@/components/ui/spinner";
-import ProfilePicture from "./AvatarAndStatus";
+import ProfilePicture from "../../components/ProfilePicture";
 const General = () => {
   const [profile, setProfile] = useState({
     name: "",

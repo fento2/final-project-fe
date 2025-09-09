@@ -1,5 +1,4 @@
 "use client";
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -43,7 +42,10 @@ const Security = () => {
         toast.success(data.message)
       }
       console.log(data)
-    } catch (error) {
+    } catch (error: any) {
+      if (error.status === 409) {
+        toast.error('yor account register with google')
+      }
       console.log(error)
     }
   }
