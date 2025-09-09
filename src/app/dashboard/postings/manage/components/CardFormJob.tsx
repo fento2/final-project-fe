@@ -4,17 +4,30 @@ import { Button } from "@/components/ui/button";
 import FormJobPosting from "./FormJobPosting";
 import { Briefcase, RotateCcw } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCreateJobStore } from "@/lib/zustand/createJobStore";
+import { postingsCreateFetch } from "@/fetch/postings.fetch";
+import { useToast } from "@/components/basic-toast";
+import { useGeneralDataStore } from "@/lib/zustand/generalData";
 
 const CardJobPosting = () => {
   const pathname = usePathname();
   const isEdit = pathname.includes("edit");
-  const { reset } = useCreateJobStore();
+  const toast = useToast()
+  const router = useRouter()
+  const { reset } = useCreateJobStore()
+  const { reset: resetGeneralData } = useGeneralDataStore()
 
-  const handleSave = () => {
-    console.log("Updated Profile:");
-    // TODO: call API update profile di sini
+
+
+  const handleSave = async () => {
+    const res = await postingsCreateFetch(useCreateJobStore.getState(), toast)
+    if (res) {
+      router.push('/dashboard/postings')
+      reset()
+      resetGeneralData()
+    }
+
   };
 
   return (
@@ -42,7 +55,8 @@ const CardJobPosting = () => {
                 Reset <RotateCcw />
               </Button>
             )}
-            <Button className="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-700">
+            <Button className="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-700"
+              onClick={() => isEdit ? "" : handleSave()}>
               {isEdit ? "Update" : "Post"} <Briefcase />
             </Button>
           </div>

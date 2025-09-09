@@ -1,16 +1,11 @@
 import { apiCall } from "@/helper/apiCall";
 import {
-  convertDateToMonthYear,
-  initialStateEducationForm,
-} from "@/helper/profileHelper";
-import { EducationState } from "@/lib/zustand/educationStorage";
-import {
-  schemaCreateEducation,
-  schemaUpdateProfileUser,
-} from "@/validation/profile.validation";
+  schemaUpdateCompanyProfile,
+  SchemaUpdateCompanyProfile,
+} from "@/validation/company.validation";
+import { schemaUpdateProfileUser } from "@/validation/profile.validation";
 import axios from "axios";
 import { Dispatch, SetStateAction } from "react";
-
 //role user profile
 export interface UpdateProfileProps {
   name: string;
@@ -90,125 +85,48 @@ export const getProfilRoleUserFetch = async (toast: {
   }
 };
 
-//education
-interface EducationFormProps {
-  university: string;
-  degree: string;
-  fieldOfStudy: string;
-  startMonth: string;
-  startYear: string;
-  endMonth?: string;
-  endYear?: string;
-  description: string;
-}
-export const createEducationFetch = async (
-  toast: {
-    success: (title: string, description?: string) => string;
-    error: (title: string, description?: string) => string;
-    warning: (title: string, description?: string) => string;
-    info: (title: string, description?: string) => string;
-  },
-  data: EducationFormProps,
-  setLoading: (laoding: boolean) => void,
-  reset: (
-    initial?: Partial<Omit<EducationState, "setField">> | undefined
-  ) => void
+//company role
+export const getDataCompanyProfileFetch = async () => {
+  try {
+    const { data } = await apiCall.get("/company/get-data-profile");
+    if (data.success) {
+      console.log(data);
+      return data.data;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const updateCompanyProfileFetch = async (
+  payload: SchemaUpdateCompanyProfile,
+  toast: any
 ) => {
   try {
-    setLoading(true);
-    const result = schemaCreateEducation.safeParse({
-      ...data,
-      startYear: Number(data.startYear),
-      endYear: Number(data.endYear),
-      endMonth: data.endMonth || undefined,
-    });
+    const result = schemaUpdateCompanyProfile.safeParse(payload);
     if (!result.success) {
       const messages = result.error.issues[0].message;
+      console.log(result);
       toast.error(messages);
-      // console.log(result.error);
-      return;
-    } else {
-      const { data } = await apiCall.post(
-        "/account/education/create",
-        result.data
-      );
-      if (data.success) {
-        toast.success(data.message);
-      }
-      console.log("ini lolos", result.data);
+      return false;
+    }
+    const formData = new FormData();
+    formData.append("name", payload.name);
+    formData.append("phone", payload.phone ?? "");
+    formData.append("website", payload.website ?? "");
+    formData.append("description", payload.description ?? "");
+
+    // Hanya append file kalau ada dan valid
+    if (payload.profile_picture instanceof File) {
+      formData.append("profile_picture", payload.profile_picture);
+    }
+    const { data } = await apiCall.patch("/company/update-profile", formData);
+    if (data.success) {
+      return data.success;
     }
   } catch (error: any) {
-    toast.error(error.message);
-    console.log(error);
-    console.log("ini error", error.status);
-  } finally {
-    setLoading(false);
-  }
-};
-
-export interface CardEducationProps {
-  education_id: string;
-  university: string;
-  degree: string;
-  fieldOfStudy: string;
-  startDate: string; // ISO string dari backend
-  endDate?: string; // optional, kalau ongoing
-  description?: string;
-}
-
-export const getEducationListFetch = async (
-  setEducations: (value: SetStateAction<CardEducationProps[]>) => void
-) => {
-  try {
-    const { data } = await apiCall.get("/account/education/list");
-    if (data.success) {
-      setEducations(data.data);
-    }
-    console.log(data);
-  } catch (error) {
-    console.error("Failed to fetch education list:", error);
-  }
-};
-
-export const getEducationDetailFetch = async (
-  id: string,
-  setField: (
-    field:
-      | "university"
-      | "degree"
-      | "fieldOfStudy"
-      | "startMonth"
-      | "startYear"
-      | "endMonth"
-      | "endYear"
-      | "description"
-      | "isEditing"
-      | "reset",
-    value: any
-  ) => void
-) => {
-  try {
-    const { data } = await apiCall.get(`/account/education/detail/${id}`);
-    if (data.success) {
-      const edu = data.data;
-
-      const start = convertDateToMonthYear(new Date(edu.startDate));
-      const end = edu.endDate
-        ? convertDateToMonthYear(new Date(edu.endDate))
-        : { month: "", year: 0 };
-
-      setField("university", edu.university);
-      setField("degree", edu.degree);
-      setField("fieldOfStudy", edu.fieldOfStudy);
-      setField("startMonth", start.month);
-      setField("startYear", start.year.toString());
-      setField("endMonth", end.month);
-      setField("endYear", end.year ? end.year.toString() : "");
-      setField("description", edu.description || "");
-      setField("isEditing", true);
-      console.log(data);
-    }
-  } catch (error) {
-    console.log(error);
+    console.error("Update failed:", error?.response?.data || error.message);
+    toast.error(error?.response?.data?.message || "Failed to update");
+    return false;
   }
 };

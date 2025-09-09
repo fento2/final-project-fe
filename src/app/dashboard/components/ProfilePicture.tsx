@@ -5,30 +5,30 @@ import { Label } from "@/components/ui/label";
 import { Edit2, UserCircle2 } from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 
-interface Profile {
-    name: string;
-    username: string;
-    email: string;
-    phone: string;
-    gender: string;
-    birthDate: string;
-    address: string;
-    profile_picture: string;
-}
+// interface Profile {
+//     name: string;
+//     username: string;
+//     email: string;
+//     phone: string;
+//     gender: string;
+//     birthDate: string;
+//     address: string;
+//     profile_picture: string;
+// }
 
-interface ProfilePictureProps {
-    profile: Profile;
-    editing: boolean;
-    setProfile: Dispatch<SetStateAction<Profile>>;
-    setUploadPicture: Dispatch<SetStateAction<File | null>>
-}
+// interface ProfilePictureProps {
+//     profile: Profile;
+//     editing: boolean;
+//     setProfile: Dispatch<SetStateAction<Profile>>;
+//     setUploadPicture: Dispatch<SetStateAction<File | null>>
+// }
 
 const ProfilePicture = ({
     profile,
     editing,
     setProfile,
     setUploadPicture,
-}: ProfilePictureProps) => {
+}: any) => {
     const toast = useToast()
     return (
         <div className="flex flex-col sm:flex-row gap-6 sm:items-center relative">

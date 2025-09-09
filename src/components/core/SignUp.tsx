@@ -31,7 +31,7 @@ const SignUp = () => {
   const [checkEmail, setCheckEmail] = useState(false)
   const [dataSignUp, setDataSignUp] = useState({
     role: 'USER',
-    name: "",
+    companyName: "",
     username: "",
     email: "",
     password: "",
@@ -102,7 +102,7 @@ const SignUp = () => {
             type='text'
             value={dataSignUp.name}
             placeholder={dataSignUp.role === "USER" ? "Full Name" : "Company Name"}
-            onChange={(v) => setDataSignUp({ ...dataSignUp, name: v })}
+            onChange={(v) => setDataSignUp({ ...dataSignUp, companyName: v })}
             leftIcon={dataSignUp.role === "USER" ? <User className="w-4 h-4" /> : <Building className="w-4 h-4" />}
           />
           {/* username */}

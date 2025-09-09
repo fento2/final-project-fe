@@ -14,12 +14,14 @@ import {
 import { GraduationCap, Plus } from "lucide-react";
 import UniversityAutocomplete from "./FormUnivAutoComplete";
 import { useRouter, useSearchParams } from "next/navigation";
-import { createEducationFetch, getEducationDetailFetch } from "@/fetch/profile.fetch";
 import { useToast } from "@/components/basic-toast";
-import { Dots_v2 } from "@/components/ui/spinner";
 import { useEducationStore } from "@/lib/zustand/educationStorage";
 import DateForm from "./DateForm";
-
+import {
+    createEducationFetch,
+    editEducationFetch,
+    getEducationDetailFetch,
+} from "@/fetch/educationFetch";
 const EducationForm = () => {
     const {
         university,
@@ -31,78 +33,107 @@ const EducationForm = () => {
         endYear,
         description,
         setField,
-        reset
+        reset,
     } = useEducationStore();
     const searchParams = useSearchParams();
     const router = useRouter();
     const toast = useToast();
     const [open, setOpen] = useState(false);
-    const [loading, setLoading] = useState(false);
-    // Sync open state dengan query
+
+    // Sinkronisasi modal dengan query
     useEffect(() => {
-        if (searchParams.get("education") === "create") {
+        const type = searchParams.get("education");
+        const id = searchParams.get("id");
+        if (type === "create") {
             setOpen(true);
-        } else if (searchParams.get('education') === 'edit') {
-            handleGetDetailEducation()
-            setOpen(true)
+        } else if (type === "edit" && id) {
+            setOpen(true);
+            getEducationDetailFetch(id, setField);
         } else {
             setOpen(false);
         }
-    }, [searchParams]);
-    // Update query saat klik tombol Add
+    }, [searchParams, setField]);
+    // Buka form create
     const handleAddClick = () => {
         router.replace("/dashboard/profile?education=create");
     };
-    // Hapus query saat modal ditutup
-    const handleOpenChange = (value: boolean) => {
-        setOpen(value);
-        if (value) {
-            router.replace("/dashboard/profile?education=create");
-        } else {
-            router.replace("/dashboard/profile");
-            reset(); // reset store
+    // Tutup form
+    const handleClose = () => {
+        router.replace("/dashboard/profile");
+        reset();
+        setOpen(false);
+    };
+    // Create
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const result = await createEducationFetch(
+            toast,
+            {
+                university,
+                degree,
+                fieldOfStudy,
+                startMonth,
+                startYear,
+                endMonth,
+                endYear,
+                description,
+            },
+            reset,
+            setOpen
+        );
+        if (result) {
+            handleClose();
+        }
+    };
+    // Edit
+    const handleEdit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        const education_id = searchParams.get("id") || "";
+        const result = await editEducationFetch(
+            toast,
+            {
+                university,
+                degree,
+                fieldOfStudy,
+                startMonth,
+                startYear,
+                endMonth,
+                endYear,
+                description,
+            },
+            reset,
+            education_id,
+            setOpen
+        );
+        if (result) {
+            handleClose();
         }
     };
 
-    const handleGetDetailEducation = async () => {
-        const education_id = searchParams.get('id')
-        await getEducationDetailFetch(education_id || '', setField)
-    }
-
-
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-        await createEducationFetch(toast, {
-            university,
-            degree,
-            fieldOfStudy,
-            startMonth,
-            startYear,
-            endMonth,
-            endYear,
-            description
-        }, setLoading, reset);
-    };
-
     return (
-        <Dialog open={open} onOpenChange={handleOpenChange}>
+        <Dialog open={open} onOpenChange={(val) => !val && handleClose()}>
             <DialogTrigger asChild>
                 <Button variant="default" onClick={handleAddClick}>
                     <Plus /> Add Education
                 </Button>
             </DialogTrigger>
+
             <DialogContent className="sm:max-w-lg">
                 <DialogHeader>
                     <DialogTitle className="flex items-center gap-2">
-                        <GraduationCap /> Add Education
+                        <GraduationCap />{" "}
+                        {searchParams.get("education") === "edit"
+                            ? "Edit Education"
+                            : "Add Education"}
                     </DialogTitle>
                 </DialogHeader>
 
-                <form onSubmit={handleSubmit} className="space-y-4 relative">
-                    {loading && <div className="absolute z-50 flex justify-center h-screen w-full">
-                        <Dots_v2 />
-                    </div>}
-
+                <form
+                    onSubmit={(e) =>
+                        searchParams.get("education") === "edit" ? handleEdit(e) : handleSubmit(e)
+                    }
+                    className="space-y-4 relative"
+                >
                     {/* University */}
                     <div className="space-y-1">
                         <Label htmlFor="university">University</Label>
@@ -111,7 +142,6 @@ const EducationForm = () => {
                             onChange={(val) => setField("university", val)}
                         />
                     </div>
-
                     {/* Degree */}
                     <div className="space-y-1">
                         <Label htmlFor="degree">Degree</Label>
@@ -124,7 +154,6 @@ const EducationForm = () => {
                             className="py-6 !text-lg placeholder:text-gray-400"
                         />
                     </div>
-
                     {/* Field of Study */}
                     <div className="space-y-1">
                         <Label htmlFor="fieldOfStudy">Field of Study</Label>
@@ -137,7 +166,14 @@ const EducationForm = () => {
                             className="py-6 !text-lg placeholder:text-gray-400"
                         />
                     </div>
-                    <DateForm startMonth={startMonth} startYear={startYear} endMonth={endMonth} endYear={endYear} setField={setField} />
+                    {/* Dates */}
+                    <DateForm
+                        startMonth={startMonth}
+                        startYear={startYear}
+                        endMonth={endMonth}
+                        endYear={endYear}
+                        setField={setField}
+                    />
                     {/* Description */}
                     <div className="space-y-1">
                         <Label htmlFor="description">Description</Label>
@@ -151,12 +187,12 @@ const EducationForm = () => {
                             className="!text-lg placeholder:text-gray-400"
                         />
                     </div>
-
-                    <Button type="submit" className="bg-indigo-500 w-full">Save</Button>
+                    <Button type="submit" className="bg-indigo-500 w-full">
+                        {searchParams.get("education") === "edit" ? "Save Edit" : "Post"}
+                    </Button>
                 </form>
             </DialogContent>
         </Dialog>
     );
 };
-
 export default EducationForm;

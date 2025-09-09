@@ -1,38 +1,54 @@
+'use client'
+
 import { Command, CommandInput, CommandList, CommandItem } from "@/components/ui/command";
-import { useEffect, useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 import { useCreateJobStore } from "@/lib/zustand/createJobStore";
 import { apiCall } from "@/helper/apiCall";
+import debounce from "lodash.debounce";
 
 const FieldSkill = () => {
-  const { skill, addSkill, removeSkill } = useCreateJobStore();
-  const [skillList, setSkillList] = useState<string[]>([])
+  const { skills: skill, addSkill: addSkill, removeSkill } = useCreateJobStore();
+  const [skillList, setSkillList] = useState<string[]>([]);
   const [input, setInput] = useState("");
 
-  // Filtered skill otomatis
-  const filteredSkills = skillList.filter(
-    (s) => s.toLowerCase().includes(input.toLowerCase()) && !skill.includes(s)
+  // Debounce untuk fetch API
+  const debouncedFetch = useMemo(
+    () =>
+      debounce(async (val: string) => {
+        if (!val) return;
+
+        try {
+          const { data } = await apiCall.get("/postings/get-skill-list", {
+            params: { search: val },
+          });
+
+          if (data.success) {
+            setSkillList(data.data.skillNames ?? []);
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      }, 1000),
+    []
   );
 
-
-  const getGeneralData = async () => {
-    try {
-
-      const { data } = await apiCall.get('/general/get-data')
-      if (data.success) {
-        setSkillList(data.data.skillList)
-        console.log("fetch skillList", data)
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
+  // Cleanup debounce saat unmount
   useEffect(() => {
-    getGeneralData()
-  }, [input])
+    return () => debouncedFetch.cancel();
+  }, [debouncedFetch]);
 
+  // Handler input
+  const handleInputChange = (val: string) => {
+    setInput(val); // update UI
+    debouncedFetch(val); // panggil API
+  };
+
+  // Filter frontend (hindari duplikat)
+  const filteredSkills = skillList.filter(
+    (s) => !skill.includes(s)
+  );
 
   return (
     <div className="flex flex-col gap-2 md:col-span-2 relative">
@@ -42,15 +58,18 @@ const FieldSkill = () => {
         <CommandInput
           placeholder="Search skill..."
           value={input}
-          onValueChange={(val) => setInput(val)}
+          onValueChange={handleInputChange}
         />
         <CommandList>
+          {filteredSkills.length === 0 && input && (
+            <CommandItem disabled>No results</CommandItem>
+          )}
           {filteredSkills.map((s) => (
             <CommandItem
               key={s}
               onSelect={() => {
                 addSkill(s);
-                setInput("");
+                setInput(""); // reset input setelah pilih
               }}
             >
               {s}
@@ -61,9 +80,16 @@ const FieldSkill = () => {
 
       <div className="flex flex-wrap gap-2 mt-2">
         {skill.map((tag) => (
-          <Badge key={tag} variant="secondary" className="flex items-center gap-1 p-2 text-sm">
+          <Badge
+            key={tag}
+            variant="secondary"
+            className="flex items-center gap-1 p-2 text-sm"
+          >
             {tag}
-            <X className="w-3 h-3 cursor-pointer" onClick={() => removeSkill(tag)} />
+            <X
+              className="w-3 h-3 cursor-pointer"
+              onClick={() => removeSkill(tag)}
+            />
           </Badge>
         ))}
       </div>

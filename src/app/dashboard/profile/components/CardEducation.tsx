@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
@@ -15,20 +14,32 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { EllipsisVertical, Calendar, GraduationCap, Dot, ArrowRight } from "lucide-react";
-import { CardEducationProps, getEducationDetailFetch, getEducationListFetch } from "@/fetch/profile.fetch";
-import { useEducationStore } from "@/lib/zustand/educationStorage";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
-// format date
+import {
+    EllipsisVertical,
+    Calendar,
+    GraduationCap,
+    Dot,
+    ArrowRight,
+} from "lucide-react";
+import { useToast } from "@/components/basic-toast";
+import { CardEducationProps, delateEducationFetch, getEducationListFetch } from "@/fetch/educationFetch";
 const formatDateToMonthYear = (dateStr?: string) => {
     if (!dateStr) return "Present";
     const date = new Date(dateStr);
     return date.toLocaleString("en-US", { month: "long", year: "numeric" });
 };
-
-// Single card
 const CardEducationItem = ({
-    education_id,
     university,
     degree,
     fieldOfStudy,
@@ -78,7 +89,6 @@ const CardEducationItem = ({
         </Card>
     );
 };
-
 // List component
 const CardEducationList = ({
     educations,
@@ -102,21 +112,33 @@ const CardEducationList = ({
         </div>
     );
 };
-
 // Main component
 const CardEducation = () => {
     const [educations, setEducations] = useState<CardEducationProps[]>([]);
+    const [educationId, setEducationId] = useState<string | null>(null);
     const router = useRouter();
-    const { setField } = useEducationStore()
+    const toast = useToast()
 
-    const handleEdit = async (id: string) => {
-        // push ke halaman edit dengan query id
-        router.replace(`/dashboard/profile?education=edit&id=${id}`);
-
+    const handleEdit = (education_id: string) => {
+        router.replace(`/dashboard/profile?education=edit&id=${education_id}`);
     };
 
-    const handleDelete = (id: string) => {
-        console.log("Delete education id:", id);
+    const handleDelete = (education_id: string) => {
+        setEducationId(education_id);
+        // ubah URL pas buka modal
+        router.replace(`/dashboard/profile?education=delete&id=${education_id}`);
+    };
+
+    const confirmDelete = async () => {
+        if (!educationId) return;
+        const result = await delateEducationFetch(toast, educationId)
+        if (result) {
+            await getEducationListFetch(setEducations);
+            router.replace(`/dashboard/profile`);
+            return
+        } else {
+            return toast.error('faild delete')
+        }
     };
 
     useEffect(() => {
@@ -124,11 +146,41 @@ const CardEducation = () => {
     }, []);
 
     return (
-        <CardEducationList
-            educations={educations}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-        />
+        <>
+            <CardEducationList
+                educations={educations}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+            />
+
+            <AlertDialog open={!!educationId} onOpenChange={() => setEducationId(null)}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Education</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Are you sure you want to delete this education record? This action
+                            cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel
+                            onClick={() => {
+                                setEducationId(null);
+                                router.replace(`/dashboard/profile`); // cancel → balik url normal
+                            }}
+                        >
+                            Cancel
+                        </AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={confirmDelete}
+                            className="bg-red-600 hover:bg-red-700 text-white"
+                        >
+                            Confirm
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </>
     );
 };
 

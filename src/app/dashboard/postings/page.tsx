@@ -14,8 +14,10 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus, Search } from "lucide-react";
 import JobPostingsCard from "./componetns/JobsPostingsCard";
+import { useAuthRole } from "@/helper/authRole";
 
 const PostingsPage = () => {
+  useAuthRole('COMPANY')
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("newest");
   const [category, setCategory] = useState("all");

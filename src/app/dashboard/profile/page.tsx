@@ -2,7 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import General from "./components/General";
-import Security from "./components/Security";
+import Security from "../components/Security";
 import CardEducation from "./components/CardEducation";
 import ExperienceCard from "./components/CardExperience";
 import EducationForm from "./components/EducationForm";
@@ -10,8 +10,6 @@ import ExperienceForm from "./components/ExperienceForm";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Briefcase, GraduationCap } from "lucide-react";
 import { useAuthRole } from "@/helper/authRole";
-
-
 
 const ProfileUser = () => {
   useAuthRole('USER')
