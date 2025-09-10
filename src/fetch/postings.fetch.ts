@@ -30,9 +30,11 @@ export const postingsCreateFetch = async (
 };
 export const getDetailForEditFetch = async (
   useEditJobStore: any,
-  slug: string
+  slug: string,
+  setLoading: (val: boolean) => void
 ) => {
   try {
+    setLoading(true);
     const {
       setEditCategory,
       setEditCurrency,
@@ -66,6 +68,8 @@ export const getDetailForEditFetch = async (
     }
   } catch (error) {
     console.log(error);
+  } finally {
+    setLoading(false);
   }
 };
 export const updateJobPostingFetch = async (
