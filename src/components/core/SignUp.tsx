@@ -110,7 +110,7 @@ const SignUp = () => {
             name="username"
             type='text'
             value={dataSignUp.username}
-            placeholder="Usernmae"
+            placeholder="Username"
             onChange={(v) => setDataSignUp({ ...dataSignUp, username: v })}
             leftIcon={<AtSign className="w-4 h-4" />}
           />

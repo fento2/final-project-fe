@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import { Star, Users, MapPin, DollarSign, Briefcase, Building, Award, TrendingUp } from "lucide-react";
 import { Button } from "../../../../components/ui/button";
 import { Card } from "../../../../components/ui/card";
@@ -12,6 +13,10 @@ interface CompanyCardProps {
 }
 
 export function CompanyCard({ company, onViewJobs, onViewProfile }: CompanyCardProps) {
+    const slug = company.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -93,19 +98,21 @@ export function CompanyCard({ company, onViewJobs, onViewProfile }: CompanyCardP
 
                 {/* Actions */}
                 <div className="mt-auto space-y-2">
-                    <Button 
-                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition-colors text-xs sm:text-sm py-2"
-                        onClick={() => onViewJobs?.(company.id)}
-                    >
-                        View All Jobs
-                    </Button>
-                    <Button 
-                        variant="outline" 
-                        className="w-full border-gray-200 hover:bg-gray-50 rounded-lg text-xs sm:text-sm py-2"
-                        onClick={() => onViewProfile?.(company.id)}
-                    >
-                        Company Profile
-                    </Button>
+                    <Link href={`/jobs/companies/${slug}`}>
+                        <Button 
+                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition-colors text-xs sm:text-sm py-2"
+                        >
+                            View All Jobs
+                        </Button>
+                    </Link>
+                    <Link href={`/jobs/companies/${slug}`}>
+                        <Button 
+                            variant="outline" 
+                            className="w-full border-gray-200 hover:bg-gray-50 rounded-lg text-xs sm:text-sm py-2"
+                        >
+                            Company Profile
+                        </Button>
+                    </Link>
                 </div>
             </Card>
         </motion.div>

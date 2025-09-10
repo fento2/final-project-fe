@@ -3,11 +3,7 @@ import { Briefcase, MapPin, Calendar, Bookmark, Share2, GraduationCap, Layers, B
 import Image from "next/image";
 import Link from "next/link";
 
-interface JobDetailPageProps {
-    params: { slug: string };
-}
-
-export default async function JobDetailPage({ params }: JobDetailPageProps) {
+export default async function JobDetailPage({ params }: { params: Promise<{ slug: string }> }) {
     const { slug } = await params;
     const jobTitle = decodeURIComponent(slug).replace(/-/g, "/");
 
