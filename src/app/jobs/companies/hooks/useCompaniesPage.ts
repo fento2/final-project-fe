@@ -1,5 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { filterCompanies, sortCompanies, getUniqueValues, type Company } from "../../../../helper/companyHelpers";
+import { useCompanies } from "../../../../hooks/useCompanies";
+import { Company as DatabaseCompany } from "../../../../types/database";
 
 interface CompanyFilters {
     activity: string[];
@@ -9,7 +11,10 @@ interface CompanyFilters {
     tools: string[];
 }
 
-export function useCompaniesPage(companies: Company[]) {
+export function useCompaniesPage() {
+    // Fetch companies from backend
+    const { companies: backendCompanies, loading: backendLoading, error: backendError } = useCompanies();
+    
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedIndustry, setSelectedIndustry] = useState("");
     const [selectedLocation, setSelectedLocation] = useState("");
@@ -28,6 +33,29 @@ export function useCompaniesPage(companies: Company[]) {
     const [showFilters, setShowFilters] = useState(false);
     
     const itemsPerPage = 9;
+
+    // Transform backend companies to frontend format
+    const companies = useMemo((): Company[] => {
+        if (!Array.isArray(backendCompanies)) {
+            return [];
+        }
+        return backendCompanies.map((company: DatabaseCompany) => ({
+            id: company.company_id,
+            name: company.name,
+            logo: company.profile_picture || "https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=64&h=64&fit=crop&crop=center",
+            employees: Math.floor(Math.random() * 2000) + 50, // Mock data since not in DB
+            salary: "50,000 - 120,000 per year", // Mock data
+            location: "Remote", // Mock data since not detailed in DB
+            jobsOpen: Math.floor(Math.random() * 30) + 1, // Mock data
+            rating: Math.floor(Math.random() * 2) + 4, // Mock 4-5 stars
+            industry: "Technology", // Mock data
+            founded: 2010 + Math.floor(Math.random() * 13), // Mock 2010-2023
+            description: company.description || "A leading company in their industry",
+            benefits: ["Health Insurance", "Remote Work", "Professional Development"], // Mock data
+            growth: Math.floor(Math.random() * 30) + 5, // Mock 5-35%
+            verified: true
+        }));
+    }, [backendCompanies]);
 
     // Filter and search functionality using helper functions
     const filteredCompanies = useMemo(() => {
@@ -91,7 +119,7 @@ export function useCompaniesPage(companies: Company[]) {
         page,
         viewMode,
         sortBy,
-        isLoading,
+        isLoading: isLoading || backendLoading,
         showFilters,
         
         // Computed values
@@ -100,6 +128,9 @@ export function useCompaniesPage(companies: Company[]) {
         totalPages,
         uniqueIndustries,
         uniqueLocations,
+        
+        // Backend data
+        backendError,
         
         // Actions
         setSearchTerm,

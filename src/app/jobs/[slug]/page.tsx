@@ -1,11 +1,28 @@
 // app/jobs/[id]/page.tsx (Next.js 13+ dengan App Router)
+"use client";
+
 import { Briefcase, MapPin, Calendar, Bookmark, Share2, GraduationCap, Layers, Banknote, User, Hourglass, Check, CircleCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useJobs } from "@/hooks/useJobs";
+import { useMemo } from "react";
 
-export default async function JobDetailPage({ params }: { params: Promise<{ slug: string }> }) {
-    const { slug } = await params;
+export default function JobDetailPage() {
+    const params = useParams();
+    const slug = params.slug as string;
     const jobTitle = decodeURIComponent(slug).replace(/-/g, "/");
+
+    const { jobs, loading, error } = useJobs();
+    
+    // Find the specific job by slug/title
+    const currentJob = useMemo(() => {
+        return jobs.find(job => 
+            job.slug === slug || 
+            job.title === jobTitle ||
+            job.job_id?.toString() === slug
+        );
+    }, [jobs, slug, jobTitle]);
 
     return (
         <div className="max-w-6xl mx-auto px-6 py-10">

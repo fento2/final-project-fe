@@ -1,52 +1,39 @@
+"use client";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Calendar, Clock, ArrowLeft, Share2 } from "lucide-react";
+import { useBlogPost } from "@/hooks/useBlog";
 
-// Mock data - in a real app, this would come from a CMS or database
-const blogPosts = {
-    "10-tips-acing-job-interview": {
-        id: 1,
-        title: "10 Tips for Acing Your Next Job Interview",
-        excerpt: "Master the art of job interviews with these proven strategies that will help you stand out from other candidates.",
-        content: `
-            <p>Job interviews can be nerve-wracking, but with the right preparation and mindset, you can turn them into opportunities to shine. Here are 10 proven tips that will help you ace your next job interview.</p>
-            
-            <h2>1. Research the Company Thoroughly</h2>
-            <p>Before walking into any interview, spend time researching the company. Understand their mission, values, recent news, and the role you're applying for. This knowledge will help you tailor your responses and show genuine interest.</p>
-            
-            <h2>2. Prepare Your STAR Stories</h2>
-            <p>Use the STAR method (Situation, Task, Action, Result) to structure your responses to behavioral questions. Prepare 3-5 compelling stories that demonstrate your skills and achievements.</p>
-            
-            <h2>3. Practice Common Interview Questions</h2>
-            <p>While you can't predict every question, practicing common ones like "Tell me about yourself" and "Why do you want this job?" will help you respond confidently.</p>
-            
-            <h2>4. Prepare Thoughtful Questions</h2>
-            <p>Always have questions ready to ask the interviewer. This shows your interest and helps you evaluate if the company is right for you.</p>
-            
-            <h2>5. Dress Appropriately</h2>
-            <p>Research the company culture and dress slightly more formal than their everyday attire. When in doubt, it's better to be overdressed than underdressed.</p>
-        `,
-        image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=400&fit=crop",
-        category: "Career Tips",
-        date: "2024-09-08",
-        readTime: "5 min read",
-        author: {
-            name: "Sarah Johnson",
-            avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b29c?w=100&h=100&fit=crop&crop=face",
-            bio: "Career Coach & HR Professional with 10+ years of experience"
-        }
+interface BlogPageProps {
+    params: {
+        slug: string;
+    };
+}
+
+export default function BlogPage({ params }: BlogPageProps) {
+    const { post, loading, error } = useBlogPost(params.slug);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            </div>
+        );
     }
-    // Add more blog posts here
-};
 
-export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
-    const { slug } = await params;
-    const post = blogPosts[slug as keyof typeof blogPosts];
-
-    if (!post) {
+    if (error || !post) {
         notFound();
     }
+    // Helper function to format date
+    const formatDate = (date: Date | string) => {
+        const d = new Date(date);
+        return d.toLocaleDateString('en-US', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        });
+    };
 
     return (
         <div className="min-h-screen bg-white">
@@ -74,25 +61,21 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                     <div className="flex items-center gap-6 text-gray-600">
                         <div className="flex items-center gap-2">
                             <Image
-                                src={post.author.avatar}
-                                alt={post.author.name}
+                                src={post.author?.avatar || "/images/default-avatar.jpg"}
+                                alt={post.author?.name || "Author"}
                                 width={40}
                                 height={40}
                                 className="rounded-full"
                             />
-                            <span className="font-medium">{post.author.name}</span>
+                            <span className="font-medium">{post.author?.name || "Unknown Author"}</span>
                         </div>
                         <div className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
-                            {new Date(post.date).toLocaleDateString('en-US', { 
-                                month: 'long', 
-                                day: 'numeric', 
-                                year: 'numeric' 
-                            })}
+                            {formatDate(post.published_at || post.created_at)}
                         </div>
                         <div className="flex items-center gap-1">
                             <Clock className="w-4 h-4" />
-                            {post.readTime}
+                            {post.read_time || "5 min read"}
                         </div>
                         <button className="flex items-center gap-1 text-blue-600 hover:text-blue-700">
                             <Share2 className="w-4 h-4" />
@@ -103,14 +86,16 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
             </div>
 
             {/* Featured Image */}
-            <div className="relative h-96 w-full">
-                <Image
-                    src={post.image}
-                    alt={post.title}
-                    fill
-                    className="object-cover"
-                />
-            </div>
+            {post.image && (
+                <div className="relative h-96 w-full">
+                    <Image
+                        src={post.image}
+                        alt={post.title}
+                        fill
+                        className="object-cover"
+                    />
+                </div>
+            )}
 
             {/* Article Content */}
             <article className="max-w-4xl mx-auto px-6 py-12">
@@ -119,25 +104,27 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
                 </div>
 
                 {/* Author Bio */}
-                <div className="mt-12 p-6 bg-gray-50 rounded-2xl">
-                    <div className="flex items-start gap-4">
-                        <Image
-                            src={post.author.avatar}
-                            alt={post.author.name}
-                            width={80}
-                            height={80}
-                            className="rounded-full"
-                        />
-                        <div>
-                            <h3 className="text-xl font-bold text-gray-900 mb-2">
-                                {post.author.name}
-                            </h3>
-                            <p className="text-gray-600">
-                                {post.author.bio}
-                            </p>
+                {post.author && (
+                    <div className="mt-12 p-6 bg-gray-50 rounded-2xl">
+                        <div className="flex items-start gap-4">
+                            <Image
+                                src={post.author.avatar || "/images/default-avatar.jpg"}
+                                alt={post.author.name}
+                                width={80}
+                                height={80}
+                                className="rounded-full"
+                            />
+                            <div>
+                                <h3 className="text-xl font-bold text-gray-900 mb-2">
+                                    {post.author.name}
+                                </h3>
+                                <p className="text-gray-600">
+                                    Content Writer & Career Expert
+                                </p>
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
 
                 {/* Related Articles */}
                 <div className="mt-12">

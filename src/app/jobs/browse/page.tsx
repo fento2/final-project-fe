@@ -4,6 +4,7 @@ import { Banknote, MapPin } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useMemo, useState } from "react";
+import { useJobs } from "@/hooks/useJobs";
 
 type Job = {
     id: string;
@@ -15,17 +16,6 @@ type Job = {
     salaryMax?: number;
     tags?: string[];
 };
-
-const SAMPLE_JOBS: Job[] = Array.from({ length: 15 }).map((_, i) => ({
-    id: String(i + 1),
-    title: ["Senior UI Designer", "UI/UX Designer", "Mobile UI Designer", "Data Analyst", "Project Manager"][i % 5],
-    company: ["Creative Solutions, Inc.", "Acme Corporation", "App Works", "Bright Future Solutions", "Tech Works Inc."][i % 5],
-    type: (["Full Time", "Full Time", "Full Time", "Part-time", "Contract"] as Job["type"][])[i % 5],
-    location: ["San Francisco, CA", "New York, NY", "Los Angeles, CA", "Chicago, IL", "Austin, TX"][i % 5],
-    salaryMin: 60000 + i * 1000,
-    salaryMax: 120000 + i * 1500,
-    tags: ["Figma", "React", "Tailwind"].slice(0, (i % 3) + 1),
-}));
 
 type Filters = {
     date: string;
@@ -270,6 +260,8 @@ function slugify(title: string) {
 }
 
 export default function JobsListPage() {
+    const { jobs, loading, error } = useJobs();
+    
     const [filters, setFilters] = useState({
         date: "Anytime",
         types: [] as string[],
@@ -281,14 +273,27 @@ export default function JobsListPage() {
     const [page, setPage] = useState(1);
     const perPage = 9;
 
+    const transformedJobs = useMemo(() => {
+        return jobs.map((job: any) => ({
+            id: job.job_id?.toString() || job.id?.toString() || '',
+            title: job.title || 'Job Position',
+            company: job.Company?.name || 'Unknown Company',
+            type: (job.job_type?.replace('_', ' ') || 'Full Time') as Job["type"],
+            location: job.location || 'Remote',
+            salaryMin: job.salary || 0,
+            salaryMax: job.salary ? job.salary * 1.5 : 0,
+            tags: job.skills?.map((skill: any) => skill.name) || [],
+        }));
+    }, [jobs]);
+
     const filtered = useMemo(() => {
-        return SAMPLE_JOBS.filter((j) => {
+        return transformedJobs.filter((j) => {
             if (filters.types.length && !filters.types.includes(j.type)) return false;
             if (filters.salaryMax && j.salaryMin && j.salaryMin > filters.salaryMax) return false;
             if (filters.tools.length && !filters.tools.every((t) => j.tags?.includes(t))) return false;
             return true;
         });
-    }, [filters]);
+    }, [transformedJobs, filters]);
 
     const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
     const shown = filtered.slice((page - 1) * perPage, page * perPage);
@@ -327,13 +332,35 @@ export default function JobsListPage() {
                     </div>
 
                     <div className="lg:col-span-9">
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {shown.map((job) => (
-                                <JobCard key={job.id} job={job} />
-                            ))}
-                        </div>
+                        {loading ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {Array.from({ length: 6 }).map((_, i) => (
+                                    <div key={i} className="bg-white rounded-xl shadow-lg p-6 animate-pulse">
+                                        <div className="h-6 bg-gray-200 rounded mb-3"></div>
+                                        <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                                        <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : error ? (
+                            <div className="text-center py-12">
+                                <p className="text-gray-500">Error loading jobs: {error}</p>
+                            </div>
+                        ) : transformedJobs.length === 0 ? (
+                            <div className="text-center py-12">
+                                <p className="text-gray-500">No jobs found</p>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {shown.map((job) => (
+                                        <JobCard key={job.id} job={job} />
+                                    ))}
+                                </div>
 
-                        <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+                                <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

@@ -34,8 +34,8 @@ const MobileJobCarousel: React.FC<MobileJobCarouselProps> = ({
 }) => {
     const [currentIndex, setCurrentIndex] = useState(0);
 
-    // Limit jobs to maxJobs
-    const displayedJobs = jobs.slice(0, maxJobs);
+    // Limit jobs to maxJobs with safety check
+    const displayedJobs = Array.isArray(jobs) ? jobs.slice(0, maxJobs) : [];
 
     // Carousel navigation functions
     const nextSlide = () => {
