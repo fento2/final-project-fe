@@ -9,6 +9,7 @@ import { apiCall } from "@/helper/apiCall";
 import { useState, useEffect } from "react";
 import { toTitleCase } from "@/helper/toTitleCase";
 import ReadOnlyQuill from "@/app/dashboard/components/ReadOnlyReactQuil";
+import PreselectionControl from "./BottomSection";
 
 interface DetailJobPostring {
     addPreselection: boolean;
@@ -32,6 +33,7 @@ interface IJobDetail {
     job_type: string;     // enum diganti string
     latitude: string;
     longitude: string;
+    preselection_test: boolean;
     skills: {
         id: number;
         name: string;
@@ -42,30 +44,29 @@ interface IJobDetail {
 const DetailPostingWithApplicant = ({
     addPreselection,
     setAddPreselection,
-    handleFileUpload,
 }: DetailJobPostring) => {
     const [job, setJob] = useState<IJobDetail | null>(null);
     const { slug } = useParams();
 
 
-
-
-    // Fetch job detail dari backend
     const getDetailJob = async () => {
         try {
             const { data } = await apiCall.get(`/postings/get-detail/${slug}`);
             if (data.success) {
-                setJob(data.data); // langsung set ke state
+                setJob(data.data);
             }
         } catch (error) {
             console.log(error);
         }
     };
 
-    // fetch data saat component mount
     useEffect(() => {
         getDetailJob();
     }, [slug]);
+
+    const handleEditPreselection = () => {
+        console.log("Edit preselection"); // nanti bisa panggil modal atau navigasi ke form edit
+    };
 
 
     if (!job) {
@@ -110,7 +111,7 @@ const DetailPostingWithApplicant = ({
                 <CardContent className="space-y-6 overflow-y-auto max-h-[650px] px-6 py-4">
                     {/* About This Job */}
                     <section className="mt-2">
-                        <h2 className="text-lg font-bold tracking-widest mb-3 border-b border-gray-200 pb-2">
+                        <h2 className="text-xl font-bold tracking-widest border-b border-gray-200 pb-2">
                             About This Job
                         </h2>
                         {/* <div
@@ -157,34 +158,17 @@ const DetailPostingWithApplicant = ({
                     )}
 
                     {/* Add Preselection */}
-                    <section className="mt-6">
-                        <div className="flex items-center justify-between">
-                            <Label className="text-lg font-medium">Add Preselection Test</Label>
-                            <Switch
-                                checked={addPreselection}
-                                onCheckedChange={setAddPreselection}
-                                className="bg-gray-300 data-[state=checked]:bg-indigo-500 relative rounded-full transition-colors"
-                            >
-                                <span
-                                    className={`${addPreselection ? "translate-x-6" : "translate-x-0"} inline-block w-6 h-6 bg-white rounded-full shadow-md transform transition-transform`}
-                                />
-                            </Switch>
-                        </div>
+                    <PreselectionControl
+                        initialEnabled={job.preselection_test}
+                        onEdit={handleEditPreselection}
+                        onSave={async (enabled) => {
+                            await apiCall.put(`/postings/preselection/${slug}`, { preselection_test: enabled });
+                            if (job) setJob({ ...job, preselection_test: enabled });
+                            alert("Preselection updated!");
+                        }}
+                    />
 
-                        {addPreselection && (
-                            <div className="space-y-2 mt-3">
-                                <Input
-                                    type="file"
-                                    accept=".xlsx,.xls"
-                                    className="w-64 cursor-pointer"
-                                    onChange={handleFileUpload}
-                                />
-                                <p className="text-sm text-gray-500">
-                                    Upload the test questions in Excel format (.xlsx or .xls)
-                                </p>
-                            </div>
-                        )}
-                    </section>
+
                 </CardContent>
 
                 <ManagePosting slug={slug as string} />

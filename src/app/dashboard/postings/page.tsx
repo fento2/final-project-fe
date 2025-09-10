@@ -182,11 +182,11 @@ const PostingsPage = () => {
         </div>
       )}
       {/* Pagination */}
-      <PaginationDashboard
+      {totalPage !== 1 && <PaginationDashboard
         currentPage={currentPage}
         totalPages={totalPage}
         onPageChange={setCurrentPage}
-      />
+      />}
     </div>
   );
 };
