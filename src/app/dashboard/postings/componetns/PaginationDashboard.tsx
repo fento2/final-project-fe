@@ -27,11 +27,10 @@ export const PaginationDashboard = ({
         <button
           key={page}
           onClick={() => onPageChange(page)}
-          className={`px-3 py-1 rounded-lg border ${
-            page === currentPage
+          className={`px-3 py-1 rounded-lg border ${page === currentPage
               ? "bg-blue-500 text-white"
               : "hover:bg-gray-100"
-          }`}
+            }`}
         >
           {page}
         </button>

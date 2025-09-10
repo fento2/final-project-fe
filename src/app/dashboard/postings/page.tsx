@@ -1,5 +1,7 @@
 "use client";
-import { useState } from "react";
+
+import { useState, useEffect, useMemo } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -8,53 +10,92 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { PaginationDashboard } from "./componetns/PaginationDashboard";
-import { jobs } from "./data/dataDummy";
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus, Search } from "lucide-react";
-import JobPostingsCard from "./componetns/JobsPostingsCard";
+
 import { useAuthRole } from "@/helper/authRole";
+import { apiCall } from "@/helper/apiCall";
+import JobPostingsCard from "./componetns/JobsPostingsCard";
+import { PaginationDashboard } from "./componetns/PaginationDashboard";
+import { toSEO, toTitleCase } from "@/helper/toTitleCase";
+import debounce from "lodash.debounce";
 
 const PostingsPage = () => {
-  useAuthRole('COMPANY')
-  const [search, setSearch] = useState("");
-  const [sort, setSort] = useState("newest");
-  const [category, setCategory] = useState("all");
-  const [currentPage, setCurrentPage] = useState(1);
+  useAuthRole("COMPANY");
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Ambil nilai awal dari URL jika ada
+  const [search, setSearch] = useState(searchParams.get("search") || "");
+  const [sort, setSort] = useState(searchParams.get("sort") || "desc");
+  const [category, setCategory] = useState(searchParams.get("category") || "all");
+  const [currentPage, setCurrentPage] = useState(Number(searchParams.get("page")) || 1);
+
+  const [postingList, setPostingList] = useState<any[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [totalPage, setTotalPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+
   const perPage = 6;
 
-  const categories = ["all", ...new Set(jobs.map((job) => job.category))];
+  // update URL ketika state berubah
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (search) params.set("search", toSEO(search));
+    if (sort) params.set("sort", sort);
+    if (category) params.set("category", toSEO(category));
 
-  const filteredJobs = jobs
-    .filter((job) => {
-      const matchSearch =
-        job.title.toLowerCase().includes(search.toLowerCase()) ||
-        job.company.toLowerCase().includes(search.toLowerCase()) ||
-        job.location.toLowerCase().includes(search.toLowerCase()) ||
-        job.category.toLowerCase().includes(search.toLowerCase());
+    params.set("page", currentPage.toString());
+    params.set("limit", perPage.toString()); // limit
 
-      const matchCategory =
-        category === "all" ? true : job.category === category;
+    router.replace(`/dashboard/postings?${params.toString()}`);
+  }, [search, sort, category, currentPage, perPage, router]);
 
-      return matchSearch && matchCategory;
-    })
-    .sort((a, b) => {
-      if (sort === "newest") {
-        return (
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        );
-      }
-      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-    });
+  // Fetch jobs
+  const deboucedFetchJobs = useMemo(
+    () => debounce((searchVal: string, sortVal: string, categoryVal: string, page: number) => {
+      fetchJobs(searchVal, sortVal, categoryVal, page);
+    }, 1000),
+    []
+  );
 
-  const totalPages = Math.ceil(filteredJobs.length / perPage);
-  const startIndex = (currentPage - 1) * perPage;
-  const paginatedJobs = filteredJobs.slice(startIndex, startIndex + perPage);
+  // update fetchJobs untuk menerima semua filter
+  const fetchJobs = async (search: string, sort: string, category: string, page: number) => {
+    try {
+      setLoading(true)
+      const params = new URLSearchParams();
+      params.set("search", search);
+      params.set("sort", sort);
+      params.set("category", category);
+      params.set("page", page.toString());
+      params.set("limit", perPage.toString());
+
+      const { data } = await apiCall.get(`/postings/get?${params.toString()}`);
+
+      setPostingList(data.data.data);
+      setTotalPage(data.data.totalPage);
+      setCategories(["all", ...data.data.categories]);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false)
+    }
+  };
+
+  // panggil debounce tiap kali salah satu filter berubah
+  useEffect(() => {
+    deboucedFetchJobs(search, sort, category, currentPage);
+
+    return () => deboucedFetchJobs.cancel();
+  }, [search, sort, category, currentPage]);
+  ;
 
   return (
     <div className="md:px-20 px-4 space-y-6 container mx-auto my-8">
-      {/* Page Header */}
+      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Job Postings</h1>
@@ -70,7 +111,7 @@ const PostingsPage = () => {
         </Link>
       </div>
 
-      {/* Search, Sort & Category Filter */}
+      {/* Search & Filters */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
         <div className="relative sm:w-1/2">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
@@ -81,7 +122,7 @@ const PostingsPage = () => {
               setSearch(e.target.value);
               setCurrentPage(1);
             }}
-            className="py-6 !text-lg pl-10" // tambahin padding kiri biar teks gak nutup ikon
+            className="py-6 !text-lg pl-10"
           />
         </div>
 
@@ -91,12 +132,8 @@ const PostingsPage = () => {
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="newest" className="py-4 text-lg">
-                Newest
-              </SelectItem>
-              <SelectItem value="oldest" className="py-4 text-lg">
-                Oldest
-              </SelectItem>
+              <SelectItem value="desc" className="py-4 text-lg">Desc</SelectItem>
+              <SelectItem value="asc" className="py-4 text-lg">Asc</SelectItem>
             </SelectContent>
           </Select>
 
@@ -112,9 +149,7 @@ const PostingsPage = () => {
             </SelectTrigger>
             <SelectContent>
               {categories.map((cat) => (
-                <SelectItem key={cat} value={cat} className="py-4 text-lg">
-                  {cat}
-                </SelectItem>
+                <SelectItem key={cat} value={cat} className="py-4 text-lg">{toTitleCase(cat)}</SelectItem>
               ))}
             </SelectContent>
           </Select>
@@ -122,18 +157,34 @@ const PostingsPage = () => {
       </div>
 
       {/* Jobs Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {paginatedJobs.map((job, idx) => (
-          <div key={idx}>
-            <JobPostingsCard job={job} />
-          </div>
-        ))}
-      </div>
-
+      {!loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {postingList.map((job, idx) => (
+            <JobPostingsCard key={idx} job={job} />
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array(perPage).fill(0).map((_, idx) => (
+            <div key={idx} className="border rounded-2xl animate-pulse px-4 py-4">
+              <div className="h-4 w-1/2 bg-gray-300 mb-2"></div>
+              <div className="h-6 w-3/4 bg-gray-300 mb-2"></div>
+              <div className="h-4 w-full bg-gray-300 mb-1"></div>
+              <div className="h-4 w-full bg-gray-300 mb-1"></div>
+              <div className="h-4 w-full bg-gray-300 mb-1"></div>
+              <div className="h-4 w-1/2 bg-gray-300 mb-2"></div>
+              <div className="h-6 w-3/4 bg-gray-300 mb-2"></div>
+              <div className="h-4 w-full bg-gray-300 mb-1"></div>
+              <div className="h-4 w-full bg-gray-300 mb-1"></div>
+              <div className="h-4 w-1/2 bg-gray-300"></div>
+            </div>
+          ))}
+        </div>
+      )}
       {/* Pagination */}
       <PaginationDashboard
         currentPage={currentPage}
-        totalPages={totalPages}
+        totalPages={totalPage}
         onPageChange={setCurrentPage}
       />
     </div>

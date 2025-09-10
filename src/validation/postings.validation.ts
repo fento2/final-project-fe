@@ -5,7 +5,14 @@ export const schemaJobsInput = z.object({
 
   category: z.string().min(1, "Category is required"), // string biasa
   job_type: z.string().min(1, "Job type is required"),
-  skills: z.array(z.string()).min(1, "At least one skill is required"),
+  skills: z
+    .array(
+      z.object({
+        id: z.any(),
+        name: z.string().min(1, "Skill name is required"),
+      })
+    )
+    .min(1, "At least one skill is required"),
 
   salary: z.number().positive("Salary must be positive"),
   periodSalary: z.string().min(1, "Period is required"), // string

@@ -15,7 +15,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { EllipsisVertical } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { apiCall } from "@/helper/apiCall";
+import { Dots_v2 } from "@/components/ui/spinner";
+import { useToast } from "@/components/basic-toast";
 
 type Job = {
   slug: string;
@@ -23,12 +26,26 @@ type Job = {
 
 const ManagePosting = ({ slug }: Job) => {
   const [openDelete, setOpenDelete] = useState(false);
+  const [loading, setLoading] = useState(false)
   const router = useRouter();
+  const toast = useToast();
 
-  const handleDelete = () => {
-    console.log("Delete job id:");
-    setOpenDelete(false);
-    // TODO: panggil API delete job
+  const handleDelete = async () => {
+    try {
+      setLoading(true)
+      const { data } = await apiCall.delete(`/postings/delete/${slug}`)
+      if (data.success) {
+        setOpenDelete(false)
+        toast.success(data.message)
+        router.replace('/dashboard/postings')
+      }
+    } catch (error) {
+      toast.error('faild to delete')
+      console.log(error)
+
+    } finally {
+      setLoading(false)
+    }
   };
 
   return (
@@ -59,9 +76,10 @@ const ManagePosting = ({ slug }: Job) => {
       </DropdownMenu>
 
       {/* Modal confirm delete */}
-      <Dialog open={openDelete} onOpenChange={setOpenDelete}>
-        <DialogContent>
-          <DialogHeader>
+      <Dialog open={openDelete} onOpenChange={setOpenDelete} >
+        <DialogContent >
+          <DialogHeader >
+
             <DialogTitle>Are you sure?</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
@@ -73,7 +91,7 @@ const ManagePosting = ({ slug }: Job) => {
               Cancel
             </Button>
             <Button variant="destructive" onClick={handleDelete}>
-              Delete
+              {!loading ? 'Delete' : <Dots_v2 />}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -42,7 +42,7 @@ const FormJobPosting = () => {
     editDescription,
     editLongitude,
     editLocation,
-    editExpireAt,
+    editExpiredAt,
     setEditLatitude,
     setEditDescription,
     setEditLongitude,
@@ -67,9 +67,9 @@ const FormJobPosting = () => {
                 className="w-full sm:w-60 justify-start text-left font-normal py-6 text-lg"
               >
                 <CalendarIcon className="mr-2 h-5 w-5" />
-                {getValue(expiredAt, editExpireAt, pathname) ? (
+                {getValue(expiredAt, editExpiredAt, pathname) ? (
                   format(
-                    new Date(getValue(expiredAt, editExpireAt, pathname)),
+                    new Date(getValue(expiredAt, editExpiredAt, pathname)),
                     "PPP"
                   )
                 ) : (
@@ -81,8 +81,8 @@ const FormJobPosting = () => {
               <Calendar
                 mode="single"
                 selected={
-                  getValue(expiredAt, editExpireAt, pathname)
-                    ? new Date(getValue(expiredAt, editExpireAt, pathname))
+                  getValue(expiredAt, editExpiredAt, pathname)
+                    ? new Date(getValue(expiredAt, editExpiredAt, pathname))
                     : undefined
                 }
                 onSelect={(date) => {
