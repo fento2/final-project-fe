@@ -11,9 +11,11 @@ import { getValue, setValue } from "@/helper/postingsHelper";
 import { useCreateJobStore } from "@/lib/zustand/createJobStore";
 import { useEditJobStore } from "@/lib/zustand/editJobStore";
 import { usePathname } from "next/navigation";
-import FieldSkill from "./FieldSkill";
-import { toTitleCase } from "@/helper/toTitleCase";
+
+
 import { useGeneralDataStore } from "@/lib/zustand/generalData";
+import { toTitleCase } from "@/helper/toTitleCase";
+import FieldSkill from "./FieldSkill";
 const BasicForm = () => {
   const pathname = usePathname();
   const {
@@ -35,11 +37,11 @@ const BasicForm = () => {
     editCategory,
     editSalary,
     editJobType,
-    editSalaryPeriod,
+    editPeriodSalary: editSalaryPeriod,
     editCurrency,
     setEditTitle,
     setEditSalary,
-    setEditSalaryPeriod,
+    setEditPeriodSalary: setEditSalaryPeriod,
     setEditCurrency,
     setEditCategory,
     setEditJobType,

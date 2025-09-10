@@ -1,14 +1,12 @@
 "use client";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Car, Edit2, FileText } from "lucide-react";
+import { Edit2, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ManagePosting from "./components/ManagePostings";
 import { useParams } from "next/navigation";
 import FormPreselectionTest from "./components/FormPreSelection";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { useCreatePreselectionStore } from "@/lib/zustand/preselectionStore";
 import * as XLSX from "xlsx";
@@ -21,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import DetailPostingWithApplicant from "./components/DetailJobPosting";
 
 const DetailPostings = () => {
   const params = useParams();
@@ -162,109 +161,7 @@ const DetailPostings = () => {
   return (
     <div className="space-y-6 container mx-auto md:px-20 px-8 my-8">
       <div className="grid lg:grid-cols-3 grid-cols-1 gap-6">
-        {/* Job Detail */}
-        <Card className="relative lg:col-span-2 border border-gray-200 shadow-sm rounded-lg order-1">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-2xl font-semibold">
-              {job.title}
-            </CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">{job.company}</p>
-          </CardHeader>
-
-          <CardContent className="space-y-4 overflow-y-auto max-h-[650px]">
-            {/* Info Grid */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-1">
-                <p className="text-md font-bold">Category</p>
-                <p className="text-base">{job.category}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-md font-bold">Location</p>
-                <p className="text-base">{job.location}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-md font-bold">Salary</p>
-                <p className="text-base">{job.salary}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-md font-bold">Type</p>
-                <p className="text-base">{job.jobType}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-md font-bold">Posted</p>
-                <p className="text-base">{job.createdAt}</p>
-              </div>
-              <div className="space-y-1">
-                <p className="text-md font-bold">Expires</p>
-                <p className="text-base">{job.expiredAt}</p>
-              </div>
-            </div>
-
-            {/* Description */}
-            <div className="mt-4">
-              <h2 className="text-lg font-bold tracking-wide mb-2">
-                Description
-              </h2>
-              <div
-                className="quill-preview"
-                dangerouslySetInnerHTML={{ __html: job.description }}
-              />
-            </div>
-
-            {/* Tags / Skills */}
-            {job.skill && job.skill.length > 0 && (
-              <div className="-mt-10">
-                <h2 className="text-lg font-semibold tracking-wide mb-2">
-                  Required Skills
-                </h2>
-                <div className="flex flex-wrap gap-2">
-                  {job.skill.map((s: string, i: number) => (
-                    <Badge
-                      key={i}
-                      variant="secondary"
-                      className="px-3 py-1 text-sm bg-indigo-500/30 text-indigo-700"
-                    >
-                      {s}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            <div className="flex flex-col gap-2 mt-6">
-              <div className="flex items-center space-x-4">
-                <Label className="text-lg">Add Preselection Test</Label>
-                <Switch
-                  checked={addPreselection}
-                  onCheckedChange={setAddPreselection}
-                  className="bg-gray-200 data-[state=checked]:bg-indigo-500 relative rounded-full transition-colors"
-                >
-                  <span
-                    className={`${
-                      addPreselection ? "translate-x-6" : "translate-x-0"
-                    } inline-block w-6 h-6 bg-white rounded-full shadow-md transform transition-transform`}
-                  />
-                </Switch>
-              </div>
-
-              {addPreselection && (
-                <div className="space-y-2 mt-2">
-                  <Input
-                    type="file"
-                    accept=".xlsx,.xls"
-                    className="w-64 cursor-pointer"
-                    onChange={handleFileUpload}
-                  />
-                  <p className="text-sm text-muted-foreground">
-                    Upload the test questions in Excel format (.xlsx or .xls)
-                  </p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-          <ManagePosting slug={slug as string} />
-        </Card>
-
+        <DetailPostingWithApplicant addPreselection={addPreselection} setAddPreselection={setAddPreselection} handleFileUpload={handleFileUpload} />
         {/* preselectiontest */}
 
         {addPreselection && (
