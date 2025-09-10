@@ -37,7 +37,7 @@ const CardJobPosting = () => {
   const handleUpdate = async () => {
     const res = await updateJobPostingFetch(useEditJobStore, toast, setLoading, slug as string)
     if (res) {
-      router.push('/dashboard/postings')
+      router.push(`/dashboard/postings/${slug}`)
       reset()
       resetGeneralData()
     }
@@ -60,8 +60,17 @@ const CardJobPosting = () => {
           <Separator className="w-full h-[0.5px]" />
 
           {/* Actions */}
-          <div className={`flex ${isEdit ? "justify-end" : "justify-between"}`}>
-            {!isEdit && (
+          <div className={`flex justify-between`}>
+            {isEdit ? (
+              // Cancel button saat edit
+              <Button
+                className="w-full sm:w-auto bg-neutral-300 text-black hover:bg-neutral-700 hover:text-white"
+                onClick={() => router.back()}
+              >
+                Cancel
+              </Button>
+            ) : (
+              // Reset button saat create
               <Button
                 className="w-full sm:w-auto bg-neutral-300 text-black hover:bg-neutral-700 hover:text-white"
                 onClick={reset}
@@ -83,6 +92,7 @@ const CardJobPosting = () => {
               )}
             </Button>
           </div>
+
         </CardContent>
       </Card>
     </div>

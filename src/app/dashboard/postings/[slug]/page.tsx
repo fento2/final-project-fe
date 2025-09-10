@@ -1,6 +1,6 @@
 "use client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Edit2, FileText } from "lucide-react";
+import { Edit2, FileText, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ManagePosting from "./components/ManagePostings";
 import { useParams } from "next/navigation";
@@ -163,14 +163,46 @@ const DetailPostings = () => {
       <div className="grid lg:grid-cols-3 grid-cols-1 gap-6">
         <DetailPostingWithApplicant addPreselection={addPreselection} setAddPreselection={setAddPreselection} handleFileUpload={handleFileUpload} />
         {/* preselectiontest */}
-
         {addPreselection && (
-          <Card className="lg:col-span-3 order-2 lg:order-3">
-            <CardContent>
-              <FormPreselectionTest />
-            </CardContent>
-          </Card>
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
+            onClick={() => setAddPreselection(false)}
+          >
+            <Card
+              className="w-full max-w-3xl mx-4 relative"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Tombol close X */}
+              <button
+                onClick={() => setAddPreselection(false)}
+                className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl font-bold"
+              >
+                <X />
+              </button>
+
+              <CardContent className="space-y-4 p-6">
+                <h2 className="text-lg font-semibold mb-2">Preselection Test</h2>
+
+                {/* Form Preselection + upload file */}
+                <FormPreselectionTest />
+
+                <div className="mt-4">
+                  <p className="text-sm text-gray-500 mb-2">
+                    Upload the test questions in Excel format (.xlsx or .xls) or enter them manually below.
+                  </p>
+                  <Input
+                    type="file"
+                    accept=".xlsx,.xls"
+                    className="w-full sm:w-64 cursor-pointer"
+                    onChange={handleFileUpload}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         )}
+
+
 
         <Card className="lg:col-span-1 order-3 lg:order-2 ">
           <CardHeader className="flex flex-col gap-4 items-center">

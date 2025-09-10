@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { apiCall } from "@/helper/apiCall";
 import { useState, useEffect } from "react";
 import { toTitleCase } from "@/helper/toTitleCase";
+import ReadOnlyQuill from "@/app/dashboard/components/ReadOnlyReactQuil";
 
 interface DetailJobPostring {
     addPreselection: boolean;
@@ -73,10 +74,23 @@ const DetailPostingWithApplicant = ({
                 <CardHeader className="px-6 pt-6">
                     <div className="h-6 bg-gray-300 rounded w-1/3 mb-2"></div>
                     <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                    <div className="h-6 bg-gray-300 rounded w-1/3 mb-2"></div>
+                    <div className="h-4 bg-gray-200 rounded w-1/4"></div>
                 </CardHeader>
                 <CardContent className="px-6 py-4 space-y-4">
                     <div className="h-4 bg-gray-200 rounded w-full"></div>
                     <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
+                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
                     <div className="h-4 bg-gray-200 rounded w-3/4"></div>
                     <div className="h-4 bg-gray-200 rounded w-2/3"></div>
                 </CardContent>
@@ -96,12 +110,16 @@ const DetailPostingWithApplicant = ({
                 <CardContent className="space-y-6 overflow-y-auto max-h-[650px] px-6 py-4">
                     {/* About This Job */}
                     <section className="mt-2">
-                        <h2 className="text-lg font-bold tracking-widest mb-3 border-b border-gray-200 pb-2">About This Job</h2>
-                        <div
+                        <h2 className="text-lg font-bold tracking-widest mb-3 border-b border-gray-200 pb-2">
+                            About This Job
+                        </h2>
+                        {/* <div
                             className="quill-preview prose prose-sm max-w-none"
                             dangerouslySetInnerHTML={{ __html: job.description }}
-                        />
+                        /> */}
+                        <ReadOnlyQuill value={job.description} />
                     </section>
+
 
                     {/* Info Grid */}
                     <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
@@ -129,7 +147,7 @@ const DetailPostingWithApplicant = ({
                                     <Badge
                                         key={s.id}
                                         variant="secondary"
-                                        className="px-3 py-1 text-sm bg-indigo-100 text-indigo-800 hover:bg-indigo-200 transition-colors rounded-md cursor-default"
+                                        className="px-3 py-1 text-sm bg-indigo-100 text-indigo-800 hover:bg-indigo-200 transition-colors rounded-full cursor-default"
                                     >
                                         {s.name}
                                     </Badge>

@@ -15,7 +15,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { EllipsisVertical } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { apiCall } from "@/helper/apiCall";
 import { Dots_v2 } from "@/components/ui/spinner";
 import { useToast } from "@/components/basic-toast";
