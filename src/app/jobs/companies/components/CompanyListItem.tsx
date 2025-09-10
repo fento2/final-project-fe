@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import { Star, Building } from "lucide-react";
 import { Button } from "../../../../components/ui/button";
 import { Card } from "../../../../components/ui/card";
@@ -12,6 +13,10 @@ interface CompanyListItemProps {
 }
 
 export function CompanyListItem({ company, onViewJobs, onViewProfile }: CompanyListItemProps) {
+    const slug = company.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/(^-|-$)/g, "");
     return (
         <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -50,13 +55,14 @@ export function CompanyListItem({ company, onViewJobs, onViewProfile }: CompanyL
                                     <Star className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400 fill-current" />
                                     <span className="text-xs sm:text-sm font-semibold text-gray-700">{company.rating}.0</span>
                                 </div>
-                                <Button 
-                                    className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm px-3 sm:px-4 py-2"
-                                    onClick={() => onViewJobs?.(company.id)}
-                                >
-                                    <span className="hidden sm:inline">View Jobs</span>
-                                    <span className="sm:hidden">Jobs</span>
-                                </Button>
+                                <Link href={`/jobs/companies/${slug}`}>
+                                    <Button 
+                                        className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm px-3 sm:px-4 py-2"
+                                    >
+                                        <span className="hidden sm:inline">View Jobs</span>
+                                        <span className="sm:hidden">Jobs</span>
+                                    </Button>
+                                </Link>
                             </div>
                         </div>
                     </div>
