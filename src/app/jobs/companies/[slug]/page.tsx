@@ -63,9 +63,9 @@ const COMPANIES: Record<string, Company> = {
         slug: "acme-corporation",
         name: "Acme Corporation",
         coverImage:
-            "https://images.unsplash.com/photo-1552913908-526f8d105a40?q=80&w=1974&auto=format&fit=crop",
+            "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1974&auto=format&fit=crop",
         logo:
-            "https://images.unsplash.com/photo-1631882250056-6891cf8b5db1?w=200&h=200&fit=crop&crop=faces",
+            "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=200&h=200&fit=crop&crop=faces",
         verified: true,
         meta: {
             location: "New York, NY",
@@ -183,11 +183,9 @@ export default async function CompanyDetailPage({
             {/* Header */}
             <header className="mt-4 border-b">
                 <div className="relative max-w-7xl mx-auto px-6">
+                    {/* Cover Image */}
                     <div className="relative h-56 w-full rounded-2xl overflow-hidden">
                         <Image src={company.coverImage} alt={company.name} fill className="object-cover" />
-                        <div className="absolute -bottom-8 left-6 w-20 h-20 rounded-2xl bg-white shadow-lg flex items-center justify-center overflow-hidden">
-                            <Image src={company.logo} alt={`${company.name} logo`} width={80} height={80} className="object-cover" />
-                        </div>
                         <div className="absolute top-6 right-6">
                             <div className="bg-indigo-600 text-white px-3 py-2 rounded-full text-xs font-semibold shadow">
                                 WE ARE HIRING
@@ -195,40 +193,47 @@ export default async function CompanyDetailPage({
                         </div>
                     </div>
 
-                    <div className="pt-12 pb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                        <div>
-                            <div className="flex items-center gap-2">
-                                <h1 className="text-3xl md:text-4xl font-bold text-gray-900">{company.name}</h1>
-                                {company.verified && (
-                                    <CheckCircle2 className="text-indigo-600" />
-                                )}
-                            </div>
-                            <div className="mt-3 flex flex-wrap gap-2 text-sm text-gray-600">
-                                <span className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full">
-                                    {company.stats.openJobs} Jobs Open - Available
-                                </span>
-                                <span className="inline-flex items-center gap-2 bg-gray-50 px-3 py-1 rounded-full">
-                                    <MapPin className="w-4 h-4" /> {company.meta.location}
-                                </span>
-                                <span className="inline-flex items-center gap-2 bg-gray-50 px-3 py-1 rounded-full">
-                                    <DollarSign className="w-4 h-4" /> {company.meta.salaryRange}
-                                </span>
-                                <span className="inline-flex items-center gap-2 bg-gray-50 px-3 py-1 rounded-full">
-                                    <Timer className="w-4 h-4" /> {company.meta.hiringTime}
-                                </span>
-                            </div>
+                    {/* Company Logo - Outside Card */}
+                    <div className="flex items-start gap-6 pt-6 pb-6">
+                        <div className="w-24 h-24 rounded-2xl bg-white shadow-lg flex items-center justify-center overflow-hidden flex-shrink-0">
+                            <Image src={company.logo} alt={`${company.name} logo`} width={96} height={96} className="object-cover" />
                         </div>
 
-                        <div className="flex items-center gap-3 self-start md:self-auto">
-                            <button className="bg-indigo-600 text-white px-4 py-2 rounded-xl font-semibold hover:bg-indigo-700 transition">
-                                Contact This Company
-                            </button>
-                            <button className="p-2.5 rounded-xl border hover:bg-gray-50">
-                                <Share2 className="w-5 h-5" />
-                            </button>
-                            <button className="p-2.5 rounded-xl border hover:bg-gray-50">
-                                <Bookmark className="w-5 h-5" />
-                            </button>
+                        <div className="flex-1 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900">{company.name}</h1>
+                                    {company.verified && (
+                                        <CheckCircle2 className="text-indigo-600" />
+                                    )}
+                                </div>
+                                <div className="mt-3 flex flex-wrap gap-2 text-sm text-gray-600">
+                                    <span className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full">
+                                        {company.stats.openJobs} Jobs Open - Available
+                                    </span>
+                                    <span className="inline-flex items-center gap-2 bg-gray-50 px-3 py-1 rounded-full">
+                                        <MapPin className="w-4 h-4" /> {company.meta.location}
+                                    </span>
+                                    <span className="inline-flex items-center gap-2 bg-gray-50 px-3 py-1 rounded-full">
+                                        <DollarSign className="w-4 h-4" /> {company.meta.salaryRange}
+                                    </span>
+                                    <span className="inline-flex items-center gap-2 bg-gray-50 px-3 py-1 rounded-full">
+                                        <Timer className="w-4 h-4" /> {company.meta.hiringTime}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center gap-3 self-start md:self-auto">
+                                <button className="bg-indigo-600 text-white px-4 py-2 rounded-xl font-semibold hover:bg-indigo-700 transition">
+                                    Contact This Company
+                                </button>
+                                <button className="p-2.5 rounded-xl border hover:bg-gray-50">
+                                    <Share2 className="w-5 h-5" />
+                                </button>
+                                <button className="p-2.5 rounded-xl border hover:bg-gray-50">
+                                    <Bookmark className="w-5 h-5" />
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

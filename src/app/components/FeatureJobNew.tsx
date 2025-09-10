@@ -2,12 +2,59 @@
 import { useState } from "react";
 import FeatureJobCard from "./JobCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { useFeaturedJobs } from "@/hooks/useJobs";
+import { useFeaturedJobs } from "../../hooks/useJobs";
 
-export default function FeatureJob() {
+// Simplified fallback data (only used as backup)
+const fallbackJobs = [
+    {
+        id: 1,
+        company: "UXLabs Company",
+        logo: "https://images.unsplash.com/photo-1728577740843-5f29c7586afe?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        postedDate: "Feb 18, 2023",
+        location: "Chicago, IL",
+        salary: "80,000 - 100,000 per year",
+        title: "Software Developer",
+        type: "Full Time",
+        description: "Develop and maintain software applications and programs for our clients using various programming languages and platforms.",
+        daysLeft: 25,
+    },
+    {
+        id: 2,
+        company: "SkyView Enterprises", 
+        logo: "https://images.unsplash.com/photo-1728577740843-5f29c7586afe?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        postedDate: "Feb 20, 2023",
+        location: "Los Angeles, CA",
+        salary: "50,000 - 60,000 per year",
+        title: "Graphic Designer",
+        type: "Full Time",
+        description: "Create visually appealing graphics, designs, layouts for clients to use in various media, including websites, social media, and prints.",
+        daysLeft: 16,
+    },
+    {
+        id: 3,
+        company: "TechCorp Solutions",
+        logo: "https://images.unsplash.com/photo-1728577740843-5f29c7586afe?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        postedDate: "Feb 22, 2023",
+        location: "New York, NY",
+        salary: "90,000 - 120,000 per year",
+        title: "Data Scientist",
+        type: "Full Time",
+        description: "Analyze complex data sets to derive business insights and build predictive models for strategic decision making.",
+        daysLeft: 12,
+    },
+];
+
+const FeatureJob = () => {
     const [page, setPage] = useState(1);
-    const { jobs: featuredJobs, loading, error } = useFeaturedJobs(18); // Get more jobs for pagination
+    const { jobs: featuredJobs, loading, error } = useFeaturedJobs(9); // Get more jobs for pagination
+    const itemsPerPage = 3;
     
+    // Use backend data if available, fallback to dummy data
+    const jobsToUse = featuredJobs && featuredJobs.length > 0 ? featuredJobs : fallbackJobs;
+    const startIndex = (page - 1) * itemsPerPage;
+    const currentPageJobs = jobsToUse.slice(startIndex, startIndex + itemsPerPage);
+    const totalPages = Math.ceil(jobsToUse.length / itemsPerPage);
+
     if (loading) {
         return (
             <section className="max-w-7xl mx-auto px-4 py-16 text-center">
@@ -16,27 +63,6 @@ export default function FeatureJob() {
             </section>
         );
     }
-
-    if (error) {
-        return (
-            <section className="max-w-7xl mx-auto px-4 py-16 text-center">
-                <p className="text-red-600">Failed to load featured jobs: {error}</p>
-            </section>
-        );
-    }
-
-    if (!featuredJobs || featuredJobs.length === 0) {
-        return (
-            <section className="max-w-7xl mx-auto px-4 py-16 text-center">
-                <p className="text-gray-600">No featured jobs available</p>
-            </section>
-        );
-    }
-
-    const itemsPerPage = 6;
-    const startIndex = (page - 1) * itemsPerPage;
-    const currentPageJobs = featuredJobs.slice(startIndex, startIndex + itemsPerPage);
-    const totalPages = Math.ceil(featuredJobs.length / itemsPerPage);
 
     return (
         <section className="max-w-7xl mx-auto px-4 py-16 text-black">
@@ -56,14 +82,14 @@ export default function FeatureJob() {
                     <FeatureJobCard 
                         key={job.job_id || job.id || i} 
                         company={job.Companies?.name || job.company?.name || job.company || "Unknown Company"}
-                        logo={job.Companies?.profile_picture || job.company?.profile_picture || "/images/logo.png"}
-                        postedDate={job.createdAt ? new Date(job.createdAt).toLocaleDateString() : "Recently"}
+                        logo={job.Companies?.profile_picture || job.company?.profile_picture || job.logo || "/images/logo.png"}
+                        postedDate={job.createdAt ? new Date(job.createdAt).toLocaleDateString() : job.postedDate || "Recently"}
                         location={job.location || "Remote"}
-                        salary={job.salary ? `$${job.salary}/${job.periodSalary?.toLowerCase() || 'hour'}` : "Competitive"}
+                        salary={job.salary ? `$${job.salary}/${job.periodSalary?.toLowerCase() || 'hour'}` : job.salary || "Competitive"}
                         title={job.title || "Job Position"}
-                        type={job.job_type?.replace('_', ' ') || "Full-time"}
+                        type={job.job_type?.replace('_', ' ') || job.type || "Full-time"}
                         description={job.description?.replace(/<[^>]*>/g, '').substring(0, 100) + '...' || "No description available"}
-                        daysLeft={job.expiredAt ? Math.ceil((new Date(job.expiredAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : Math.floor(Math.random() * 30) + 1}
+                        daysLeft={job.expiredAt ? Math.ceil((new Date(job.expiredAt).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)) : job.daysLeft || Math.floor(Math.random() * 30) + 1}
                     />
                 ))}
             </div>
@@ -101,4 +127,6 @@ export default function FeatureJob() {
             </div>
         </section>
     );
-}
+};
+
+export default FeatureJob;

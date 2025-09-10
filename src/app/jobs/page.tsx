@@ -4,6 +4,7 @@ import { Banknote, MapPin } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useMemo, useState } from "react";
+import { useJobs } from "@/hooks/useJobs";
 
 type Job = {
     id: string;
@@ -15,17 +16,6 @@ type Job = {
     salaryMax?: number;
     tags?: string[];
 };
-
-const SAMPLE_JOBS: Job[] = Array.from({ length: 15 }).map((_, i) => ({
-    id: String(i + 1),
-    title: ["Senior UI Designer", "UI/UX Designer", "Mobile UI Designer", "Data Analyst", "Project Manager"][i % 5],
-    company: ["Creative Solutions, Inc.", "Acme Corporation", "App Works", "Bright Future Solutions", "Tech Works Inc."][i % 5],
-    type: (["Full Time", "Full Time", "Full Time", "Part-time", "Contract"] as Job["type"][])[i % 5],
-    location: ["San Francisco, CA", "New York, NY", "Los Angeles, CA", "Chicago, IL", "Austin, TX"][i % 5],
-    salaryMin: 60000 + i * 1000,
-    salaryMax: 120000 + i * 1500,
-    tags: ["Figma", "React", "Tailwind"].slice(0, (i % 3) + 1),
-}));
 
 type Filters = {
     date: string;
@@ -281,14 +271,31 @@ export default function JobsListPage() {
     const [page, setPage] = useState(1);
     const perPage = 9;
 
+    // Fetch jobs from backend
+    const { jobs: backendJobs, loading, error } = useJobs({ limit: 50 });
+
+    // Transform backend data to match frontend Job type
+    const transformedJobs: Job[] = useMemo(() => {
+        return backendJobs.map((job: any) => ({
+            id: job.job_id?.toString() || job.id?.toString() || '',
+            title: job.title || 'Job Position',
+            company: job.Companies?.name || job.company?.name || 'Unknown Company',
+            type: (job.job_type?.replace('_', ' ') || 'Full Time') as Job["type"],
+            location: job.location || 'Remote',
+            salaryMin: job.salary || 0,
+            salaryMax: job.salary ? job.salary * 1.5 : 0,
+            tags: job.skills?.map((skill: any) => skill.name) || [],
+        }));
+    }, [backendJobs]);
+
     const filtered = useMemo(() => {
-        return SAMPLE_JOBS.filter((j) => {
+        return transformedJobs.filter((j: Job) => {
             if (filters.types.length && !filters.types.includes(j.type)) return false;
             if (filters.salaryMax && j.salaryMin && j.salaryMin > filters.salaryMax) return false;
             if (filters.tools.length && !filters.tools.every((t) => j.tags?.includes(t))) return false;
             return true;
         });
-    }, [filters]);
+    }, [filters, transformedJobs]);
 
     const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
     const shown = filtered.slice((page - 1) * perPage, page * perPage);
@@ -322,15 +329,31 @@ export default function JobsListPage() {
                         <a href="/jobs/browse" className="text-sm text-indigo-600 hover:underline">See all jobs →</a>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-10">
-                        {SAMPLE_JOBS.slice(0, 6).map((job) => (
-                            <div key={job.id} className="bg-white rounded-xl shadow p-4">
-                                <h3 className="text-lg font-semibold mb-1">{job.title}</h3>
-                                <div className="text-sm text-gray-500 mb-2">{job.company}</div>
-                                <div className="text-sm text-gray-600">{job.location} • <span className="font-medium">{job.type}</span></div>
-                            </div>
-                        ))}
-                    </div>
+                    {loading ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-10">
+                            {Array.from({ length: 6 }).map((_, i) => (
+                                <div key={i} className="bg-white rounded-xl shadow p-4 animate-pulse">
+                                    <div className="h-6 bg-gray-200 rounded mb-2"></div>
+                                    <div className="h-4 bg-gray-200 rounded mb-2 w-3/4"></div>
+                                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                                </div>
+                            ))}
+                        </div>
+                    ) : error ? (
+                        <div className="bg-white rounded-xl shadow p-8 mb-10 text-center">
+                            <p className="text-gray-600">Failed to load jobs. Please try again later.</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-10">
+                            {transformedJobs.slice(0, 6).map((job: Job) => (
+                                <div key={job.id} className="bg-white rounded-xl shadow p-4">
+                                    <h3 className="text-lg font-semibold mb-1">{job.title}</h3>
+                                    <div className="text-sm text-gray-500 mb-2">{job.company}</div>
+                                    <div className="text-sm text-gray-600">{job.location} • <span className="font-medium">{job.type}</span></div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
 
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-2xl font-semibold">Featured Companies</h2>

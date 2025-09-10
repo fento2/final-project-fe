@@ -14,7 +14,6 @@ import { EmptyState } from "./components/EmptyState";
 import { CTASection } from "./components/CTASection";
 
 // Data and hooks
-import { companiesData } from "./data/companiesData";
 import { useCompaniesPage } from "./hooks/useCompaniesPage";
 
 export default function CompaniesPage() {
@@ -36,6 +35,9 @@ export default function CompaniesPage() {
         uniqueLocations,
         filteredCompanies,
         
+        // Backend data
+        backendError,
+        
         // Actions
         setSearchTerm,
         setSelectedIndustry,
@@ -48,7 +50,7 @@ export default function CompaniesPage() {
         clearFilters,
         handleViewJobs,
         handleViewProfile,
-    } = useCompaniesPage(companiesData);
+    } = useCompaniesPage();
 
     return (
         <div className="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
@@ -71,7 +73,7 @@ export default function CompaniesPage() {
                             onIndustryChange={setSelectedIndustry}
                             onLocationChange={setSelectedLocation}
                             onClearFilters={clearFilters}
-                            companiesData={companiesData}
+                            companiesData={filteredCompanies}
                         />
                     </aside>
 
@@ -100,8 +102,20 @@ export default function CompaniesPage() {
                         {/* Loading State */}
                         {isLoading && <LoadingCards />}
 
+                        {/* Error State */}
+                        {!isLoading && backendError && (
+                            <div className="text-center py-12">
+                                <p className="text-gray-500">Error loading companies: {backendError}</p>
+                            </div>
+                        )}
+
+                        {/* Empty State */}
+                        {!isLoading && !backendError && currentCompanies.length === 0 && (
+                            <EmptyState onClearFilters={clearFilters} />
+                        )}
+
                         {/* Companies Grid/List */}
-                        {!isLoading && (
+                        {!isLoading && !backendError && currentCompanies.length > 0 && (
                             <AnimatePresence mode="wait">
                                 <motion.div
                                     key={viewMode}

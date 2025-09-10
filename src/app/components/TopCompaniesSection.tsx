@@ -1,66 +1,47 @@
+"use client";
+
 import Link from "next/link";
 import { TopCompanyCard } from "./CardTopCompanyHome";
+import { useTopCompanies } from "@/hooks/useCompanies";
 
-const companies = [
-    {
-        id: 1,
-        name: "TechWorks Incorporation",
-        employees: 1235,
-        jobsOpen: 8,
-        rating: 3,
-        logo: "/logo1.png",
-        location: "Jakarta, Indonesia",
-        industry: "Technology",
-        description: "Leading tech company specializing in AI and cloud solutions.",
-        growth: 12,
-        verified: true,
-        benefits: ["Health Insurance", "Remote Work", "Stock Options"],
-    },
-    {
-        id: 2,
-        name: "Bright Future Solutions",
-        employees: 3567,
-        jobsOpen: 20,
-        rating: 4,
-        logo: "/logo2.png",
-        location: "Bandung, Indonesia",
-        industry: "Consulting",
-        description: "Consulting firm focused on business transformation and growth.",
-        growth: 8,
-        verified: false,
-        benefits: ["Flexible Hours", "Career Development"],
-    },
-    {
-        id: 3,
-        name: "SkyView Enterprises",
-        employees: 7824,
-        jobsOpen: 14,
-        rating: 5,
-        logo: "/logo3.png",
-        location: "Surabaya, Indonesia",
-        industry: "Aerospace",
-        description: "Innovative aerospace company with global reach.",
-        growth: 15,
-        verified: true,
-        benefits: ["Travel Opportunities", "Performance Bonus", "Retirement Plan"],
-    },
-];
+export default function TopCompaniesSection() {
+    const { companies: topCompanies, loading, error } = useTopCompanies(3);
 
-export default function TopCompanies() {
+    if (loading) {
+        return (
+            <section className="py-16 bg-white">
+                <div className="max-w-6xl mx-auto text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
+                    <p className="mt-4 text-gray-600">Loading top companies...</p>
+                </div>
+            </section>
+        );
+    }
+
+    if (error) {
+        return (
+            <section className="py-16 bg-white">
+                <div className="max-w-6xl mx-auto text-center">
+                    <p className="text-red-600">Failed to load companies: {error}</p>
+                </div>
+            </section>
+        );
+    }
+
     return (
-        <section className="py-12 px-3">
+        <section className="py-16 bg-white">
             <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                 {/* Bagian kiri */}
                 <div>
                     <h2 className="text-2xl font-bold">Top Companies</h2>
                     <p className="text-gray-600 mb-6">
-                        Explore and find the dream job opportunities with our best companies.
+                        Discover leading companies in various industries and explore exciting career opportunities
                     </p>
 
                     <div className="space-y-6">
-                        {companies.map((company, index) => (
+                        {topCompanies.map((company: any, index: number) => (
                             <div
-                                key={company.id}
+                                key={company.id || company.company_id}
                                 className="grid grid-cols-[60px_1fr] gap-4 items-center"
                             >
                                 {/* Nomor */}
@@ -70,18 +51,18 @@ export default function TopCompanies() {
 
                                 {/* Card Company */}
                                 <TopCompanyCard
-                                    logo={company.logo}
+                                    logo={company.logo || company.profile_picture}
                                     name={company.name}
-                                    rating={company.rating}
-                                    employees={company.employees}
-                                    jobsOpen={company.jobsOpen}
+                                    rating={company.rating || 4}
+                                    employees={company.employees || 100}
+                                    jobsOpen={company.jobsOpen || 5}
                                 />
                             </div>
                         ))}
                     </div>
 
                     <Link
-                        href="#"
+                        href="/jobs/companies"
                         className="text-indigo-600 text-sm font-medium mt-6 inline-block hover:underline"
                     >
                         View All Top Companies
@@ -89,24 +70,41 @@ export default function TopCompanies() {
                 </div>
 
                 {/* Bagian kanan */}
-                <div className="p-8 h-full content-center bg-gray-50 rounded-2xl bg-[url(https://images.unsplash.com/photo-1575257922566-5d0a4a2da788?q=80&w=1174&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)]">
-                    <h3 className="text-2xl font-bold mb-4">
-                        Ready to take the next step in your dream career with us?
-                    </h3>
-                    <p className="text-gray-600 mb-6">
-                        Join JobListing today and start exploring exciting job opportunities
-                        with top companies.
-                    </p>
-                    <div className="flex gap-4">
-                        <button className="px-4 py-2 bg-indigo-600 text-white rounded-lg">
-                            Contact Us
-                        </button>
-                        <button className="px-4 py-2 border border-gray-300 rounded-lg">
-                            Learn More
-                        </button>
+                <div className="hidden md:block">
+                    <div className="rounded-lg p-8 bg-gray-50">
+                        <div className="text-center mb-6">
+                            <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                                Looking for Top Companies?
+                            </h3>
+                            <p className="text-gray-600 text-sm">
+                                Explore opportunities with leading employers in your field
+                            </p>
+                        </div>
+                        
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between text-sm">
+                                <span className="text-gray-600">Active Companies:</span>
+                                <span className="font-semibold text-indigo-600">150+</span>
+                            </div>
+                            <div className="flex items-center justify-between text-sm">
+                                <span className="text-gray-600">Open Positions:</span>
+                                <span className="font-semibold text-indigo-600">2,500+</span>
+                            </div>
+                            <div className="flex items-center justify-between text-sm">
+                                <span className="text-gray-600">Industries:</span>
+                                <span className="font-semibold text-indigo-600">25+</span>
+                            </div>
+                        </div>
+
+                        <Link
+                            href="/jobs/companies"
+                            className="block w-full text-center bg-indigo-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-indigo-700 transition-colors duration-300 mt-6"
+                        >
+                            Browse All Companies
+                        </Link>
                     </div>
                 </div>
             </div>
         </section>
     );
-};
+}
