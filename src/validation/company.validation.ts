@@ -19,7 +19,7 @@ export const schemaUpdateCompanyProfile = z.object({
 
   description: z
     .string()
-    .max(10000, "Description too long")
+    .max(20000, "Description too long")
     .or(z.literal("")) // boleh kosong string
     .nullable()
     .optional(),

@@ -30,27 +30,31 @@ export default function TextEditor({ value, setValue, profile }: ITextEditor) {
     toolbar: {
       container: [
         ["bold", "italic", "underline", "strike"],
-        ["requirement", "benefit"], // custom button
-        [{ color: [] }, { background: [] }],
-        [{ list: "bullet" }],
-        [{ align: [] }],
+        [{ size: ["small", false, "large", "huge"] }],
+        // ["requirement", "benefit"], // custom button
+        [{ header: [1, 2, 3, false] }],
+        [{ list: "ordered" }, { list: "bullet" },
+          //  { list: "check" }
+        ],
+        [{ indent: "-1" }, { indent: "+1" }],
+        [{ align: [] }, { direction: "rtl" }],
+        // [{ color: [] }, { background: [] }],
+        ["blockquote", "code-block"],
         ["link", "video"],
-        ["code-block"],
-        [{ size: ["small", false, "large", "huge"] }], // ← ukuran huruf
         ["clean"],
       ],
       // ini custom toolbar
       handlers: {
-        requirement: function (this: any) {
-          const editor = this.quill;
-          editor.insertText(editor.getLength() - 1, "\nRequirements:\n");
-          editor.formatLine(editor.getLength() - 1, 1, { list: "bullet" });
-        },
-        benefit: function (this: any) {
-          const editor = this.quill;
-          editor.insertText(editor.getLength() - 1, "\nBenefits:\n");
-          editor.formatLine(editor.getLength() - 1, 1, { list: "bullet" });
-        },
+        // requirement: function (this: any) {
+        //   const editor = this.quill;
+        //   editor.insertText(editor.getLength() - 1, "\nRequirements:\n");
+        //   editor.formatLine(editor.getLength() - 1, 1, { list: "bullet" });
+        // },
+        // benefit: function (this: any) {
+        //   const editor = this.quill;
+        //   editor.insertText(editor.getLength() - 1, "\nBenefits:\n");
+        //   editor.formatLine(editor.getLength() - 1, 1, { list: "bullet" });
+        // },
         // image: function (this: any) {
         //   const editor = this.quill;
         //   const url = prompt("Enter image URL"); // bisa diganti modal custom
@@ -70,6 +74,14 @@ export default function TextEditor({ value, setValue, profile }: ITextEditor) {
         //       img.height = height ? parseInt(height) : 300;
         //     }
         //   }, 100);
+        // },
+        // image: function (this: any) {
+        //   const editor = this.quill;
+        //   const url = prompt("Enter image URL:");
+        //   if (!url) return;
+
+        //   const range = editor.getSelection(true);
+        //   editor.insertEmbed(range.index, "image", url, "user");
         // },
       },
     },

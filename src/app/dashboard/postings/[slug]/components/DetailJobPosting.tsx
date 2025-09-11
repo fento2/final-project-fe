@@ -1,60 +1,26 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+"use client";
+
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import ManagePosting from "./ManagePostings";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { useParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import { apiCall } from "@/helper/apiCall";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { toTitleCase } from "@/helper/toTitleCase";
 import ReadOnlyQuill from "@/app/dashboard/components/ReadOnlyReactQuil";
 import PreselectionControl from "./BottomSection";
+import { useJobDetailStore } from "@/lib/zustand/detailJobStore";
 
-interface DetailJobPostring {
-    addPreselection: boolean;
-    setAddPreselection: (value: boolean) => void;
-    handleFileUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
-}
-
-interface IJobDetail {
-    job_id: number;
-    title: string;
-    slug: string;
-    description: string;
-    location: string;
-    salary: number;
-    periodSalary: string; // enum diganti string
-    currency: string;     // enum diganti string
-    expiredAt: string | Date;
-    createdAt: string | Date;
-    updatedAt: string | Date;
-    category: string;     // enum diganti string
-    job_type: string;     // enum diganti string
-    latitude: string;
-    longitude: string;
-    preselection_test: boolean;
-    skills: {
-        id: number;
-        name: string;
-    }[];
-    company?: string;
-}
-
-const DetailPostingWithApplicant = ({
-    addPreselection,
-    setAddPreselection,
-}: DetailJobPostring) => {
-    const [job, setJob] = useState<IJobDetail | null>(null);
+const DetailPostingWithApplicant = () => {
     const { slug } = useParams();
 
+    const job = useJobDetailStore((state) => state.jobDetail);
+    const setJob = useJobDetailStore((state) => state.setJobDetail);
 
     const getDetailJob = async () => {
         try {
             const { data } = await apiCall.get(`/postings/get-detail/${slug}`);
-            if (data.success) {
-                setJob(data.data);
-            }
+            if (data.success) setJob(data.data);
         } catch (error) {
             console.log(error);
         }
@@ -64,116 +30,87 @@ const DetailPostingWithApplicant = ({
         getDetailJob();
     }, [slug]);
 
-    const handleEditPreselection = () => {
-        console.log("Edit preselection"); // nanti bisa panggil modal atau navigasi ke form edit
-    };
-
-
     if (!job) {
         return (
             <Card className="relative lg:col-span-2 border border-gray-200 shadow-md rounded-xl bg-white order-1 animate-pulse">
-                <CardHeader className="px-6 pt-6">
-                    <div className="h-6 bg-gray-300 rounded w-1/3 mb-2"></div>
-                    <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-                    <div className="h-6 bg-gray-300 rounded w-1/3 mb-2"></div>
+                <CardHeader className="px-6 pt-6 space-y-2">
+                    <div className="h-6 bg-gray-300 rounded w-1/3"></div>
                     <div className="h-4 bg-gray-200 rounded w-1/4"></div>
                 </CardHeader>
-                <CardContent className="px-6 py-4 space-y-4">
-                    <div className="h-4 bg-gray-200 rounded w-full"></div>
-                    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-                    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-                    <div className="h-4 bg-gray-200 rounded w-5/6"></div>
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                <CardContent className="px-6 py-4 space-y-3">
+                    {Array.from({ length: 12 }).map((_, idx) => (
+                        <div key={idx} className="h-4 bg-gray-200 rounded w-full"></div>
+                    ))}
                 </CardContent>
             </Card>
         );
     }
 
     return (
-        <>
-            <Card className="relative lg:col-span-2 border border-gray-200 shadow-md rounded-xl bg-white order-1">
-                <CardHeader className=" px-6 pt-6">
-                    <CardTitle className="text-3xl font-semibold">{job.title}</CardTitle>
-                    {job.company && (
-                        <p className="text-sm mt-1">{job.company}</p>
-                    )}
-                </CardHeader>
-                <CardContent className="space-y-6 overflow-y-auto max-h-[650px] px-6 py-4">
-                    {/* About This Job */}
-                    <section className="mt-2">
-                        <h2 className="text-xl font-bold tracking-widest border-b border-gray-200 pb-2">
-                            About This Job
+        <Card className="relative lg:col-span-2 border border-gray-200 shadow-md rounded-xl bg-white order-1">
+            <CardHeader className="px-6">
+                <CardTitle className="text-lg sm:text-xl md:text-3xl font-bold tracking-wide">
+                    {job.title}
+                </CardTitle>
+            </CardHeader>
+
+            <CardContent className="overflow-y-auto max-h-[550px] px-6 scrollbar-hide">
+                {/* About This Job */}
+                <section className="border-b border-gray-200 pb-6 md:pb-8">
+                    <h2 className="text-base sm:text-lg md:text-2xl font-semibold tracking-wide mb-4 md:mb-6 border-b border-gray-200 pb-1">
+                        About This Job
+                    </h2>
+                    <ReadOnlyQuill value={job.description} />
+                </section>
+
+                {/* Info Grid */}
+                <section className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-6">
+                    {[
+                        { label: "Category", value: toTitleCase(job.category) },
+                        { label: "Location", value: job.location },
+                        { label: "Salary", value: `${toTitleCase(job.currency)} ${job.salary.toLocaleString()} / ${toTitleCase(job.periodSalary)}` },
+                        { label: "Type", value: toTitleCase(job.job_type) },
+                        { label: "Posted", value: new Date(job.createdAt).toLocaleDateString() },
+                        { label: "Expires", value: new Date(job.expiredAt).toLocaleDateString() },
+                    ].map((info, idx) => (
+                        <div key={idx} className="space-y-1">
+                            <p className="text-xs sm:text-sm md:text-base font-medium text-gray-600 uppercase tracking-wide">
+                                {info.label}
+                            </p>
+                            <p className="text-sm sm:text-base md:text-lg font-semibold text-gray-800">
+                                {info.value}
+                            </p>
+                        </div>
+                    ))}
+                </section>
+
+                {/* Skills */}
+                {job.skills && job.skills.length > 0 && (
+                    <section className="mt-6">
+                        <h2 className="text-sm sm:text-base md:text-lg font-semibold mb-3 border-b border-gray-200 pb-1">
+                            Skills
                         </h2>
-                        {/* <div
-                            className="quill-preview prose prose-sm max-w-none"
-                            dangerouslySetInnerHTML={{ __html: job.description }}
-                        /> */}
-                        <ReadOnlyQuill value={job.description} />
+                        <div className="flex flex-wrap gap-2">
+                            {job.skills.map((s) => (
+                                <Badge
+                                    key={s.id}
+                                    variant="secondary"
+                                    className="px-2 sm:px-3 py-1 text-xs sm:text-sm md:text-base bg-indigo-100 text-indigo-800 hover:bg-indigo-200 rounded-full transition-colors"
+                                >
+                                    {s.name}
+                                </Badge>
+                            ))}
+                        </div>
                     </section>
+                )}
+            </CardContent>
 
+            <CardFooter>
+                <PreselectionControl initialEnabled={job.preselection_test} />
+            </CardFooter>
 
-                    {/* Info Grid */}
-                    <section className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                        {[
-                            { label: "Category", value: toTitleCase(job.category) },
-                            { label: "Location", value: job.location },
-                            { label: "Salary", value: `${toTitleCase(job.currency)} ${job.salary.toLocaleString()} / ${toTitleCase(job.periodSalary)}` },
-                            { label: "Type", value: toTitleCase(job.job_type) },
-                            { label: "Posted", value: new Date(job.createdAt).toLocaleDateString() },
-                            { label: "Expires", value: new Date(job.expiredAt).toLocaleDateString() },
-                        ].map((info, idx) => (
-                            <div key={idx} className="space-y-1">
-                                <p className="text-md font-medium">{info.label}</p>
-                                <p className="text-base">{info.value}</p>
-                            </div>
-                        ))}
-                    </section>
-
-                    {/* Skills */}
-                    {job.skills && job.skills.length > 0 && (
-                        <section className="mt-6">
-                            <h2 className="text-lg font-semibold  mb-3 border-b border-gray-200 pb-2">Required Skills</h2>
-                            <div className="flex flex-wrap gap-2">
-                                {job.skills.map((s) => (
-                                    <Badge
-                                        key={s.id}
-                                        variant="secondary"
-                                        className="px-3 py-1 text-sm bg-indigo-100 text-indigo-800 hover:bg-indigo-200 transition-colors rounded-full cursor-default"
-                                    >
-                                        {s.name}
-                                    </Badge>
-                                ))}
-                            </div>
-                        </section>
-                    )}
-
-                    {/* Add Preselection */}
-                    <PreselectionControl
-                        initialEnabled={job.preselection_test}
-                        onEdit={handleEditPreselection}
-                        onSave={async (enabled) => {
-                            await apiCall.put(`/postings/preselection/${slug}`, { preselection_test: enabled });
-                            if (job) setJob({ ...job, preselection_test: enabled });
-                            alert("Preselection updated!");
-                        }}
-                    />
-
-
-                </CardContent>
-
-                <ManagePosting slug={slug as string} />
-            </Card>
-        </>
+            <ManagePosting slug={slug as string} />
+        </Card>
     );
 };
 
