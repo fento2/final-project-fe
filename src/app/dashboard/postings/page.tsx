@@ -10,9 +10,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import { Plus, Search } from "lucide-react";
 
 import { useAuthRole } from "@/helper/authRole";
@@ -21,6 +18,7 @@ import JobPostingsCard from "./componetns/JobsPostingsCard";
 import { PaginationDashboard } from "./componetns/PaginationDashboard";
 import { toSEO, toTitleCase } from "@/helper/toTitleCase";
 import debounce from "lodash.debounce";
+import ButtonLoading from "./componetns/ButtonLoading";
 
 const PostingsPage = () => {
   useAuthRole("COMPANY");
@@ -78,6 +76,7 @@ const PostingsPage = () => {
       setPostingList(data.data.data);
       setTotalPage(data.data.totalPage);
       setCategories(["all", ...data.data.categories]);
+      console.log(data)
     } catch (error) {
       console.error(error);
     } finally {
@@ -103,12 +102,7 @@ const PostingsPage = () => {
             Manage and review all job postings uploaded to the platform.
           </p>
         </div>
-        <Link href="/dashboard/postings/manage/create">
-          <Button className="bg-blue-600 hover:bg-blue-700 text-white flex items-center gap-2">
-            <Plus className="h-4 w-4" />
-            Create New Posting
-          </Button>
-        </Link>
+        <ButtonLoading url="/dashboard/postings/manage/create" icon={Plus} text="Create New Job" />
       </div>
 
       {/* Search & Filters */}
@@ -182,7 +176,7 @@ const PostingsPage = () => {
         </div>
       )}
       {/* Pagination */}
-      {totalPage !== 1 && <PaginationDashboard
+      {!(totalPage <= 1) && <PaginationDashboard
         currentPage={currentPage}
         totalPages={totalPage}
         onPageChange={setCurrentPage}

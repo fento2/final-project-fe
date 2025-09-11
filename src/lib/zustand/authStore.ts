@@ -29,8 +29,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({
       email: "",
       role: "",
+      profile_picture: "",
       isLogin: false,
       checkLogin: true,
-      profile_picture: "",
     }),
 }));

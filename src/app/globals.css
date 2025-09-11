@@ -181,3 +181,13 @@
 .leaflet-popup-pane {
   z-index: 10 !important;
 }
+
+
+/* Hide scrollbar tapi tetap bisa scroll */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE dan Edge */
+  scrollbar-width: none;     /* Firefox */
+}

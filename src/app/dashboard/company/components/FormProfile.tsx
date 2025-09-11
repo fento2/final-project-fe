@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ChangeEvent } from "react";
 import TextEditor from "../../components/TextEditor";
+import ReadOnlyQuill from "../../components/ReadOnlyReactQuil";
 
 interface ICompanyProfile {
   name: string;
@@ -121,10 +122,11 @@ const FormCompanyProfile = ({
           <div className="mt-2">
             {!editing && (
               <div>
-                <div
+                {/* <div
                   className="quill-preview border p-4 rounded-md"
                   dangerouslySetInnerHTML={{ __html: desc }}
-                />
+                /> */}
+                <ReadOnlyQuill value={desc} />
               </div>
             )}
           </div>
