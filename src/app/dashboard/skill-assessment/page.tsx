@@ -5,6 +5,7 @@ import { apiCall } from "@/helper/apiCall";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 interface SkillAssessment {
     assessment_id: number;
@@ -17,6 +18,7 @@ export default function SkillAssessmentListPage() {
     const [data, setData] = useState<SkillAssessment[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [totalSkillAssessments, setTotalSkillAssessments] = useState(0);
 
     const fetchData = async () => {
         try {
@@ -33,8 +35,18 @@ export default function SkillAssessmentListPage() {
         }
     }
 
+    const checkSubscription = async () => {
+        try {
+            const { data } = await apiCall.get("/userAssessments");
+            setTotalSkillAssessments(data.data.length);
+        } catch (error: any) {
+            setError(error.response.data.message || error.message || "Failed to check subscription")
+        }
+    }
+
     useEffect(() => {
         fetchData();
+        checkSubscription();
     }, []);
 
     const toSlug = (a: SkillAssessment) => {
@@ -53,6 +65,7 @@ export default function SkillAssessmentListPage() {
 
     return (
         <div className="p-4 pl-20 space-y-6">
+            <Badge className="bg-green-600 hover:bg-green-700">Total skills taken (last 30 days): {totalSkillAssessments}</Badge>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <h1 className="text-2xl font-bold tracking-tight">
                     Skill Assessments
@@ -72,6 +85,14 @@ export default function SkillAssessmentListPage() {
                     {error}
                 </div>
             )}
+
+            {
+                totalSkillAssessments > 2 && (
+                    <div className="text-sm rounded-md border border-red-200 bg-red-50 px-3 py-2 text-red-600">
+                        You've already taken skill assessments twice in the last 30 days. To increase your quota and continue taking more assessments, please subscribe to a plan.
+                    </div>
+                )
+            }
 
             <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {loading &&
@@ -95,7 +116,7 @@ export default function SkillAssessmentListPage() {
                     <Card
                         key={item.assessment_id}
                         className="flex flex-col pt-0 overflow-hidden rounded-xl border shadow-md hover:shadow-lg transition-shadow"
-                        onClick={() => handleView(item)}
+                        onClick={totalSkillAssessments > 2 ? undefined : () => handleView(item)}
                     >
                         <CardHeader className="p-0">
                             <div className="relative w-full h-40">
@@ -107,7 +128,6 @@ export default function SkillAssessmentListPage() {
                                 />
                             </div>
                         </CardHeader>
-
                         <CardContent className="">
                             <h2 className="text-base font-semibold line-clamp-1">
                                 {item.skill_name}
@@ -116,9 +136,8 @@ export default function SkillAssessmentListPage() {
                                 {item.description || "No description provided."}
                             </p>
                         </CardContent>
-
                         <CardFooter>
-                            <Button size="sm" onClick={() => handleView(item)} className="w-full" >
+                            <Button size="sm" onClick={() => handleView(item)} className="w-full" disabled={totalSkillAssessments > 2} >
                                 Detail
                             </Button>
                         </CardFooter>

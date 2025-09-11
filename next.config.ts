@@ -24,6 +24,11 @@ const nextConfig: NextConfig = {
         hostname: "**", // semua hostname
         pathname: "/**", // semua path
       },
+      {
+        protocol: "https",
+        hostname: "i.pinimg.com",
+        pathname: "/**"
+      }
     ],
   },
 };

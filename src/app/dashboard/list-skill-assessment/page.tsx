@@ -72,7 +72,6 @@ const ListSKillAssessmentPage = () => {
             <div className="mt-4 rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full min-w-[880px] table-fixed border-collapse">
-                        {/* Tentukan lebar kolom (sesuaikan kebutuhan) */}
                         <colgroup>
                             <col className="w-20" />
                             <col className="w-64" />

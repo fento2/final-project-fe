@@ -1,6 +1,7 @@
-import { ParsedQuestion } from "../types/questionAssessment";
+import { ParsedQuestion, QuestionRow } from "../types/questionAssessment";
 
-type Props = { questions: ParsedQuestion[] };
+// type Props = { questions: ParsedQuestion[] };
+type Props = { questions: Array<ParsedQuestion | QuestionRow> }
 
 export default function TableQuestionPreview({ questions }: Props) {
     return (
