@@ -39,5 +39,10 @@ export const usePreselectionStore = create<PreselectionTest>()((set) => ({
   setSlug: (slug) => set({ slug }),
   setShowForm: (showForm) => set({ showForm }),
   resetQuestions: () =>
-    set({ questions: [], minScore: 70, slug: "", showForm: false }), // reset termasuk minScore
+    set({
+      questions: [],
+      minScore: 70,
+      slug: "",
+      showForm: false,
+    }), // reset termasuk minScore
 }));

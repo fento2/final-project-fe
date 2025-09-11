@@ -183,11 +183,24 @@
 }
 
 
-/* Hide scrollbar tapi tetap bisa scroll */
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
+/* Untuk Webkit (Chrome, Safari, Edge) */
+.thin-scrollbar::-webkit-scrollbar {
+  width: 6px;          /* Lebar scrollbar */
+  height: 6px;         /* Lebar scrollbar horizontal */
 }
-.scrollbar-hide {
-  -ms-overflow-style: none;  /* IE dan Edge */
-  scrollbar-width: none;     /* Firefox */
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3); /* Warna thumb */
+  border-radius: 3px;  /* Membuat ujung bulat */
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0.05); /* Warna track */
+  border-radius: 3px;
+}
+
+/* Untuk Firefox */
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,0,0,0.3) rgba(0,0,0,0.05);
 }

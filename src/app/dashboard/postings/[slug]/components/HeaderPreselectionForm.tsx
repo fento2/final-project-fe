@@ -35,7 +35,7 @@ const HeaderPreselectionTestForm = ({
                         variant="destructive"
                         className="flex items-center gap-2 md:text-sm text-xs"
                     >
-                        Delete <Trash2 size={16} />
+                        Remove <Trash2 size={16} />
                     </Button>
                     <Button
                         onClick={handleAddQuestion}
