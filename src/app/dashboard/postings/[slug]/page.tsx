@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Edit2, FileText, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import FormPreselectionTest from "./components/FormPreSelection";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -24,7 +24,13 @@ const DetailPostings = () => {
   const [sortOption, setSortOption] = useState("appliedAt"); // appliedAt / status
   const [sortDirection, setSortDirection] = useState("desc"); // asc / desc
   const [filterStatus, setFilterStatus] = useState("all"); // all / Pending / Accepted / Rejected
-
+  const router = useRouter()
+  const {
+    questions,
+    setQuestions,
+    minScore,
+    setMinScore,
+  } = usePreselectionStore();
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -48,36 +54,12 @@ const DetailPostings = () => {
           row["Option D"] || "",
         ].filter(Boolean),
         answer: row["Answer"], // misalnya "A", "B", "C", "D"
-      }));
+      })).slice(0, 25)
 
       setQuestions(parsedQuestions); // simpan ke zustand
     };
     reader.readAsArrayBuffer(file);
   };
-
-  // dummy job detail
-  const job = {
-    title: "Frontend Developer",
-    company: "Tech Corp",
-    category: "Software Development",
-    location: "Jakarta, Indonesia",
-    salary: "Rp 10.000.000 - Rp 15.000.000",
-    jobType: "Full-Time",
-    createdAt: "2025-08-15",
-    expiredAt: "2025-09-15",
-
-    description:
-      '<p><span style="color: rgba(0, 0, 0, 0.9); background-color: rgba(0, 0, 0, 0);">As a full stack engineer, you will be responsible for the development and launch of product features. Your role will need to be a combination of team player and individual contributor who has production experience delivering front-end and back-end software at scale. </span></p><p><br></p><p><strong style="color: rgba(0, 0, 0, 0.9); background-color: rgba(0, 0, 0, 0);">Requirements :</strong></p><ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><span style="color: rgba(0, 0, 0, 0.9); background-color: rgba(0, 0, 0, 0);">Candidate must possess at least Bachelor\'s Degree in Engineering (Computer/Telecommunication) or equivalent.</span></li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><span style="color: rgba(0, 0, 0, 0.9); background-color: rgba(0, 0, 0, 0);">3-5 years of full stack development experience and very good at problem solving, bug fixing, helping team to solve problems.</span></li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><span style="color: rgba(0, 0, 0, 0.9); background-color: rgba(0, 0, 0, 0);">Experience in components at each layer of modern web applications.</span></li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><span style="color: rgba(0, 0, 0, 0.9); background-color: rgba(0, 0, 0, 0);">Experience in JavaScript frameworks (e.g Vue.js &amp; Node.js) is a must.</span></li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><span style="color: rgba(0, 0, 0, 0.9); background-color: rgba(0, 0, 0, 0);">Experience in both front-end and back-end aspects.</span></li></ol><p><br></p><p><strong style="color: rgba(0, 0, 0, 0.9); background-color: rgba(0, 0, 0, 0);">Job Descriptions :</strong></p><ol><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><span style="color: rgba(0, 0, 0, 0.9); background-color: rgba(0, 0, 0, 0);">Design and implementation of low-latency, high-availability, and performance-oriented applications for Sociolla platform.</span></li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><span style="color: rgba(0, 0, 0, 0.9); background-color: rgba(0, 0, 0, 0);">Develop, build, test, deploy modules.</span></li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><span style="color: rgba(0, 0, 0, 0.9); background-color: rgba(0, 0, 0, 0);">Continuously discover, evaluate, and implement new technologies to maximize development efficiency.</span></li><li data-list="bullet"><span class="ql-ui" contenteditable="false"></span><span style="color: rgba(0, 0, 0, 0.9); background-color: rgba(0, 0, 0, 0);">Ensure the performance, quality, and responsiveness of the application.</span></li></ol><p><br></p><p><br></p>',
-    skill: [
-      "JavaScript",
-      "TypeScript",
-      "React",
-      "Next.js",
-      "TailwindCSS",
-      "Node.js",
-    ],
-  };
-
   // dummy applicants
   const applicants = [
     {
@@ -129,17 +111,14 @@ const DetailPostings = () => {
       score: 90,
     },
   ];
-
   const filteredApplicants = applicants.filter((app) =>
     filterStatus === "all" ? true : app.status === filterStatus
   );
-
   const statusOrder: Record<string, number> = {
     Pending: 1,
     Accepted: 2,
     Rejected: 3,
   };
-
   const sortedApplicants = [...filteredApplicants].sort((a, b) => {
     let compare = 0;
     if (sortOption === "appliedAt") {
@@ -153,15 +132,6 @@ const DetailPostings = () => {
     return sortDirection === "asc" ? compare : -compare;
   });
 
-  const {
-    questions,
-    setQuestions,
-    updateQuestion,
-    minScore,
-    setMinScore,
-    resetQuestions,
-  } = usePreselectionStore();
-
   return (
     <div className="space-y-6 container mx-auto md:px-20 px-8 my-8 ">
       <div className="grid lg:grid-cols-3 grid-cols-1 gap-6">
@@ -170,19 +140,23 @@ const DetailPostings = () => {
         {showForm && (
           <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
-            onClick={() => setShowForm(false)}
+            onClick={() => { setShowForm(false), router.replace(`/dashboard/postings/${slug}`) }}
           >
             <Card
               className=" w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-6xl mx-4 relative max-h-[600px] overflow-y-auto sm:max-h-[700px] md:max-h-[800px] lg:max-h-none lg:overflow-visible scrollbar-hide"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Tombol close X */}
-              <button
-                onClick={() => setShowForm(false)}
-                className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl font-bold"
-              >
-                <X />
-              </button>
+              <div>
+                <p className="absolute left-6 top-7 text-black text-xl font-bold"
+                >Maximal 25 question</p>
+                {/* Tombol close X */}
+                <button
+                  onClick={() => { setShowForm(false), router.replace(`/dashboard/postings/${slug}`) }}
+                  className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl font-bold"
+                >
+                  <X />
+                </button>
+              </div>
 
               <CardContent className="space-y-4 p-4 sm:p-6">
                 {/* Form Preselection + upload file */}
@@ -258,7 +232,7 @@ const DetailPostings = () => {
             </div>
           </CardHeader>
 
-          <CardContent className="overflow-y-auto max-h-[650px] scrollbar-hide">
+          <CardContent className="overflow-y-auto max-h-[650px] thin-scrollbar">
             <div className="space-y-4">
               {sortedApplicants.map((app, idx) => (
                 <div

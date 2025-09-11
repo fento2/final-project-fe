@@ -142,7 +142,7 @@ function SidebarContent({ isCollapsed, setIsCollapsed }: { isCollapsed: boolean,
                       router.replace('/')
                     }}
                     className={cn(
-                      "flex h-8 w-full flex-row items-center rounded-md px-3 py-1.5 transition hover:bg-muted hover:text-red-500 cursor-pointer",
+                      "flex h-8 w-full flex-row items-center rounded-md px-2.5 py-1.5 transition hover:bg-muted hover:text-red-500 cursor-pointer",
                     )}
                   >
                     <LogOut className="h-6 w-6" />

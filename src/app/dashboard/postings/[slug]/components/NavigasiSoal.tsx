@@ -17,12 +17,10 @@ import { usePreselectionStore } from "@/lib/zustand/preselectionStore"
 import { schemaPreselectionTest, transformStoreToBE } from "@/validation/preselection.validation"
 import { useToast } from "@/components/basic-toast"
 import { apiCall } from "@/helper/apiCall"
-import { useParams } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { useJobDetailStore } from "@/lib/zustand/detailJobStore"
 import { useState } from "react"
 import { Dots_v2 } from "@/components/ui/spinner"
-
-
 interface NavigasiSoalProps {
     currentIndex: number
     questions: any[]
@@ -30,7 +28,6 @@ interface NavigasiSoalProps {
     handleNext: () => void
 
 }
-
 const NavigasiSoal: React.FC<NavigasiSoalProps> = ({
     currentIndex,
     questions,
@@ -38,11 +35,15 @@ const NavigasiSoal: React.FC<NavigasiSoalProps> = ({
     handleNext,
 
 }) => {
-    const { minScore, setShowForm } = usePreselectionStore()
+    const { minScore, setShowForm, resetQuestions } = usePreselectionStore()
     const { slug } = useParams()
+    const searchParams = useSearchParams()
+    const selection_id = searchParams.get('selection-id')
+    const isEdit = searchParams.get('action') === 'edit'
     const toast = useToast()
     const setJob = useJobDetailStore((state) => state.setJobDetail);
     const [loading, setLoading] = useState(false)
+    const router = useRouter()
     const getDetailJob = async () => {
         try {
             const { data } = await apiCall.get(`/postings/get-detail/${slug}`);
@@ -68,6 +69,8 @@ const NavigasiSoal: React.FC<NavigasiSoalProps> = ({
                 toast.success(data.message)
                 getDetailJob()
                 setShowForm(false)
+                resetQuestions()
+
             }
         } catch (error) {
             toast.error('faild create preselection test')
@@ -76,7 +79,31 @@ const NavigasiSoal: React.FC<NavigasiSoalProps> = ({
             setLoading(false)
         }
     }
-
+    const handleEdit = async () => {
+        try {
+            setLoading(true)
+            const result = schemaPreselectionTest.safeParse(transformStoreToBE({ minScore, questions }))
+            if (!result.success) {
+                const messages = result.error.issues[0].message;
+                toast.error(messages);
+                console.log(result.error);
+                return;
+            }
+            const { data } = await apiCall.patch(`/preselection/edit/${selection_id}`, result.data)
+            if (data.success) {
+                toast.success(data.message)
+                router.replace(`/dashboard/postings/${slug}`)
+                getDetailJob()
+                setShowForm(false)
+                resetQuestions()
+            }
+        } catch (error) {
+            toast.error('faild edit preselection test')
+            console.log(error)
+        } finally {
+            setLoading(false)
+        }
+    }
     return (
         <div className="flex justify-between mt-4">
             {/* Tombol Previous */}
@@ -101,10 +128,10 @@ const NavigasiSoal: React.FC<NavigasiSoalProps> = ({
                         <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
                             <AlertDialogAction
-                                onClick={handleSave}
+                                onClick={isEdit ? handleEdit : handleSave}
                                 className="bg-indigo-500 hover:bg-indigo-700"
                             >
-                                {loading ? <Dots_v2 /> : "Yes, Submit"}
+                                {loading ? <Dots_v2 /> : isEdit ? "Yes, Update" : "Yes, Submit"}
                             </AlertDialogAction>
                         </AlertDialogFooter>
                     </AlertDialogContent>

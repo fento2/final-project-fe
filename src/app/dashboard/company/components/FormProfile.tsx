@@ -121,7 +121,7 @@ const FormCompanyProfile = ({
           )}
           <div className="mt-2">
             {!editing && (
-              <div>
+              <div className="border p-3 rounded-xl">
                 {/* <div
                   className="quill-preview border p-4 rounded-md"
                   dangerouslySetInnerHTML={{ __html: desc }}

@@ -88,7 +88,7 @@ export const getProfilRoleUserFetch = async (toast: {
 //company role
 export const getDataCompanyProfileFetch = async () => {
   try {
-    const { data } = await apiCall.get("/company/get-data-profile");
+    const { data } = await apiCall.get("/company/get/my-data-profile");
     if (data.success) {
       console.log(data);
       return data.data;

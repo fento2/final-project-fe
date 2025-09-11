@@ -13,10 +13,8 @@ import { useJobDetailStore } from "@/lib/zustand/detailJobStore";
 
 const DetailPostingWithApplicant = () => {
     const { slug } = useParams();
-
     const job = useJobDetailStore((state) => state.jobDetail);
     const setJob = useJobDetailStore((state) => state.setJobDetail);
-
     const getDetailJob = async () => {
         try {
             const { data } = await apiCall.get(`/postings/get-detail/${slug}`);
@@ -25,7 +23,6 @@ const DetailPostingWithApplicant = () => {
             console.log(error);
         }
     };
-
     useEffect(() => {
         getDetailJob();
     }, [slug]);
@@ -45,7 +42,6 @@ const DetailPostingWithApplicant = () => {
             </Card>
         );
     }
-
     return (
         <Card className="relative lg:col-span-2 border border-gray-200 shadow-md rounded-xl bg-white order-1">
             <CardHeader className="px-6">
@@ -54,7 +50,7 @@ const DetailPostingWithApplicant = () => {
                 </CardTitle>
             </CardHeader>
 
-            <CardContent className="overflow-y-auto max-h-[550px] px-6 scrollbar-hide">
+            <CardContent className="overflow-y-auto max-h-[550px] px-6 thin-scrollbar">
                 {/* About This Job */}
                 <section className="border-b border-gray-200 pb-6 md:pb-8">
                     <h2 className="text-base sm:text-lg md:text-2xl font-semibold tracking-wide mb-4 md:mb-6 border-b border-gray-200 pb-1">
@@ -104,11 +100,9 @@ const DetailPostingWithApplicant = () => {
                     </section>
                 )}
             </CardContent>
-
             <CardFooter>
-                <PreselectionControl initialEnabled={job.preselection_test} />
+                <PreselectionControl initialEnabled={job.preselection_test} getDetailJob={getDetailJob} />
             </CardFooter>
-
             <ManagePosting slug={slug as string} />
         </Card>
     );

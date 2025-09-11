@@ -91,9 +91,11 @@ export default function TextEditor({ value, setValue, profile }: ITextEditor) {
     toolbar: {
       container: [
         ["bold", "italic", "underline", "strike"],
-        [{ color: [] }, { background: [] }],
+        [{ header: [1, 2, 3, false] }],
+        // [{ color: [] }, { background: [] }],
         [{ list: "bullet" }],
-        [{ align: [] }],
+        [{ indent: "-1" }, { indent: "+1" }],
+        [{ align: [] }, { direction: "rtl" }],
         ["link"],
         ["clean"],
       ],
