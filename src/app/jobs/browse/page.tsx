@@ -261,7 +261,7 @@ function slugify(title: string) {
 
 export default function JobsListPage() {
     const { jobs, loading, error } = useJobs();
-    
+
     const [filters, setFilters] = useState({
         date: "Anytime",
         types: [] as string[],

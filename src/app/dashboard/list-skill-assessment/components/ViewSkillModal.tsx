@@ -7,7 +7,7 @@ import { SkillAssessment } from "@/types/skillAssessment";
 import { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 import TableQuestionPreview from "./TableQuestionsPreview";
-import { ParsedQuestion } from "../types/questionAssessment";
+import { QuestionRow } from "../types/questionAssessment";
 
 interface Props {
     isOpen: boolean;
@@ -17,12 +17,12 @@ interface Props {
 
 export default function ViewSkillModal({ isOpen, onClose, item }: Props) {
     const [serverError, setServerError] = useState("");
-    const [questions, setQuestions] = useState<ParsedQuestion[]>([]);
-    const [originalQuestions, setOriginalQuestions] = useState<ParsedQuestion[]>([]);
+    const [questions, setQuestions] = useState<QuestionRow[]>([]);
+    const [originalQuestions, setOriginalQuestions] = useState<QuestionRow[]>([]);
     const [fileName, setFileName] = useState<string>("");
     const [loading, setLoading] = useState<boolean>(false);
     const [replaceAll, setReplaceAll] = useState<boolean>(false);
-    const assessmentId = (item as any)?.assessment_id;
+    const assessmentId = item?.assessment_id;
 
     const resetState = () => {
         setQuestions([]);
@@ -45,8 +45,8 @@ export default function ViewSkillModal({ isOpen, onClose, item }: Props) {
             const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
             const existingIds = originalQuestions.map(q => q.assessment_question_id);
-            const parsedQuestions: ParsedQuestion[] = (jsonData as any[]).map((val, idx) => {
-                const q: ParsedQuestion = {
+            const parsedQuestions: QuestionRow[] = (jsonData as any[]).map((val, idx) => {
+                const q: QuestionRow = {
                     assessment_question_id: existingIds[idx],
                     question: val["Question"] || val["question"] || "",
                     option_a: val["Option_A"] || val["option_a"] || "",
@@ -69,8 +69,8 @@ export default function ViewSkillModal({ isOpen, onClose, item }: Props) {
             setServerError("");
             const res = await apiCall.get(`/questions/${assessmentId}`);
             const body = res.data;
-            const list = Array.isArray(body) ? body : body?.data ?? [];
-            const parsed: ParsedQuestion[] = (list as any[]).map((q: any, idx: number) => ({
+            const list = Array.isArray(body) ? body : body?.data;
+            const parsed: QuestionRow[] = (list as any[]).map((q: any, idx: number) => ({
                 assessment_question_id: q.assessment_question_id ?? idx + 1,
                 question: q.question,
                 option_a: q.option_a,
@@ -171,7 +171,9 @@ export default function ViewSkillModal({ isOpen, onClose, item }: Props) {
 
                 {questions.length > 0 && (
                     <div className="grid gap-3">
-                        <h3 className="text-sm font-semibold">Preview Questions ({questions.length})</h3>
+                        <h3 className="text-sm font-semibold">
+                            {fileName ? `Preview Questions (${questions.length})` : `Questions from DB (${questions.length})`}
+                        </h3>
                         <TableQuestionPreview questions={questions} />
                     </div>
                 )}
