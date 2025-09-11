@@ -36,7 +36,7 @@ export const schemaJobsInput = z.object({
   description: z
     .string()
     .min(10, "Job description must be at least 10 characters")
-    .max(10000, "Job description too long"),
+    .max(20000, "Job description too long"),
 });
 
 // auto type

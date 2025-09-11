@@ -2,16 +2,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Edit2, FileText, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import ManagePosting from "./components/ManagePostings";
 import { useParams } from "next/navigation";
 import FormPreselectionTest from "./components/FormPreSelection";
-import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { useCreatePreselectionStore } from "@/lib/zustand/preselectionStore";
+import { usePreselectionStore } from "@/lib/zustand/preselectionStore";
 import * as XLSX from "xlsx";
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
 import {
   Select,
   SelectContent,
@@ -24,12 +20,11 @@ import DetailPostingWithApplicant from "./components/DetailJobPosting";
 const DetailPostings = () => {
   const params = useParams();
   const { slug } = params;
-  const [addPreselection, setAddPreselection] = useState(true);
+  const { showForm, setShowForm } = usePreselectionStore()
   const [sortOption, setSortOption] = useState("appliedAt"); // appliedAt / status
   const [sortDirection, setSortDirection] = useState("desc"); // asc / desc
   const [filterStatus, setFilterStatus] = useState("all"); // all / Pending / Accepted / Rejected
 
-  const { setQuestions: setQuestions } = useCreatePreselectionStore();
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -158,37 +153,49 @@ const DetailPostings = () => {
     return sortDirection === "asc" ? compare : -compare;
   });
 
+  const {
+    questions,
+    setQuestions,
+    updateQuestion,
+    minScore,
+    setMinScore,
+    resetQuestions,
+  } = usePreselectionStore();
+
   return (
-    <div className="space-y-6 container mx-auto md:px-20 px-8 my-8">
+    <div className="space-y-6 container mx-auto md:px-20 px-8 my-8 ">
       <div className="grid lg:grid-cols-3 grid-cols-1 gap-6">
-        <DetailPostingWithApplicant addPreselection={addPreselection} setAddPreselection={setAddPreselection} handleFileUpload={handleFileUpload} />
+        <DetailPostingWithApplicant />
         {/* preselectiontest */}
-        {addPreselection && (
+        {showForm && (
           <div
             className="fixed inset-0 z-50 flex items-center justify-center bg-black/40"
-            onClick={() => setAddPreselection(false)}
+            onClick={() => setShowForm(false)}
           >
             <Card
-              className="w-full max-w-3xl mx-4 relative"
+              className=" w-full max-w-sm sm:max-w-md md:max-w-2xl lg:max-w-6xl mx-4 relative max-h-[600px] overflow-y-auto sm:max-h-[700px] md:max-h-[800px] lg:max-h-none lg:overflow-visible scrollbar-hide"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Tombol close X */}
               <button
-                onClick={() => setAddPreselection(false)}
+                onClick={() => setShowForm(false)}
                 className="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl font-bold"
               >
                 <X />
               </button>
 
-              <CardContent className="space-y-4 p-6">
-                <h2 className="text-lg font-semibold mb-2">Preselection Test</h2>
-
+              <CardContent className="space-y-4 p-4 sm:p-6">
                 {/* Form Preselection + upload file */}
-                <FormPreselectionTest />
+                <FormPreselectionTest
+                  questions={questions}
+                  setQuestions={setQuestions}
+                  minScore={minScore}
+                  setMinScore={setMinScore} />
 
                 <div className="mt-4">
                   <p className="text-sm text-gray-500 mb-2">
-                    Upload the test questions in Excel format (.xlsx or .xls) or enter them manually below.
+                    Upload the test questions in Excel format (.xlsx or .xls) or enter
+                    them manually below.
                   </p>
                   <Input
                     type="file"
@@ -200,9 +207,8 @@ const DetailPostings = () => {
               </CardContent>
             </Card>
           </div>
+
         )}
-
-
 
         <Card className="lg:col-span-1 order-3 lg:order-2 ">
           <CardHeader className="flex flex-col gap-4 items-center">
@@ -252,7 +258,7 @@ const DetailPostings = () => {
             </div>
           </CardHeader>
 
-          <CardContent className="overflow-y-auto max-h-[650px]">
+          <CardContent className="overflow-y-auto max-h-[650px] scrollbar-hide">
             <div className="space-y-4">
               {sortedApplicants.map((app, idx) => (
                 <div
@@ -300,7 +306,7 @@ const DetailPostings = () => {
           </CardContent>
         </Card>
       </div>
-    </div>
+    </div >
   );
 };
 

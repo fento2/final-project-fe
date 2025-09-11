@@ -22,7 +22,7 @@ const ProfileNavSection = ({ isCollapsed, setIsCollapsed }: IProfileNavSection) 
     <div className="flex items-center gap-3 -mt-2">
       <Avatar className="w-11 h-11 rounded-full">
         <AvatarImage
-          src={profile_picture}
+          src={profile_picture || ''}
           alt="user"
           className="rounded-full object-cover"
         />
