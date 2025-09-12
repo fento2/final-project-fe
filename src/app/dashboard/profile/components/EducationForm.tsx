@@ -22,6 +22,8 @@ import {
     editEducationFetch,
     getEducationDetailFetch,
 } from "@/fetch/educationFetch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toTitleCase } from "@/helper/toTitleCase";
 const EducationForm = () => {
     const {
         university,
@@ -48,7 +50,7 @@ const EducationForm = () => {
             setOpen(true);
         } else if (type === "edit" && id) {
             setOpen(true);
-            getEducationDetailFetch(id, setField);
+            getEducationDetailFetch(id, setField as any);
         } else {
             setOpen(false);
         }
@@ -145,14 +147,19 @@ const EducationForm = () => {
                     {/* Degree */}
                     <div className="space-y-1">
                         <Label htmlFor="degree">Degree</Label>
-                        <Input
-                            id="degree"
-                            name="degree"
-                            placeholder="e.g. Bachelor's"
+                        <Select
                             value={degree}
-                            onChange={(e) => setField("degree", e.target.value)}
-                            className="py-6 !text-lg placeholder:text-gray-400"
-                        />
+                            onValueChange={(val) => setField("degree", val)}
+                        >
+                            <SelectTrigger id="degree" className="py-6 !text-lg w-full">
+                                <SelectValue placeholder="Select degree" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {['HIGH_SCHOOL', 'DIPLOMA', 'BACHELOR', 'MASTER', 'DOCTORATE'].map((v, idx) => (
+                                    <SelectItem key={idx} value={v} className="p-4 text-lg">{toTitleCase(v)}</SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
                     {/* Field of Study */}
                     <div className="space-y-1">

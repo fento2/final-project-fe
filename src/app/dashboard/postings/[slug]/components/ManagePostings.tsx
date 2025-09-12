@@ -50,10 +50,7 @@ const ManagePosting = ({ slug }: Job) => {
 
   const handleEdit = async () => {
     setLoadingEdit(true);
-    // Bisa pakai timeout untuk simulasi loading jika ingin cepat terlihat
-    setTimeout(() => {
-      router.push(`/dashboard/postings/manage/edit/${slug}`);
-    }, 300);
+    router.push(`/dashboard/postings/manage/edit/${slug}`);
   };
 
   return (

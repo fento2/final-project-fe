@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import DetailPostingWithApplicant from "./components/DetailJobPosting";
+import ApplicantSection from "./components/ApplicantsSection";
 
 const DetailPostings = () => {
   const params = useParams();
@@ -53,10 +54,12 @@ const DetailPostings = () => {
           row["Option C"] || "",
           row["Option D"] || "",
         ].filter(Boolean),
-        answer: row["Answer"], // misalnya "A", "B", "C", "D"
+        answer: row["Answer"],
       })).slice(0, 25)
 
-      setQuestions(parsedQuestions); // simpan ke zustand
+      setQuestions(parsedQuestions);
+      e.target.value = ''
+
     };
     reader.readAsArrayBuffer(file);
   };
@@ -131,6 +134,13 @@ const DetailPostings = () => {
     }
     return sortDirection === "asc" ? compare : -compare;
   });
+  const getApplicantList = () => {
+    try {
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <div className="space-y-6 container mx-auto md:px-20 px-8 my-8 ">
@@ -184,101 +194,7 @@ const DetailPostings = () => {
 
         )}
 
-        <Card className="lg:col-span-1 order-3 lg:order-2 ">
-          <CardHeader className="flex flex-col gap-4 items-center">
-            {/* Judul di tengah */}
-            <CardTitle className="text-center">
-              Applicants ({filteredApplicants.length})
-            </CardTitle>
-
-            {/* Bar filter + sort + toggle di bawah judul */}
-            <div className="flex justify-between items-center w-full">
-              {/* Kanan: Filter Status + Sort Option */}
-              <div className="flex gap-2">
-                {/* Filter Status */}
-                <Select value={filterStatus} onValueChange={setFilterStatus}>
-                  <SelectTrigger className="">
-                    <SelectValue placeholder="All Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All</SelectItem>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="Accepted">Accepted</SelectItem>
-                    <SelectItem value="Rejected">Rejected</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                {/* Sort Option */}
-                <Select value={sortOption} onValueChange={setSortOption}>
-                  <SelectTrigger className="">
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="appliedAt">Applied Date</SelectItem>
-                    <SelectItem value="status">Status</SelectItem>
-                    <SelectItem value="score">Score</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              {/* Kiri: Toggle Asc / Desc */}
-              <Button
-                variant="outline"
-                onClick={() =>
-                  setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"))
-                }
-              >
-                {sortDirection === "asc" ? "Asc ↑" : "Desc ↓"}
-              </Button>
-            </div>
-          </CardHeader>
-
-          <CardContent className="overflow-y-auto max-h-[650px] thin-scrollbar">
-            <div className="space-y-4">
-              {sortedApplicants.map((app, idx) => (
-                <div
-                  key={idx}
-                  className="border rounded-lg p-4 flex flex-col md:flex-row justify-between items-start md:items-center hover:shadow-md transition-shadow"
-                >
-                  {/* Info Pelamar */}
-                  <div className="mb-3 md:mb-0">
-                    <h3 className="font-semibold text-lg">{app.name}</h3>
-                    <p className="text-sm text-muted-foreground">{app.email}</p>
-                    <p className="text-sm">
-                      Status: <span className="font-medium">{app.status}</span>
-                    </p>
-                    <p className="text-sm">
-                      Score: <span className="font-medium">{app.score}</span>
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Applied on {app.appliedAt}
-                    </p>
-                  </div>
-
-                  {/* Aksi */}
-                  <div className="flex gap-2 flex-wrap md:flex-col">
-                    <Button variant="outline" size="sm" asChild>
-                      <a
-                        href={app.cvUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1"
-                      >
-                        <FileText size={16} /> CV
-                      </a>
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      className="flex items-center gap-1"
-                    >
-                      <Edit2 size={16} /> Update
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <ApplicantSection />
       </div>
     </div >
   );
