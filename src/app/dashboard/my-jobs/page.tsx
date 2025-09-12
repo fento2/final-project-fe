@@ -4,6 +4,7 @@ import { useState } from "react";
 import { MoreHorizontal, Plus, X } from "lucide-react";
 import Image from "next/image";
 import { Label } from "@/components/ui/label";
+import { WorkHistoryModal } from "./components/WorkHistoryModal";
 
 interface Job {
     nameJob: string;
@@ -199,90 +200,10 @@ export default function MyJobsPage() {
                 </div>
             </div>
 
-            {/* Modal */}
-            {showModal && (
-                <div
-                    className="fixed inset-0 z-50 flex items-center justify-center"
-                    role="dialog"
-                    aria-modal="true"
-                >
-                    <div className="absolute inset-0 bg-black/40" onClick={() => setShowModal(false)} />
-                    <form
-                        onSubmit={handleAddJob}
-                        className="relative z-10 w-full max-w-md bg-white rounded-lg shadow-lg p-6"
-                    >
-                        <div className="flex items-center justify-between mb-4">
-                            <h2 className="text-lg font-medium">Add new job</h2>
-                            <button type="button" onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-700">
-                                <X />
-                            </button>
-                        </div>
-
-                        <div className="space-y-3">
-                            <Label className="mb-1">Job Name</Label>
-                            <input
-                                value={form.nameJob}
-                                onChange={(e) => handleChange("nameJob", e.target.value)}
-                                placeholder="Job name"
-                                className="w-full border rounded px-3 py-2"
-                            />
-                            <Label className="mb-1">Company Name</Label>
-                            <input
-                                value={form.nameCompany}
-                                onChange={(e) => handleChange("nameCompany", e.target.value)}
-                                placeholder="Company"
-                                className="w-full border rounded px-3 py-2"
-                            />
-                            <Label className="mb-1">Status</Label>
-                            <select
-                                value={form.status}
-                                onChange={(e) => handleChange("status", e.target.value as Job["status"])}
-                                className="w-full border rounded px-3 py-2"
-                            >
-                                <option value="Current">Current</option>
-                                <option value="Past">Past</option>
-                            </select>
-                            <Label className="mb-1">Wage</Label>
-                            <input
-                                type="number"
-                                inputMode="decimal"
-                                pattern="[0-9]"
-                                value={form.wage}
-                                onChange={(e) => handleChange("wage", e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key.length === 1 && !/[0-9.]/.test(e.key)) {
-                                        e.preventDefault();
-                                    }
-                                }}
-                                onWheel={(e) => (e.currentTarget as HTMLInputElement).blur()}
-                                placeholder="Wages"
-                                className="w-full border rounded px-3 py-2"
-                            />
-                            <Label className="mb-1">Start Work</Label>
-                            <input
-                                type="date"
-                                value={form.periodStart}
-                                onChange={(e) => handleChange("periodStart", e.target.value)}
-                                placeholder="Period Work Start"
-                                className="w-full border rounded px-3 py-2"
-                            />
-                            <Label className="mb-1">End Work</Label>
-                            <input
-                                type="date"
-                                value={form.periodEnd}
-                                onChange={(e) => handleChange("periodEnd", e.target.value)}
-                                placeholder="Period Work End"
-                                className="w-full border rounded px-3 py-2"
-                            />
-                        </div>
-
-                        <div className="mt-4 flex justify-end gap-2">
-                            <button type="button" onClick={() => setShowModal(false)} className="px-4 py-2 rounded bg-gray-100">Cancel</button>
-                            <button type="submit" className="px-4 py-2 rounded bg-blue-600 text-white">Add job</button>
-                        </div>
-                    </form>
-                </div>
-            )}
+            <WorkHistoryModal
+                open={showModal}
+                onClose={() => setShowModal(false)}
+            />
         </div>
     );
 }
