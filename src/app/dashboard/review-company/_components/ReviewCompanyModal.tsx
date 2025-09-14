@@ -49,11 +49,11 @@ export default function ReviewCompanyModal({ isOpen, item, onClose, onSaved }: P
         setOpen(Boolean(isOpen));
         if (isOpen && item) {
             reset({
-                salary_estimate: item.reviews?.salary_estimate,
-                rating_culture: item.reviews?.rating_culture,
-                rating_work_life_balance: item.reviews?.rating_work_life_balance,
-                rating_facilities: item.reviews?.rating_facilities,
-                rating_career: item.reviews?.rating_career,
+                salary_estimate: item.reviews?.salary_estimate || 0,
+                rating_culture: item.reviews?.rating_culture || 1,
+                rating_work_life_balance: item.reviews?.rating_work_life_balance || 1,
+                rating_facilities: item.reviews?.rating_facilities || 1,
+                rating_career: item.reviews?.rating_career || 1,
             })
             console.log(item.reviews?.review_id);
         }
