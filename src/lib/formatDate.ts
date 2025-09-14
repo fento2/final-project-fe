@@ -1,5 +1,15 @@
+const getUserTimeZone = () => {
+    try {
+        return Intl?.DateTimeFormat?.().resolvedOptions().timeZone;
+    } catch {
+        return undefined;
+    }
+};
+
 export default function formatDateID(d: string) {
+    const tz = getUserTimeZone();
     return new Date(d).toLocaleString("id-ID", {
+        timeZone: tz,
         day: "2-digit",
         month: "long",
         year: "numeric",

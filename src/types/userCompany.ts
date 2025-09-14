@@ -9,10 +9,10 @@ export type Company = {
     user_id?: number;
 };
 
-export type ReviewScore = {
+export type Review = {
     review_id: number;
     user_company_id: number;
-    salary_estimate?: number | null;
+    salary_estimate: number;
     rating_culture: number;
     rating_work_life_balance: number;
     rating_facilities: number;
@@ -30,5 +30,5 @@ export type UserCompanyItem = {
     createAt?: string;
     updatedAt?: string;
     company: Company;
-    reviews?: ReviewScore | null;
+    reviews?: Review | null;
 };
