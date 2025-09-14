@@ -2,10 +2,11 @@
 import { ParsedQuestion } from "@/app/dashboard/list-skill-assessment/types/questionAssessment";
 import { apiCall } from "@/helper/apiCall";
 import { useAuthStore } from "@/lib/zustand/authStore";
-import { UserAssessmentCreateDTO } from "@/validation/userAssessment.validation";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import SubmitDialog from "../../_components/SubmitDialog";
+import { UserAssessmentUpdateDTO } from "@/validation/userAssessment.validation";
+import { formatTime } from "@/lib/formatTime";
 
 export default function SkillAssessmentPage() {
     const router = useRouter();
@@ -13,39 +14,64 @@ export default function SkillAssessmentPage() {
     const params = useParams();
     const slug = Array.isArray(params.slug) ? params.slug[0] : params.slug ?? "";
     const [current, setCurrent] = useState(0);
-    const [timeLeft, setTimeLeft] = useState(90 * 60);
+    const [timeLeft, setTimeLeft] = useState(120 * 60);
     const [questions, setQuestions] = useState<ParsedQuestion[]>([]);
     const [answer, setAnswer] = useState<string[]>([]);
+    const [time, setTime] = useState();
 
     const fetchData = async () => {
         const { data } = await apiCall.get(`/questions/${slug[0]}`);
         setQuestions(data.data);
+        setAnswer(new Array(data.data.length).fill(''));
     }
 
     useEffect(() => {
+        try {
+            const start = new Date(time as any);
+            if (isNaN(start.getTime())) {
+                setTimeLeft(2 * 60 * 60);
+            } else {
+                const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
+                const end = new Date(start.getTime() + TWO_HOURS_MS);
+                const remainingSec = Math.max(0, Math.ceil((end.getTime() - Date.now()) / 1000));
+                setTimeLeft(remainingSec);
+            }
+        } catch {
+            setTimeLeft(2 * 60 * 60);
+        }
+
         const t = setInterval(() => {
             setTimeLeft((s) => (s > 0 ? s - 1 : 0));
         }, 1000);
         fetchData();
         return () => clearInterval(t);
+    }, [time]);
+
+    useEffect(() => {
+        const raw = localStorage.getItem("takeAssessment");
+
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            setTime(parsed.date_taken);
+        } else {
+            router.replace(`/dashboard/skill-assessment`);
+            return;
+        }
+
+        const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+            e.preventDefault();
+            e.returnValue = 'Ujian sedang berlangsung. Yakin ingin meninggalkan halaman?';
+        };
+
+        window.addEventListener('beforeunload', handleBeforeUnload);
+        return () => window.removeEventListener('beforeunload', handleBeforeUnload);
     }, []);
 
     useEffect(() => {
-        console.log(questions)
-    }, [questions])
-
-    const formatTime = (s: number) => {
-        const hh = Math.floor(s / 3600)
-            .toString()
-            .padStart(2, "0");
-        const mm = Math.floor((s % 3600) / 60)
-            .toString()
-            .padStart(2, "0");
-        const ss = Math.floor(s % 60)
-            .toString()
-            .padStart(2, "0");
-        return `${hh}:${mm}:${ss}`;
-    };
+        if (timeLeft === 0) {
+            handleSubmit();
+        }
+    }, [timeLeft]);
 
     const handleAnswer = (opt: string) => {
         // setAnswers((a) => ({ ...a, [current]: opt })); setAnswer((a) => ({ ...a, [current]: opt }));
@@ -60,19 +86,27 @@ export default function SkillAssessmentPage() {
             };
         });
 
-        const assessment_id = questions[0].assessment_id;
+        const raw = localStorage.getItem("takeAssessment");
+        let user_assessment_id: number | null = null;
 
-        const payload: UserAssessmentCreateDTO = {
-            assessment_id: Number(assessment_id),
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            const candidate = parsed && typeof parsed === "object" ? parsed.user_assessment_id ?? parsed : parsed;
+            const n = Number(candidate);
+            user_assessment_id = isNaN(n) ? null : n;
+        }
+
+        const payload: UserAssessmentUpdateDTO = {
+            user_assessment_id: Number(user_assessment_id),
             score
         }
-        const { data } = await apiCall.post("/userAssessments", payload);
-        router.push(`/skill-assessment/${slug}/result`)
-        console.log(data.data.user_assessment_id);
+        const { data } = await apiCall.patch("/userAssessments", payload);
+        localStorage.removeItem("takeAssessment");
+        router.push(`/dashboard/skill-assessment/${slug}/result`)
     }
 
     const handleNext = () => {
-        setCurrent((c) => Math.min(questions.length, c + 1));
+        setCurrent((c) => Math.min(questions.length - 1, c + 1));
     };
 
     const currentQuestion = questions[current];

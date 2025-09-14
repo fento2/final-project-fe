@@ -3,10 +3,36 @@ import React, { useState } from "react";
 import { useUserCompanies } from "@/hooks/useUserCompany";
 import UserCompanyCard from "./_components/UserCompanyCard";
 import AddUserCompanyModal from "./_components/AddUserCompanyModal";
+import ReviewCompanyModal from "./_components/ReviewCompanyModal";
+import { UserCompanyItem } from "@/types/userCompany";
+import { apiCall } from "@/helper/apiCall";
 
 export default function ReviewCompanyPage() {
     const { items, loading, error, refetch } = useUserCompanies();
     const [addOpen, setAddOpen] = useState(false);
+
+    const [reviewOpen, setReviewOpen] = useState(false);
+    const [selectedCompany, setSelectedCompany] = useState<UserCompanyItem>();
+
+    const openReview = (it: UserCompanyItem) => {
+        setSelectedCompany(it);
+        setReviewOpen(true);
+    };
+
+    const onDelete = async (user_company_id: number, review_id?: number) => {
+        try {
+            if (review_id) {
+                await apiCall.delete(`/reviewCompany/${review_id}`);
+            }
+            if (user_company_id) {
+                await apiCall.delete(`/user-companies/${user_company_id}`);
+            }
+        } catch (error) {
+            console.log(error);
+        } finally {
+            refetch();
+        }
+    }
 
     return (
         <div className="p-4 pl-20 space-y-6">
@@ -49,7 +75,8 @@ export default function ReviewCompanyPage() {
                     </div>
                 )}
 
-                {items.map((it) => <UserCompanyCard key={it.user_company_id} it={it} />)}
+                {/* {items.map((it) => <UserCompanyCard key={it.user_company_id} it={it} />)} */}
+                {items.map((it) => <UserCompanyCard key={it.user_company_id} it={it} onReview={() => openReview(it)} onDelete={() => onDelete(it.user_company_id, it.reviews?.review_id)} />)}
             </div>
 
             <AddUserCompanyModal
@@ -60,6 +87,19 @@ export default function ReviewCompanyPage() {
                     refetch();
                 }}
             />
+            {
+                reviewOpen && selectedCompany && (
+                    <ReviewCompanyModal
+                        isOpen={reviewOpen}
+                        item={selectedCompany}
+                        onClose={() => setReviewOpen(false)}
+                        onSaved={() => {
+                            setReviewOpen(false);
+                            refetch();
+                        }}
+                    />
+                )
+            }
         </div>
     );
 }
