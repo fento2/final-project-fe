@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { filterCompanies, sortCompanies, getUniqueValues, type Company } from "../../../../helper/companyHelpers";
 import { useCompanies } from "../../../../hooks/useCompanies";
 import { Company as DatabaseCompany } from "../../../../types/database";
@@ -12,6 +13,8 @@ interface CompanyFilters {
 }
 
 export function useCompaniesPage() {
+    const router = useRouter();
+    
     // Fetch companies from backend
     const { companies: backendCompanies, loading: backendLoading, error: backendError } = useCompanies();
     
@@ -98,11 +101,21 @@ export function useCompaniesPage() {
     };
 
     const handleViewJobs = (companyId: number) => {
-        window.open(`/jobs?company=${companyId}`, '_blank');
+        // Navigate to jobs page filtered by company
+        router.push(`/jobs?company=${companyId}`);
     };
 
     const handleViewProfile = (companyId: number) => {
-        window.open(`/companies/${companyId}`, '_blank');
+        // This function is now unused since we use Link directly in components
+        // But keeping it for backward compatibility
+        const company = companies.find(c => c.id === companyId);
+        if (company) {
+            const slug = company.name
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/(^-|-$)/g, "");
+            router.push(`/jobs/companies/${slug}`);
+        }
     };
 
     useEffect(() => {

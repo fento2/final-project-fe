@@ -55,14 +55,24 @@ export function CompanyListItem({ company, onViewJobs, onViewProfile }: CompanyL
                                     <Star className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400 fill-current" />
                                     <span className="text-xs sm:text-sm font-semibold text-gray-700">{company.rating}.0</span>
                                 </div>
-                                <Link href={`/jobs/companies/${slug}`}>
+                                <div className="flex gap-2">
                                     <Button 
+                                        onClick={() => onViewJobs?.(company.id)}
                                         className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs sm:text-sm px-3 sm:px-4 py-2"
                                     >
                                         <span className="hidden sm:inline">View Jobs</span>
                                         <span className="sm:hidden">Jobs</span>
                                     </Button>
-                                </Link>
+                                    <Link href={`/jobs/companies/${slug}`}>
+                                        <Button 
+                                            variant="outline"
+                                            className="border-gray-200 hover:bg-gray-50 text-xs sm:text-sm px-3 sm:px-4 py-2"
+                                        >
+                                            <span className="hidden sm:inline">Profile</span>
+                                            <span className="sm:hidden">Profile</span>
+                                        </Button>
+                                    </Link>
+                                </div>
                             </div>
                         </div>
                     </div>

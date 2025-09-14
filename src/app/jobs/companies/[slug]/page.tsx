@@ -15,6 +15,8 @@ import {
     Bookmark,
     Star,
 } from "lucide-react";
+import { apiCall } from "../../../../helper/apiCall";
+import { Company as DatabaseCompany } from "../../../../types/database";
 
 type Job = {
     id: string;
@@ -57,6 +59,96 @@ type Company = {
     };
     jobs: Job[];
 };
+
+// Function to fetch company data from backend
+async function fetchCompanyFromBackend(slug: string): Promise<Company | null> {
+    try {
+        const { data } = await apiCall.get('/company');
+        const companiesData = data?.data?.data || data?.data || data?.companies || data || [];
+        
+        if (Array.isArray(companiesData)) {
+            const company = companiesData.find((c: DatabaseCompany) => {
+                const companySlug = c.name
+                    .toLowerCase()
+                    .replace(/[^a-z0-9]+/g, "-")
+                    .replace(/(^-|-$)/g, "");
+                return companySlug === slug;
+            });
+            
+            if (company) {
+                // Transform backend company to frontend format
+                return {
+                    slug: slug,
+                    name: company.name,
+                    coverImage: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1974&auto=format&fit=crop",
+                    logo: company.profile_picture || "https://images.unsplash.com/photo-1560179707-f14e90ef3623?w=200&h=200&fit=crop&crop=faces",
+                    verified: true,
+                    meta: {
+                        location: "Remote",
+                        salaryRange: "50,000 - 120,000 per year",
+                        hiringTime: "Average 1-2 weeks",
+                    },
+                    description: company.description || "A leading company in their industry",
+                    culture: "We value teamwork, collaboration, and innovation. Our employees are encouraged to think creatively and work together to find the best solutions for our clients.",
+                    benefits: [
+                        "Competitive salary and benefits package",
+                        "Comprehensive health and dental insurance",
+                        "401(k) retirement plan with company match",
+                        "Paid time off and flexible work hours",
+                        "Professional development and training opportunities",
+                        "Employee recognition and awards programs",
+                    ],
+                    about: {
+                        industry: "Technology",
+                        size: "100-500 employees",
+                        founded: "2010",
+                    },
+                    contacts: {
+                        phone: "123 456 7890",
+                        email: "contact@company.com",
+                        location: "Remote",
+                    },
+                    stats: {
+                        joined: "Joined 2022",
+                        lastActive: "Last activity 2 days ago",
+                        openJobs: Math.floor(Math.random() * 30) + 1,
+                    },
+                    jobs: [
+                        {
+                            id: "1",
+                            title: "Senior Developer",
+                            type: "Full Time",
+                            bullets: [
+                                "Bachelor's degree in Computer Science or related",
+                                "5+ years of experience in software development",
+                                "Proficiency in modern web technologies",
+                            ],
+                            location: "Remote",
+                            salary: "80,000 - 120,000 per year",
+                            slug: "senior-developer",
+                        },
+                        {
+                            id: "2",
+                            title: "UI/UX Designer",
+                            type: "Full Time",
+                            bullets: [
+                                "Bachelor's degree in design or related",
+                                "3+ years of experience in UX/UI design",
+                                "Experience with design systems",
+                            ],
+                            location: "Remote",
+                            salary: "60,000 - 90,000 per year",
+                            slug: "uiux-designer",
+                        },
+                    ],
+                };
+            }
+        }
+    } catch (error) {
+        console.error('Error fetching company from backend:', error);
+    }
+    return null;
+}
 
 const COMPANIES: Record<string, Company> = {
     "acme-corporation": {
@@ -162,8 +254,19 @@ export default async function CompanyDetailPage({
     params: Promise<{ slug: string }>;
 }) {
     const { slug } = await params;
-    const company = COMPANIES[slug];
-    if (!company) return notFound();
+    
+    // First, try to get company from static data
+    let company: Company | null = COMPANIES[slug] || null;
+    
+    // If not found in static data, try to fetch from backend
+    if (!company) {
+        company = await fetchCompanyFromBackend(slug);
+    }
+    
+    // If still not found, return 404
+    if (!company) {
+        return notFound();
+    }
 
     return (
         <div className="min-h-screen bg-white">

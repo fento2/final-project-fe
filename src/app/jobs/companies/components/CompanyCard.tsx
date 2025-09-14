@@ -98,13 +98,12 @@ export function CompanyCard({ company, onViewJobs, onViewProfile }: CompanyCardP
 
                 {/* Actions */}
                 <div className="mt-auto space-y-2">
-                    <Link href={`/jobs/companies/${slug}`}>
-                        <Button 
-                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition-colors text-xs sm:text-sm py-2"
-                        >
-                            View All Jobs
-                        </Button>
-                    </Link>
+                    <Button 
+                        onClick={() => onViewJobs?.(company.id)}
+                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition-colors text-xs sm:text-sm py-2"
+                    >
+                        View All Jobs
+                    </Button>
                     <Link href={`/jobs/companies/${slug}`}>
                         <Button 
                             variant="outline" 
