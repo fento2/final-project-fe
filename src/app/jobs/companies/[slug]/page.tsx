@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { apiCall } from "../../../../helper/apiCall";
 import { Company as DatabaseCompany } from "../../../../types/database";
+import ReviewSection from "./_components/ReviewSection";
 
 type Job = {
     id: string;
@@ -65,7 +66,7 @@ async function fetchCompanyFromBackend(slug: string): Promise<Company | null> {
     try {
         const { data } = await apiCall.get('/company');
         const companiesData = data?.data?.data || data?.data || data?.companies || data || [];
-        
+
         if (Array.isArray(companiesData)) {
             const company = companiesData.find((c: DatabaseCompany) => {
                 const companySlug = c.name
@@ -74,7 +75,7 @@ async function fetchCompanyFromBackend(slug: string): Promise<Company | null> {
                     .replace(/(^-|-$)/g, "");
                 return companySlug === slug;
             });
-            
+
             if (company) {
                 // Transform backend company to frontend format
                 return {
@@ -254,15 +255,15 @@ export default async function CompanyDetailPage({
     params: Promise<{ slug: string }>;
 }) {
     const { slug } = await params;
-    
+
     // First, try to get company from static data
     let company: Company | null = COMPANIES[slug] || null;
-    
+
     // If not found in static data, try to fetch from backend
     if (!company) {
         company = await fetchCompanyFromBackend(slug);
     }
-    
+
     // If still not found, return 404
     if (!company) {
         return notFound();
@@ -490,6 +491,11 @@ export default async function CompanyDetailPage({
                     </Link>
                 </div>
             </section>
+
+            {/* REVIEW SECTION */}
+            <div className="max-w-7xl mx-auto px-6 pb-14">
+                <ReviewSection companyName={company.name} />
+            </div>
         </div>
     );
 }
