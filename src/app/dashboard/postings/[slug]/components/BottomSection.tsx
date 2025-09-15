@@ -18,7 +18,7 @@ const PreselectionControl = ({ initialEnabled, getDetailJob }: PreselectionContr
     const { setShowForm, setQuestions, setMinScore, resetQuestions } = usePreselectionStore();
     const { slug } = useParams();
     const [loading, setLoading] = useState(false);
-    const [loadingDeactivate, setLoadingDeactivate] = useState(false);
+    const [loadingActiveOrDeactivate, setLoadingActiveORDeactive] = useState(false);
     const router = useRouter();
     const toast = useToast();
     const getDetailPreselection = async () => {
@@ -47,7 +47,7 @@ const PreselectionControl = ({ initialEnabled, getDetailJob }: PreselectionContr
     };
     const deactivePreselectionTest = async () => {
         try {
-            setLoadingDeactivate(true);
+            setLoadingActiveORDeactive(true);
             const { data } = await apiCall.patch(`/preselection/deactive/${slug}`);
             if (data.success) {
                 toast.success(data.message);
@@ -62,9 +62,26 @@ const PreselectionControl = ({ initialEnabled, getDetailJob }: PreselectionContr
             console.log(error);
             toast.error("Failed to deactivate preselection test");
         } finally {
-            setLoadingDeactivate(false);
+            setLoadingActiveORDeactive(false);
         }
     };
+    const checkIfAlreadyHavePreselectionTest = async () => {
+        try {
+            setLoadingActiveORDeactive(true)
+            const { data } = await apiCall.get(`/preselection/active/${slug}`)
+            if (data.success) {
+                if (data.data) {
+                    getDetailJob()
+                } else {
+                    setShowForm(true)
+                }
+            }
+        } catch (error) {
+            console.log(error)
+        } finally {
+            setLoadingActiveORDeactive(false)
+        }
+    }
     return (
         <section className="mt-6 p-4 border rounded-lg bg-white shadow-sm w-full">
             <div className="flex items-center gap-3 mb-2">
@@ -88,9 +105,9 @@ const PreselectionControl = ({ initialEnabled, getDetailJob }: PreselectionContr
                         <Button
                             className="bg-red-500 hover:bg-red-600 flex items-center gap-2"
                             onClick={deactivePreselectionTest}
-                            disabled={loadingDeactivate}
+                            disabled={loadingActiveOrDeactivate}
                         >
-                            {loadingDeactivate ? <Dots_v2 /> : <><XCircle size={16} /> Delete</>}
+                            {loadingActiveOrDeactivate ? <Dots_v2 /> : <><XCircle size={16} /> Deactive</>}
                         </Button>
 
                         {/* Edit Button */}
@@ -104,9 +121,9 @@ const PreselectionControl = ({ initialEnabled, getDetailJob }: PreselectionContr
                 ) : (
                     <Button
                         className="bg-indigo-500 hover:bg-indigo-600 flex items-center gap-2"
-                        onClick={() => setShowForm(true)}
+                        onClick={() => checkIfAlreadyHavePreselectionTest()}
                     >
-                        <Plus size={16} /> Activate
+                        {loadingActiveOrDeactivate ? <Dots_v2 /> : <> <Plus size={16} />Active</>}
                     </Button>
                 )}
             </div>
