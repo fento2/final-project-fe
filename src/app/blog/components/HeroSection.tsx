@@ -1,47 +1,55 @@
-"use client";
-
-import { Search } from "lucide-react";
+import Link from "next/link";
 
 export default function HeroSection() {
     return (
-        <section className="bg-white border-b py-16 lg:py-24">
-            <div className="max-w-4xl mx-auto px-6 text-center">
-                <span className="inline-block text-xs font-semibold tracking-wider uppercase text-indigo-600 mb-3">Blog</span>
-                <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-4">
-                    Career Insights & News
-                </h1>
-                <p className="text-lg md:text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-                    Stay updated with the latest industry trends, career advice, and job market insights from Horizon Jobs.
-                </p>
+        <section className="relative py-16 lg:py-24 overflow-hidden">
+            {/* Background Image */}
+            <div className="absolute inset-0">
+                <div 
+                    className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                    style={{
+                        backgroundImage: `url('/images/header_bg.png')`,
+                    }}
+                ></div>
+                {/* Overlay for better text readability */}
+                <div className="absolute inset-0 bg-white/80"></div>
+            </div>
 
-                <div className="max-w-md mx-auto">
-                    <div className="relative">
-                        <input
-                            type="text"
-                            placeholder="Search articles..."
-                            className="w-full px-4 py-3 pl-12 rounded-xl bg-white border border-gray-200 shadow-sm focus:ring-4 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition"
-                            aria-label="Search articles"
-                        />
-                        <Search className="absolute left-4 top-3.5 h-5 w-5 text-gray-400" />
-                    </div>
+            {/* Background Geometric Pattern */}
+            <div className="absolute inset-0">
+                {/* Abstract geometric shapes similar to the image */}
+
+
+                {/* Abstract lines */}
+                <div className="absolute top-20 right-20 w-64 h-64 opacity-15">
+                    <svg viewBox="0 0 100 100" className="w-full h-full">
+                        <path d="M10,10 Q50,5 90,20 Q95,50 80,90 Q50,95 10,80 Q5,50 10,10"
+                            stroke="#9CA3AF" strokeWidth="0.5" fill="none" />
+                        <path d="M20,20 Q50,15 80,30 Q85,50 70,80 Q50,85 20,70 Q15,50 20,20"
+                            stroke="#D1D5DB" strokeWidth="0.3" fill="none" />
+                    </svg>
                 </div>
+            </div>
 
-                <div className="mt-6 flex flex-wrap gap-2 justify-center">
-                    {[
-                        "Career Tips",
-                        "Remote Work",
-                        "Interviews",
-                        "Tech Skills",
-                        "Workplace",
-                    ].map((tag) => (
-                        <button
-                            key={tag}
-                            className="px-3 py-1 text-sm rounded-full border border-gray-200 text-gray-600 hover:bg-gray-100 transition"
-                            type="button"
-                        >
-                            {tag}
-                        </button>
-                    ))}
+            <div className="relative max-w-7xl mx-auto px-6">
+                {/* Breadcrumb */}
+                <nav className="flex items-center gap-2 text-sm text-gray-600 mb-8">
+                    <Link href="/" className="hover:text-blue-600 transition-colors">Home</Link>
+                    <span className="text-gray-400">/</span>
+                    <span className="text-blue-600 font-medium">Blog</span>
+                </nav>
+
+                {/* Hero Content */}
+                <div className="max-w-4xl">
+                    <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+                        Insights & Inspiration:
+                        <br />
+                        <span className="text-blue-600">The JobLinkup Blog</span>
+                    </h1>
+                    <p className="text-lg text-gray-600 mb-8 leading-relaxed max-w-2xl">
+                        Discover career insights, job market trends, and expert advice to help you
+                        navigate your professional journey and accelerate your career growth.
+                    </p>
                 </div>
             </div>
         </section>

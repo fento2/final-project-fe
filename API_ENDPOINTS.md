@@ -618,3 +618,100 @@ Pastikan backend menghandle relasi dengan benar:
 3. Subscription endpoints
 4. Review endpoints
 5. Statistics endpoints
+
+---
+
+## 📰 Blog Endpoints
+
+### GET /blog
+**Deskripsi**: Get all blog posts
+**Query Parameters**:
+- `limit` (optional): Number of posts to return
+- `page` (optional): Page number for pagination
+- `category` (optional): Filter by category
+- `status` (optional): Filter by status (published, draft)
+
+**Response**:
+```json
+{
+  "success": true,
+  "message": "Blog posts retrieved successfully",
+  "data": {
+    "blogs": [
+      {
+        "id": 1,
+        "title": "10 Tips for Acing Your Next Job Interview",
+        "slug": "10-tips-acing-job-interview",
+        "content": "Full blog content in HTML format...",
+        "excerpt": "Short description of the blog post...",
+        "image": "https://example.com/image.jpg",
+        "category": "Career Tips",
+        "author": {
+          "name": "John Doe",
+          "avatar": "https://example.com/avatar.jpg",
+          "initials": "JD"
+        },
+        "published_at": "2024-09-08T00:00:00.000Z",
+        "created_at": "2024-09-08T00:00:00.000Z",
+        "updated_at": "2024-09-08T00:00:00.000Z",
+        "read_time": 5,
+        "status": "published",
+        "tags": ["interview", "career", "tips"]
+      }
+    ],
+    "pagination": {
+      "page": 1,
+      "limit": 10,
+      "total": 25,
+      "totalPages": 3
+    }
+  }
+}
+```
+
+### GET /blog/:slug
+**Deskripsi**: Get single blog post by slug
+**Response**:
+```json
+{
+  "success": true,
+  "message": "Blog post retrieved successfully",
+  "data": {
+    "id": 1,
+    "title": "10 Tips for Acing Your Next Job Interview",
+    "slug": "10-tips-acing-job-interview",
+    "content": "Full blog content in HTML format...",
+    "excerpt": "Short description of the blog post...",
+    "image": "https://example.com/image.jpg",
+    "category": "Career Tips",
+    "author": {
+      "name": "John Doe",
+      "avatar": "https://example.com/avatar.jpg",
+      "initials": "JD"
+    },
+    "published_at": "2024-09-08T00:00:00.000Z",
+    "created_at": "2024-09-08T00:00:00.000Z",
+    "updated_at": "2024-09-08T00:00:00.000Z",
+    "read_time": 5,
+    "status": "published",
+    "tags": ["interview", "career", "tips"]
+  }
+}
+```
+
+### GET /blog/categories
+**Deskripsi**: Get all blog categories
+**Response**:
+```json
+{
+  "success": true,
+  "message": "Categories retrieved successfully",
+  "data": [
+    "Career Tips",
+    "Industry Trends", 
+    "Professional Development",
+    "Skills Development",
+    "Workplace Culture"
+  ]
+}
+```
