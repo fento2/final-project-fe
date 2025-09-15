@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/select";
 import DetailPostingWithApplicant from "./components/DetailJobPosting";
 import ApplicantSection from "./components/ApplicantsSection";
+import DetailApplicationPage from "./components/DetailApplication";
 
 const DetailPostings = () => {
   const params = useParams();
@@ -63,85 +64,6 @@ const DetailPostings = () => {
     };
     reader.readAsArrayBuffer(file);
   };
-  // dummy applicants
-  const applicants = [
-    {
-      name: "Andi Wijaya",
-      email: "andi@example.com",
-      appliedAt: "2025-08-20",
-      status: "Pending",
-      cvUrl: "/dummy-cv/andi.pdf",
-      score: 70,
-    },
-    {
-      name: "Budi Santoso",
-      email: "budi@example.com",
-      appliedAt: "2025-08-22",
-      status: "Reviewed",
-      cvUrl: "/dummy-cv/budi.pdf",
-      score: 80,
-    },
-    {
-      name: "Citra Dewi",
-      email: "citra@example.com",
-      appliedAt: "2025-08-25",
-      status: "Interview Scheduled",
-      cvUrl: "/dummy-cv/citra.pdf",
-      score: 90,
-    },
-    {
-      name: "Andi Wijaya",
-      email: "andi@example.com",
-      appliedAt: "2025-08-20",
-      status: "Pending",
-      cvUrl: "/dummy-cv/andi.pdf",
-      score: 70,
-    },
-    {
-      name: "Budi Santoso",
-      email: "budi@example.com",
-      appliedAt: "2025-08-22",
-      status: "Reviewed",
-      cvUrl: "/dummy-cv/budi.pdf",
-      score: 80,
-    },
-    {
-      name: "Citra Dewi",
-      email: "citra@example.com",
-      appliedAt: "2025-08-25",
-      status: "Interview Scheduled",
-      cvUrl: "/dummy-cv/citra.pdf",
-      score: 90,
-    },
-  ];
-  const filteredApplicants = applicants.filter((app) =>
-    filterStatus === "all" ? true : app.status === filterStatus
-  );
-  const statusOrder: Record<string, number> = {
-    Pending: 1,
-    Accepted: 2,
-    Rejected: 3,
-  };
-  const sortedApplicants = [...filteredApplicants].sort((a, b) => {
-    let compare = 0;
-    if (sortOption === "appliedAt") {
-      compare =
-        new Date(a.appliedAt).getTime() - new Date(b.appliedAt).getTime();
-    } else if (sortOption === "status") {
-      compare = statusOrder[a.status] - statusOrder[b.status];
-    } else if (sortOption === "score") {
-      compare = a.score - b.score;
-    }
-    return sortDirection === "asc" ? compare : -compare;
-  });
-  const getApplicantList = () => {
-    try {
-
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
   return (
     <div className="space-y-6 container mx-auto md:px-20 px-8 my-8 ">
       <div className="grid lg:grid-cols-3 grid-cols-1 gap-6">
@@ -194,8 +116,12 @@ const DetailPostings = () => {
 
         )}
 
-        <ApplicantSection />
+
+        <div className="lg:col-span-1 order-3 lg:order-2 sticky top-25">
+          <ApplicantSection />
+        </div>
       </div>
+      <DetailApplicationPage />
     </div >
   );
 };

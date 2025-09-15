@@ -50,7 +50,7 @@ const DetailPostingWithApplicant = () => {
                 </CardTitle>
             </CardHeader>
 
-            <CardContent className="overflow-y-auto max-h-[550px] px-6 thin-scrollbar">
+            <CardContent className=" px-6 thin-scrollbar">
                 {/* About This Job */}
                 <section className="border-b border-gray-200 pb-6 md:pb-8">
                     <h2 className="text-base sm:text-lg md:text-2xl font-semibold tracking-wide mb-4 md:mb-6 border-b border-gray-200 pb-1">
