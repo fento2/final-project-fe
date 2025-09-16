@@ -13,7 +13,10 @@ const menus = [
     {
         title: "List Skill Assessment",
         icon: ClipboardList,
-        href: "/dashboard/list-skill-assessment",
+        sub: [
+            { title: "List Skill Assessment", href: "/dashboard/list-skill-assessment" },
+            { title: "User Skill Assessment", href: "/dashboard/user-skill-assessment" },
+        ],
     },
     {
         title: "Subscriptions",
