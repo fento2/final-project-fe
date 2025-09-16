@@ -5,6 +5,7 @@ import {
   UserPenIcon,
   ChevronDown,
   Star,
+  CircleDollarSign,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -42,6 +43,11 @@ const menus = [
       { title: "My Skill", href: "/dashboard/my-skill" },
       { title: "Skill Assessment", href: "/dashboard/skill-assessment" },
     ],
+  },
+  {
+    title: "Subscription",
+    icon: CircleDollarSign,
+    href: "/dashboard/my-subscription",
   },
 ];
 

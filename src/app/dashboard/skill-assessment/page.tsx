@@ -77,7 +77,7 @@ export default function SkillAssessmentListPage() {
     const skeletons = Array.from({ length: 4 });
 
     return (
-        <div className="p-4 pl-20 space-y-6">
+        <div className="p-4 md:pl-20 space-y-6">
             <Badge className="bg-green-600 hover:bg-green-700">Total skills taken (last 30 days): {totalSkillAssessments}</Badge>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <h1 className="text-2xl font-bold tracking-tight">
