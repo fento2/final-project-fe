@@ -6,21 +6,21 @@ import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 const testimonials = [
   {
     quote:
-      "I was struggling to find a job that fit my skills and experience, but JobLinkup made it easy. I found a job in just two weeks! I really appreciate the quick application process, which was quick and straightforward.",
+      "I was struggling to find a job that fit my skills and experience, but Horizon Jobs made it easy. I found a job in just two weeks! I really appreciate the quick application process, which was quick and straightforward.",
     name: "Susan Mitchell",
     location: "Austin, TX",
     avatar: "/images/logo.png",
   },
   {
     quote:
-      "I highly recommend JobLinkup to anyone looking for a job. It's the platform is user-friendly and the job listings are up-to-date. The process is smooth from start to finish. Thanks to JobLinkup and I couldn't be happier!",
+      "I highly recommend Horizon Jobs to anyone looking for a job. It's the platform is user-friendly and the job listings are up-to-date. The process is smooth from start to finish. Thanks to Horizon Jobs and I couldn't be happier!",
     name: "Michael Lawson",
     location: "Seattle, WA",
     avatar: "/images/logo.png",
   },
   {
     quote:
-      "As a recent graduate, I was struggling to find a job in my field. JobLinkup helped me find the right job and the platform made it easy to apply. The process was quick and straightforward. I highly recommend JobLinkup!",
+      "As a recent graduate, I was struggling to find a job in my field. Horizon Jobs helped me find the right job and the platform made it easy to apply. The process was quick and straightforward. I highly recommend Horizon Jobs!",
     name: "Emily Jarold",
     location: "New York, NY",
     avatar: "/images/logo.png",

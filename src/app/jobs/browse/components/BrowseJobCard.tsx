@@ -1,10 +1,11 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { MapPin, Banknote, Bookmark } from "lucide-react";
+import { MapPin, Banknote, Bookmark, BookmarkCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import DOMPurify from "dompurify";
+import { useJobSave } from "@/hooks/useJobSave";
 
 interface Job {
     id: string;
@@ -30,6 +31,7 @@ interface BrowseJobCardProps {
 
 const BrowseJobCard: React.FC<BrowseJobCardProps> = ({ job }) => {
     const router = useRouter();
+    const { isSaved, isLoading, toggleSave } = useJobSave(job.id);
 
     const handleCardClick = () => {
         if (job.slug) {
@@ -165,10 +167,23 @@ const BrowseJobCard: React.FC<BrowseJobCardProps> = ({ job }) => {
                     <Button
                         variant="outline"
                         size="icon"
-                        onClick={(e) => e.stopPropagation()}
-                        className="border-gray-300 hover:bg-gray-50 rounded-lg w-10 h-10 flex-shrink-0"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            toggleSave();
+                        }}
+                        disabled={isLoading}
+                        className={`rounded-lg w-10 h-10 flex-shrink-0 transition-colors ${
+                            isSaved 
+                                ? 'border-indigo-300 bg-indigo-50 text-indigo-600 hover:bg-indigo-100' 
+                                : 'border-gray-300 hover:bg-gray-50'
+                        }`}
+                        title={isSaved ? 'Remove from saved jobs' : 'Save this job'}
                     >
-                        <Bookmark className="w-4 h-4" />
+                        {isSaved ? (
+                            <BookmarkCheck className="w-4 h-4" />
+                        ) : (
+                            <Bookmark className="w-4 h-4" />
+                        )}
                     </Button>
                 </div>
             </div>

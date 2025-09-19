@@ -1,12 +1,13 @@
 // app/jobs/[slug]/page.tsx
 "use client";
 
-import { Briefcase, MapPin, Calendar, Bookmark, Share2, GraduationCap, Layers, Banknote, User, Hourglass, CircleCheck } from "lucide-react";
+import { Briefcase, MapPin, Calendar, Bookmark, BookmarkCheck, Share2, GraduationCap, Layers, Banknote, User, Hourglass, CircleCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useJobBySlug, useJobs } from "@/hooks/useJobs";
+import { useJobSave } from "@/hooks/useJobSave";
 import formatCurrency from "@/lib/formatCurrency";
 import { formatDateIDDateOnly } from "@/lib/formatDate";
 import BrowseCTASection from "@/app/jobs/browse/components/BrowseCTASection";
@@ -45,12 +46,76 @@ function SafeHtml({ html, className }: { html: string; className?: string }) {
     );
 }
 
+// Similar Job Card Component
+const SimilarJobCard = ({ job }: { job: any }) => {
+    const { isSaved, isLoading, toggleSave } = useJobSave(job.job_id);
+    
+    return (
+        <div key={job.job_id} className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-all duration-300">
+            <h4 className="font-semibold text-gray-900 mb-2 line-clamp-2">
+                {job.title}
+            </h4>
+            
+            <div className="flex flex-wrap gap-2 mb-4">
+                {job.job_type && (
+                    <span className="px-2 py-1 text-xs bg-purple-50 text-purple-700 rounded font-medium">
+                        {job.job_type}
+                    </span>
+                )}
+                {job.category && (
+                    <span className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded font-medium">
+                        {job.category}
+                    </span>
+                )}
+            </div>
+            
+            <div className="text-gray-700 text-sm mb-4 flex items-center gap-1">
+                <Banknote className="w-4 h-4" />
+                <span>{formatCurrency(job.salary, { currency: job.currency || "IDR" })}</span>
+            </div>
+            
+            <div className="flex items-center justify-between">
+                <Link 
+                    href={`/jobs/${job.slug || job.job_id}`} 
+                    className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+                >
+                    Apply This Job
+                </Link>
+                <div className="flex items-center gap-2">
+                    <button 
+                        onClick={toggleSave}
+                        disabled={isLoading}
+                        className={`p-2 transition-colors ${
+                            isSaved 
+                                ? 'text-blue-600 hover:text-blue-700' 
+                                : 'text-gray-400 hover:text-blue-600'
+                        }`}
+                        title={isSaved ? 'Remove from saved jobs' : 'Save this job'}
+                    >
+                        {isSaved ? (
+                            <BookmarkCheck className="w-4 h-4" />
+                        ) : (
+                            <Bookmark className="w-4 h-4" />
+                        )}
+                    </button>
+                    <button className="p-2 text-gray-400 hover:text-blue-600 transition-colors">
+                        <Share2 className="w-4 h-4" />
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+};
+
 export default function JobDetailPage() {
     const params = useParams();
     const slug = params.slug as string;
 
     // Fetch single job by slug from backend
     const { job: currentJob, loading, error } = useJobBySlug(slug);
+    
+    // Job save functionality
+    const { isSaved, isLoading: isSaveLoading, toggleSave } = useJobSave(currentJob?.job_id || '');
 
     // Related jobs by matching skills
     const related = useJobs();
@@ -184,8 +249,22 @@ export default function JobDetailPage() {
                             <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors">
                                 Apply This Job
                             </button>
-                            <button className="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-6 py-3 rounded-lg transition-colors flex items-center gap-2">
-                                <Bookmark className="w-5 h-5" />
+                            <button 
+                                onClick={toggleSave}
+                                disabled={isSaveLoading}
+                                className={`px-6 py-3 rounded-lg transition-colors flex items-center gap-2 font-semibold ${
+                                    isSaved 
+                                        ? 'bg-indigo-600 hover:bg-indigo-700 text-white border border-indigo-600' 
+                                        : 'bg-white/10 hover:bg-white/20 text-white border border-white/30'
+                                }`}
+                                title={isSaved ? 'Remove from saved jobs' : 'Save this job'}
+                            >
+                                {isSaved ? (
+                                    <BookmarkCheck className="w-5 h-5" />
+                                ) : (
+                                    <Bookmark className="w-5 h-5" />
+                                )}
+                                {isSaved ? 'Saved' : 'Save Job'}
                             </button>
                             <button className="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-6 py-3 rounded-lg transition-colors flex items-center gap-2">
                                 <Share2 className="w-5 h-5" />
@@ -354,80 +433,13 @@ export default function JobDetailPage() {
                 {/* Related Jobs Section */}
                 <section className="mt-16">
                     <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">Related Jobs</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {(related.jobs || [])
-                            .filter(j => j.job_id !== currentJob.job_id)
-                            .filter(j => {
-                                // Only show jobs that have matching Skills Specialization
-                                if (currentJob.skills && currentJob.skills.length > 0 && j.skills && j.skills.length > 0) {
-                                    const currentSkills = currentJob.skills.map(s => s.name.toLowerCase().trim());
-                                    const jobSkills = j.skills.map(s => s.name.toLowerCase().trim());
-                                    return currentSkills.some(skill => jobSkills.includes(skill));
-                                }
-                                return false; // Only show jobs with matching skills
-                            })
-                            .slice(0, 4)
-                            .map((job) => {
-                                const relatedCompanyName = job.Company?.name || "Unknown Company";
-                                const relatedCompanyLogo = toAbsoluteUrl(job.Company?.profile_picture);
-                                
-                                return (
-                                    <div key={job.job_id} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow p-6">
-                                        <div className="flex items-center gap-3 mb-4">
-                                            <Image
-                                                src={relatedCompanyLogo}
-                                                alt={relatedCompanyName}
-                                                width={40}
-                                                height={40}
-                                                className="w-10 h-10 rounded-lg object-cover"
-                                            />
-                                            <div>
-                                                <div className="font-medium text-gray-900 text-sm">{relatedCompanyName}</div>
-                                                <div className="text-xs text-gray-500">{job.location || "-"}</div>
-                                            </div>
-                                        </div>
-                                        
-                                        <h4 className="font-bold text-gray-900 mb-3 line-clamp-2 leading-tight">
-                                            {job.title}
-                                        </h4>
-                                        
-                                        <div className="flex flex-wrap gap-2 mb-4">
-                                            {job.job_type && (
-                                                <span className="px-2 py-1 text-xs bg-purple-50 text-purple-700 rounded font-medium">
-                                                    {job.job_type}
-                                                </span>
-                                            )}
-                                            {job.category && (
-                                                <span className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded font-medium">
-                                                    {job.category}
-                                                </span>
-                                            )}
-                                        </div>
-                                        
-                                        <div className="text-gray-700 text-sm mb-4 flex items-center gap-1">
-                                            <Banknote className="w-4 h-4" />
-                                            <span>{formatCurrency(job.salary, { currency: job.currency || "IDR" })}</span>
-                                        </div>
-                                        
-                                        <div className="flex items-center justify-between">
-                                            <Link 
-                                                href={`/jobs/${job.slug || job.job_id}`} 
-                                                className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-                                            >
-                                                Apply This Job
-                                            </Link>
-                                            <div className="flex items-center gap-2">
-                                                <button className="p-2 text-gray-400 hover:text-blue-600 transition-colors">
-                                                    <Bookmark className="w-4 h-4" />
-                                                </button>
-                                                <button className="p-2 text-gray-400 hover:text-blue-600 transition-colors">
-                                                    <Share2 className="w-4 h-4" />
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {related.jobs
+                            .filter((job: any) => job.job_id !== currentJob?.job_id)
+                            .slice(0, 6)
+                            .map((job: any) => (
+                                <SimilarJobCard key={job.job_id} job={job} />
+                            ))}
                     </div>
                 </section>
 

@@ -85,7 +85,9 @@ const FeatureJob = () => {
                         logo={job.Companies?.profile_picture || job.company?.profile_picture || job.logo || "/images/logo.png"}
                         postedDate={job.createdAt ? new Date(job.createdAt).toLocaleDateString() : job.postedDate || "Recently"}
                         location={job.location || "Remote"}
-                        salary={job.salary ? `$${job.salary}/${job.periodSalary?.toLowerCase() || 'hour'}` : job.salary || "Competitive"}
+                        salary={job.salary || job.expected_salary || null}
+                        periodSalary={job.periodSalary || "month"}
+                        currency={job.currency || "IDR"}
                         title={job.title || "Job Position"}
                         type={job.job_type?.replace('_', ' ') || job.type || "Full-time"}
                         description={job.description?.replace(/<[^>]*>/g, '').substring(0, 100) + '...' || "No description available"}

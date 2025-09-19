@@ -1,10 +1,11 @@
 "use client";
 
 import React from "react";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { MapPin, DollarSign, Bookmark } from "lucide-react";
+import { MapPin, DollarSign, Clock, Calendar } from "lucide-react";
+import Image from "next/image";
+import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
+import formatCurrency from "@/lib/formatCurrency";
 
 interface Job {
     id: string | number;
@@ -12,13 +13,16 @@ interface Job {
     logo?: string;
     postedDate?: string;
     location?: string;
-    salary?: string;
+    salary?: string | number | null;
+    periodSalary?: string;
+    currency?: string;
     title: string;
     type?: string;
     description?: string;
     requirements?: string[];
     lat?: number;
     lng?: number;
+    slug?: string;
 }
 
 interface JobCardProps {
@@ -28,6 +32,8 @@ interface JobCardProps {
 }
 
 const JobCard: React.FC<JobCardProps> = ({ job, index, coords }) => {
+    const router = useRouter();
+
     const formatDistance = (lat1: number, lng1: number, lat2: number, lng2: number) => {
         const R = 6371; // Radius of the Earth in kilometers
         const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -45,88 +51,121 @@ const JobCard: React.FC<JobCardProps> = ({ job, index, coords }) => {
         ? formatDistance(coords.lat, coords.lng, job.lat, job.lng)
         : null;
 
-    return (
-        <Card
-            className="bg-white border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer rounded-2xl"
-            style={{
-                animationDelay: `${index * 100}ms`,
-                animation: 'fadeInUp 0.6s ease-out forwards'
-            }}
-        >
-            <div className="p-6">
-                {/* Job Title */}
-                <h3 className="text-xl font-bold text-gray-900 mb-4">{job.title}</h3>
+    const handleJobClick = () => {
+        const jobSlug = job.slug || job.title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '') || job.id;
+        router.push(`/jobs/${jobSlug}`);
+    };
 
-                {/* Company Info with Logo */}
-                <div className="flex items-center gap-3 mb-4">
-                    {/* Company Logo - using a colorful geometric shape */}
-                    <div className="w-12 h-12 rounded-lg flex items-center justify-center"
-                        style={{
-                            background: 'linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 50%, #45B7D1 100%)'
-                        }}>
-                        <div className="w-8 h-8 bg-white rounded opacity-90 flex items-center justify-center">
-                            <div className="w-4 h-4 bg-gradient-to-br from-orange-400 to-indigo-500 rounded"></div>
+    // Format salary to IDR using backend data
+    const formatSalary = (salaryValue: string | number | null | undefined, currency?: string, period?: string) => {
+        if (!salaryValue || salaryValue === "Competitive") return "Competitive";
+        
+        // Convert to string first
+        const salaryString = String(salaryValue);
+        
+        // Extract numeric value from string like "$5000/month" or "5000"
+        const numericValue = salaryString.replace(/[^0-9]/g, '');
+        
+        if (!numericValue || numericValue === '0') return "Competitive";
+        
+        const amount = parseInt(numericValue);
+        
+        // Default to IDR if no currency specified or if already in IDR
+        if (!currency || currency === 'IDR') {
+            const periodText = period === 'hour' ? 'jam' : period === 'week' ? 'minggu' : period === 'year' ? 'tahun' : 'bulan';
+            return `${formatCurrency(amount)}/${periodText}`;
+        }
+        
+        // Convert from USD to IDR if needed (around 15,000 IDR = 1 USD)
+        const idrAmount = currency === 'USD' ? amount * 15000 : amount;
+        const periodText = period === 'hour' ? 'jam' : period === 'week' ? 'minggu' : period === 'year' ? 'tahun' : 'bulan';
+        
+        return `${formatCurrency(idrAmount)}/${periodText}`;
+    };
+
+    // Calculate days left (random for demo, in real app would come from job data)
+    const daysLeft = Math.floor(Math.random() * 30) + 1;
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: index * 0.1 }}
+            whileHover={{ y: -5 }}
+            className="h-full"
+        >
+            <div className="group bg-white/90 backdrop-blur-sm rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-6 h-full flex flex-col border-0">
+                {/* Header */}
+                <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                        <div className="relative">
+                            <Image
+                                src={job.logo || "https://images.unsplash.com/photo-1662057168154-89300791ad6e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGxvZ28lMjBjb21wYW55fGVufDB8fDB8fHww"}
+                                alt={job.company}
+                                width={48}
+                                height={48}
+                                className="w-12 h-12 object-cover rounded-xl"
+                            />
+                            <div className="absolute -top-1 -right-1 bg-green-500 rounded-full w-4 h-4 border-2 border-white"></div>
+                        </div>
+                        <div>
+                            <h4 className="font-bold text-gray-800 leading-tight">{job.company}</h4>
+                            <div className="flex items-center gap-1 mt-1">
+                                <Calendar className="w-3 h-3 text-gray-400" />
+                                <span className="text-xs text-gray-500">{job.postedDate || "Recently"}</span>
+                            </div>
                         </div>
                     </div>
-                    <div>
-                        <h4 className="font-medium text-gray-700 text-sm">{job.company}</h4>
+                    
+                    {/* Job Type Badge */}
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                        {job.type || "Full-time"}
+                    </span>
+                </div>
+
+                {/* Job Title */}
+                <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-indigo-600 transition-colors">
+                    {job.title}
+                </h3>
+
+                {/* Job Info */}
+                <div className="space-y-2 mb-4">
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <MapPin className="w-4 h-4 text-gray-400" />
+                        <span>{job.location}</span>
+                        {distance && (
+                            <span className="text-indigo-600 font-medium">({distance})</span>
+                        )}
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <DollarSign className="w-4 h-4 text-gray-400" />
+                        <span className="font-medium text-green-600">{formatSalary(job.salary, job.currency, job.periodSalary)}</span>
                     </div>
                 </div>
 
-                {/* Job Type Badge */}
-                <div className="mb-4">
-                    <Badge className="bg-indigo-100 text-indigo-700 hover:bg-indigo-100 font-medium px-3 py-1">
-                        {job.type || 'Full Time'}
-                    </Badge>
-                </div>
+                {/* Description */}
+                <p className="text-sm text-gray-600 mb-6 flex-1 line-clamp-3">
+                    {job.description || "No description available"}
+                </p>
 
-                {/* Requirements List */}
-                {job.requirements && job.requirements.length > 0 && (
-                    <div className="mb-6">
-                        <ul className="space-y-2">
-                            {job.requirements.slice(0, 3).map((req, idx) => (
-                                <li key={idx} className="text-gray-600 text-sm flex items-start">
-                                    <span className="text-gray-400 mr-2 mt-1">•</span>
-                                    <span className="leading-relaxed">{req}</span>
-                                </li>
-                            ))}
-                        </ul>
+                {/* Footer */}
+                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <div className="flex items-center gap-2 text-sm">
+                        <Clock className="w-4 h-4 text-orange-400" />
+                        <span className="text-gray-600">
+                            {daysLeft} day{daysLeft !== 1 ? 's' : ''} left
+                        </span>
                     </div>
-                )}
-
-                {/* Location */}
-                <div className="flex items-center gap-2 text-gray-600 text-sm mb-2">
-                    <MapPin className="w-4 h-4" />
-                    <span>{job.location}</span>
-                    {distance && (
-                        <span className="text-indigo-600 font-medium">({distance})</span>
-                    )}
-                </div>
-
-                {/* Salary */}
-                <div className="flex items-center gap-2 text-gray-600 text-sm mb-6">
-                    <DollarSign className="w-4 h-4" />
-                    <span>{job.salary}</span>
-                </div>
-
-                {/* Action Buttons */}
-                <div className="flex items-center gap-3">
-                    <Button
-                        className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg h-10"
-                        size="sm"
+                    
+                    <button 
+                        onClick={handleJobClick}
+                        className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors duration-200 group-hover:scale-105"
                     >
-                        Apply This Job
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="border-gray-300 hover:bg-gray-50 rounded-lg w-10 h-10 flex-shrink-0"
-                    >
-                        <Bookmark className="w-4 h-4" />
-                    </Button>
+                        Apply Now
+                    </button>
                 </div>
             </div>
-        </Card>
+        </motion.div>
     );
 };
 

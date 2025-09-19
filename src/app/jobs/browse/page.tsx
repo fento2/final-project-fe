@@ -1,5 +1,6 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import BrowseHeroSection from "./components/BrowseHeroSection";
 import JobsFilterSection, { Filters } from "./components/JobsFilterSection";
 import JobsGridSection from "./components/JobsGridSection";
@@ -8,20 +9,65 @@ import BrowseTestimonialSection from "./components/BrowseTestimonialSection";
 import BrowseCTASection from "./components/BrowseCTASection";
 
 export default function Page() {
+	const searchParams = useSearchParams();
 	const [filters, setFilters] = useState<Filters>({
 		date: "Anytime",
 		types: [],
 		tools: [],
 		location: [],
 		categories: [],
-		salaryMin: 4000,
-		salaryMax: 0,
+		salaryMin: 0, // Rp 0
+		salaryMax: 50000000, // 50 juta IDR
 	});
+
+	// Set initial filters from URL parameters
+	useEffect(() => {
+		const categoriesParam = searchParams.get("categories");
+		const queryParam = searchParams.get("query");
+		const locationParam = searchParams.get("location");
+		const typeParam = searchParams.get("type");
+
+		if (categoriesParam || queryParam || locationParam || typeParam) {
+			setFilters(prev => ({
+				...prev,
+				categories: categoriesParam ? [categoriesParam] : prev.categories,
+				// You can add more URL parameter handling here if needed
+			}));
+		}
+	}, [searchParams]);
+
+	// Function to clear individual filters
+	const handleClearFilter = (filterType: string, value: string) => {
+		setFilters(prev => {
+			if (filterType === 'categories') {
+				return {
+					...prev,
+					categories: prev.categories.filter(item => item !== value)
+				};
+			} else if (filterType === 'types') {
+				return {
+					...prev,
+					types: prev.types.filter(item => item !== value)
+				};
+			} else if (filterType === 'location') {
+				return {
+					...prev,
+					location: prev.location.filter(item => item !== value)
+				};
+			} else if (filterType === 'tools') {
+				return {
+					...prev,
+					tools: prev.tools.filter(item => item !== value)
+				};
+			}
+			return prev;
+		});
+	};
 
 	return (
 		<div className="min-h-screen bg-gray-50">
 			{/* Hero */}
-			<BrowseHeroSection />
+			<BrowseHeroSection filters={filters} onClearFilter={handleClearFilter} />
 
 			{/* Content */}
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">

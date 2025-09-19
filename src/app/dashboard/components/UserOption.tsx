@@ -29,6 +29,7 @@ const menus = [
     sub: [
       { title: "My Applications", href: "/dashboard/my-applications" },
       { title: "My Jobs", href: "/dashboard/my-jobs" },
+      { title: "Job Saves", href: "/dashboard/job-saves" },
     ],
   },
   {
