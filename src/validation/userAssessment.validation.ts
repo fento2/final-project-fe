@@ -15,3 +15,16 @@ export const userAssessmentUpdateSchema = z.object({
 });
 
 export type UserAssessmentUpdateDTO = z.infer<typeof userAssessmentUpdateSchema>;
+
+export const userAssessmentSchema = z.object({
+    user_assessment_id: z.number().int(),
+    assessment_id: z.number().int(),
+    user_id: z.number().int(),
+    score: z.number().min(0).max(100),
+    date_taken: z.date().optional(),
+    createAt: z.date().optional(),
+    updatedAt: z.date().optional(),
+});
+
+export type UserAssessmentDTO = z.infer<typeof userAssessmentSchema>;
+

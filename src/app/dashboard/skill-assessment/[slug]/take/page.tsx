@@ -101,8 +101,14 @@ export default function SkillAssessmentPage() {
             score
         }
         const { data } = await apiCall.patch("/userAssessments", payload);
+
+        if (score >= 70) {
+            const resultCerti = await apiCall.post("/assessmentCertificate", { user_assessment_id: Number(payload.user_assessment_id), certificate_code: crypto.randomUUID() });
+        }
+        
+        localStorage.setItem("lastResult", JSON.stringify(payload));
         localStorage.removeItem("takeAssessment");
-        router.push(`/dashboard/skill-assessment/${slug}/result`)
+        router.replace(`/dashboard/skill-assessment/${slug}/result`)
     }
 
     const handleNext = () => {
