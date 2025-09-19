@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import SubmitDialog from "../skill-assessment/_components/SubmitDialog";
 import SubscriptionModal from "./_components/SubscriptionModal";
 import { Subscription } from "@/types/subscription";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function SubscriptionPage() {
     const [activeSub, setActiveSub] = useState<UserSubscriptionActiveDTO>();
@@ -32,7 +34,7 @@ export default function SubscriptionPage() {
             setSubsHistory(result.data.data);
             const resSubscription = await apiCall.get("/subscription");
             setSubscription(resSubscription.data.data);
-            console.log(resSubscription.data.data);
+            console.log(res.data.data);
         } catch (error) {
             console.log(error);
         } finally {
@@ -76,17 +78,17 @@ export default function SubscriptionPage() {
                                 </div>
                                 {activeSub.payment_status === "APPROVED" && (
                                     <Badge variant="default" className="bg-green-100 text-green-800 border-green-200 hover:bg-green-200 hover:text-green-900 hover:border-green-300">
-                                        Aktif
+                                        Active
                                     </Badge>
                                 )}
                                 {activeSub.payment_status === "PENDING" && (
                                     <Badge variant="secondary">
-                                        Menunggu
+                                        Pending
                                     </Badge>
                                 )}
                                 {activeSub.payment_status === "REJECTED" && (
                                     <Badge variant="destructive">
-                                        Gagal
+                                        Rejected
                                     </Badge>
                                 )}
                             </div>
@@ -115,6 +117,11 @@ export default function SubscriptionPage() {
                                 <SubmitDialog onConfirm={() => handleUpgrade()} buttonTitle="Upgrade" variant="success" triggerLabel="Upgrade" title="Are you sure you want to upgrade?" description="Upgrading will change your subscription plan. Do you want to continue?" />
                             )
                         }
+                        <div className="flex flex-col gap-2">
+                            <Label>Upload proof of payment</Label>
+                            <Input type="file" />
+                            <Button className="bg-green-600 hover:bg-green-700">Submit</Button>
+                        </div>
                         {/* <Button variant="destructive" className="w-full">
                                 <XCircle className="mr-2 h-4 w-4" /> Batalkan Langganan
                             </Button> */}
