@@ -44,7 +44,7 @@ export default function HeroSection() {
                     <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6 leading-tight">
                         Insights & Inspiration:
                         <br />
-                        <span className="text-blue-600">The JobLinkup Blog</span>
+                        <span className="text-blue-600">The Horizon Jobs Blog</span>
                     </h1>
                     <p className="text-lg text-gray-600 mb-8 leading-relaxed max-w-2xl">
                         Discover career insights, job market trends, and expert advice to help you

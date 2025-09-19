@@ -112,7 +112,7 @@ export default function SkillAssessmentPage() {
     const currentQuestion = questions[current];
 
     return (
-        <div className="min-h-screen w-full flex flex-col bg-gray-50 py-8 pl-24 px-8">
+        <div className="min-h-screen w-full flex flex-col bg-gray-50 py-8 md:pl-24 px-8">
             {/* Header */}
             <div className="flex items-start justify-between mb-6">
                 <h1 className="text-3xl font-bold">Sistem Ujian Online</h1>

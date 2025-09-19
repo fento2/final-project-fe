@@ -11,13 +11,16 @@ interface Job {
     logo?: string;
     postedDate?: string;
     location?: string;
-    salary?: string;
+    salary?: string | number | null;
+    periodSalary?: string;
+    currency?: string;
     title: string;
     type?: string;
     description?: string;
     requirements?: string[];
     lat?: number;
     lng?: number;
+    slug?: string;
 }
 
 function getDistanceKm(lat1: number, lon1: number, lat2: number, lon2: number) {
@@ -45,19 +48,35 @@ const DiscoverySection: React.FC = () => {
     // Convert API jobs to local Job type format
     const jobs: Job[] = React.useMemo(() => {
         if (!Array.isArray(apiJobs)) return [];
+        
+        // Debug: Log first job to check salary data structure
+        if (apiJobs.length > 0) {
+            const firstJob = apiJobs[0] as any;
+            console.log('First job data from backend:', firstJob);
+            console.log('Salary fields:', {
+                salary: firstJob.salary,
+                periodSalary: firstJob.periodSalary,
+                currency: firstJob.currency,
+                expected_salary: firstJob.expected_salary
+            });
+        }
+        
         return apiJobs.map((job: any) => ({
             id: job.job_id || job.id,
-            company: job.Companies?.name || job.company?.name || "Unknown Company",
-            logo: job.Companies?.profile_picture || job.company?.profile_picture || "/images/logo.png",
+            company: job.Companies?.name || job.Company?.name || job.company?.name || "Unknown Company",
+            logo: job.Companies?.profile_picture || job.Company?.profile_picture || job.company?.profile_picture,
             postedDate: job.createdAt ? new Date(job.createdAt).toLocaleDateString() : "Recently",
             location: job.location || "Remote",
-            salary: job.salary ? `$${job.salary}/${job.periodSalary?.toLowerCase() || 'hour'}` : "Competitive",
+            salary: job.salary || job.expected_salary || null,
+            periodSalary: job.periodSalary || "month",
+            currency: job.currency || "USD",
             title: job.title,
             type: job.job_type?.replace('_', ' ') || "Full Time",
             description: job.description?.replace(/<[^>]*>/g, '').substring(0, 100) + '...' || "",
             requirements: job.skills?.map((skill: any) => skill.name) || [],
             lat: parseFloat(job.latitude) || 0,
             lng: parseFloat(job.longitude) || 0,
+            slug: job.slug,
         }));
     }, [apiJobs]);    useEffect(() => {
         // get user location
@@ -115,7 +134,7 @@ const DiscoverySection: React.FC = () => {
     }, [selectedCity, jobs, jobsSorted]);
 
     return (
-        <section className="max-w-max mx-auto px-6 py-16">
+        <section className="max-w-7xl mx-auto px-4 py-16">
             <div className="text-center">
                 <h2 className="text-4xl font-extrabold">Job Near You</h2>
                 <p className="mt-4 text-gray-500 max-w-2xl mx-auto">

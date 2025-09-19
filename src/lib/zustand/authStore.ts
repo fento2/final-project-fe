@@ -22,7 +22,11 @@ export const useAuthStore = create<AuthState>((set) => ({
   checkLogin: true,
 
   setAuth: (email, role, profile_picture) =>
-    set({ email, role, profile_picture }),
+    set({
+      email,
+      role: (role as string)?.toUpperCase?.() ? (role as string).toUpperCase() : (role as string),
+      profile_picture,
+    }),
   setIsLogin: (isLogin) => set({ isLogin }),
   setChekLogin: (checkLogin) => set({ checkLogin }),
   setLogOut: () =>

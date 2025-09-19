@@ -35,7 +35,7 @@ export default function ReviewCompanyPage() {
     }
 
     return (
-        <div className="p-4 pl-20 space-y-6">
+        <div className="p-4 md:pl-20 space-y-6">
             <div className="flex items-center justify-between">
                 <h1 className="text-xl font-semibold">Riwayat & Review Perusahaan</h1>
                 <div className="flex gap-2">

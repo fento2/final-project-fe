@@ -7,6 +7,7 @@ import ConditionalNavbar from "@/components/core/ConditionalNavbar";
 import ConditionalFooter from "@/components/core/ConditionalFooter";
 import { ToastProvider } from "@/components/basic-toast";
 import { GoogleOAuthProvider } from "@react-oauth/google";
+import AuthInit from "@/components/core/AuthInit";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,6 +35,8 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
+          {/* Ensure auth store is initialized globally on all routes */}
+          <AuthInit />
           <ShowSideBar />
           <ConditionalNavbar />
           <ToastProvider />

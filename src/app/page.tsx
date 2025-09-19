@@ -1,4 +1,6 @@
+import { Suspense } from "react";
 import HeroSection from "./components/HeroSection";
+import SearchResultsSection from "./components/SearchResultsSection";
 import DiscoverySection from "./components/DiscoverySection";
 import FeatureJob from "./components/FeatureJob";
 import TopCompaniesSection from "./components/TopCompaniesSection";
@@ -17,6 +19,12 @@ export default function Home() {
         <div className="my-8 overflow-hidden">
           <HeroSection />
         </div>
+        
+        {/* Search Results Section - appears when search is performed */}
+        <Suspense fallback={<div>Loading search results...</div>}>
+          <SearchResultsSection />
+        </Suspense>
+        
         <div className="my-8">
           <JobCategories />
         </div>

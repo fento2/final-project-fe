@@ -9,6 +9,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { apiCall } from "@/helper/apiCall";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Company } from "@/types/userCompany";
 
 const Schema = z.object({
     company_id: z.number().optional().nullable(),
@@ -18,7 +19,7 @@ const Schema = z.object({
 
 type FormValues = z.infer<typeof Schema>;
 
-export default function AddUserCompanyModal({ isOpen, onClose, onSaved }: { isOpen: boolean; onClose: () => void; onSaved?: () => void; }) {
+export default function AddUserCompanyModal({ isOpen, onClose, onSaved, item }: { isOpen: boolean; onClose: () => void; onSaved?: () => void; item: Company; }) {
     const { register, handleSubmit, control, reset, formState } = useForm<FormValues>({
         resolver: zodResolver(Schema),
         defaultValues: {

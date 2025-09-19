@@ -181,11 +181,12 @@ export default function BlogPage({ params }: BlogPageProps) {
     };
 
     // Helper function to parse markdown content
-    const parseMarkdown = (content: string) => {
+    const parseMarkdown = (content: string): string => {
         return marked(content, {
             breaks: true,
             gfm: true,
-        });
+            async: false,
+        }) as string;
     };
 
     return (

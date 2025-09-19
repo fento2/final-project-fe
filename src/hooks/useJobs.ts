@@ -29,10 +29,29 @@ export const useJobs = (filters?: JobFilters) => {
             if (filterParams.page) params.append("page", filterParams.page.toString());
             if (filterParams.limit) params.append("limit", filterParams.limit.toString());
 
-            const { data } = await apiCall.get(`/postings?${params.toString()}`);
+            // Try both /jobs and /postings endpoints
+            let data;
+            try {
+                const response = await apiCall.get(`/jobs?${params.toString()}`);
+                data = response.data;
+            } catch (jobsError) {
+                // Fallback to postings endpoint
+                const response = await apiCall.get(`/postings?${params.toString()}`);
+                data = response.data;
+            }
+
             // Handle backend response structure: { success, message, data: { data: [...] } }
             const jobsData = data?.data?.data || data?.data || data || [];
-            setJobs(Array.isArray(jobsData) ? jobsData : []);
+            const normalizedJobs = Array.isArray(jobsData) ? jobsData.map((job: any) => {
+                // Normalize relation naming: Companies -> Company
+                const normalized = { ...job };
+                if (!normalized.Company && normalized.Companies) {
+                    normalized.Company = normalized.Companies;
+                }
+                return normalized;
+            }) : [];
+            
+            setJobs(normalizedJobs);
             
             // Handle pagination if available
             if (data?.data?.pagination) {
@@ -107,11 +126,74 @@ export const useJobBySlug = (slug: string) => {
         const fetchJobBySlug = async () => {
             try {
                 setLoading(true);
-                const { data } = await apiCall.get(`/postings/slug/${slug}`);
-                setJob(data);
-            } catch (err) {
-                setError('Failed to fetch job');
-                console.error('Job by slug fetch error:', err);
+                setError(null);
+                console.log('🔍 Fetching job with slug:', slug);
+                
+                // If backend requires auth for individual jobs, try to find the job from the general listing first
+                let job = null;
+                
+                try {
+                    console.log('🌐 Fetching all jobs to find job by slug');
+                    const { data: allJobsData } = await apiCall.get('/postings');
+                    console.log('✅ Got jobs list:', allJobsData);
+                    
+                    // Handle backend response structure: { success, message, data: { data: [...] } }
+                    const jobsArray = allJobsData?.data?.data || allJobsData?.data || allJobsData || [];
+                    console.log('📦 Jobs array:', jobsArray);
+                    
+                    if (Array.isArray(jobsArray)) {
+                        // Find job by slug in the array
+                        job = jobsArray.find((j: any) => j.slug === slug || j.job_id?.toString() === slug);
+                        console.log('🔍 Found job in listing:', job);
+                    }
+                } catch (listError: any) {
+                    console.log('❌ Failed to get jobs list:', listError.response?.status, listError.message);
+                }
+                
+                // If not found in listing, try direct endpoints (they might work with cookies/session)
+                if (!job) {
+                    try {
+                        console.log('🌐 Trying /postings/slug/${slug}');
+                        const response = await apiCall.get(`/postings/slug/${slug}`);
+                        const data = response.data;
+                        console.log('✅ Success with /postings/slug:', data);
+                        job = data?.data?.data ?? data?.data ?? data;
+                    } catch (slugError: any) {
+                        console.log('❌ /postings/slug failed:', slugError.response?.status, slugError.message);
+                        
+                        try {
+                            console.log('🌐 Trying /postings/${slug} (as ID)');
+                            const response = await apiCall.get(`/postings/${slug}`);
+                            const data = response.data;
+                            console.log('✅ Success with /postings as ID:', data);
+                            job = data?.data?.data ?? data?.data ?? data;
+                        } catch (idError: any) {
+                            console.log('❌ All direct endpoints failed');
+                            // Don't throw here, we'll check if we found job from listing below
+                        }
+                    }
+                }
+                
+                if (!job) {
+                    console.log('❌ No job data found');
+                    setJob(null);
+                    setError('Job not found. You may need to be logged in to view job details.');
+                    return;
+                }
+                
+                // Normalize relation naming: Companies -> Company
+                const normalized: any = { ...job };
+                if (!normalized.Company && normalized.Companies) {
+                    normalized.Company = normalized.Companies;
+                    console.log('🔄 Normalized Companies -> Company');
+                }
+                console.log('✅ Final normalized job:', normalized);
+                setJob(normalized as Job);
+            } catch (err: any) {
+                console.error('💥 Final error:', err);
+                const errorMessage = err.response?.data?.message || err.message || 'Failed to fetch job';
+                setError(errorMessage);
+                console.error('Job by slug fetch error:', errorMessage);
             } finally {
                 setLoading(false);
             }

@@ -1,3 +1,6 @@
+/* eslint-disable */
+/* stylelint-disable */
+/* CSS custom properties and Tailwind directives */
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -203,4 +206,12 @@
 .thin-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: rgba(165, 165, 165, 0.3) rgba(150, 147, 147, 0.05);
+}
+
+/* Line clamp utility */
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
