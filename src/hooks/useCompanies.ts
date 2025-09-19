@@ -105,22 +105,88 @@ export const useTopCompanies = (limit = 10) => {
         const fetchTopCompanies = async () => {
             try {
                 setLoading(true);
-                // Use regular company endpoint with limit and sort by rating or created_at
-                const { data } = await apiCall.get(`/company?limit=${limit}&sort=created_at&order=desc`);
                 
-                // Handle different response formats
-                const companiesData = data.companies || data.data || data;
-                const topCompanies = Array.isArray(companiesData) ? companiesData.slice(0, limit) : [];
+                try {
+                    // Use the documented endpoint with limit parameter
+                    const { data } = await apiCall.get(`/company/top/with-stats?limit=${limit}`);
+                    console.log('📊 /company/top/with-stats API response:', {
+                        status: 'success',
+                        limit: limit,
+                        dataStructure: data ? Object.keys(data) : 'no data',
+                        companiesCount: data?.data?.length || data?.length || 0,
+                        fullResponse: data
+                    });
+                    
+                    // Handle different response formats
+                    const companiesData = data?.data || data?.companies || data || [];
+                    const topCompanies = Array.isArray(companiesData) ? companiesData.slice(0, limit) : [];
+                    
+                    console.log('✅ Successfully fetched companies with stats:', {
+                        companiesProcessed: topCompanies.length,
+                        sampleCompany: topCompanies[0] ? {
+                            name: topCompanies[0].name,
+                            hasJobStats: !!topCompanies[0].jobStats,
+                            hasTeamStats: !!topCompanies[0].teamStats,
+                            hasEngagementStats: !!topCompanies[0].engagementStats
+                        } : null
+                    });
+                    
+                    setCompanies(topCompanies);
+                    setError(null);
+                    
+                } catch (statsErr: any) {
+                    console.log('❌ /company/top/with-stats failed:', {
+                        status: statsErr.response?.status,
+                        message: statsErr.message,
+                        attempting: 'fallback endpoints'
+                    });
+                    
+                    // Fallback to previous endpoints if the new one fails
+                    try {
+                        // Fallback 1: /company/top with statistics query params
+                        const { data } = await apiCall.get(`/company/top?limit=${limit}&include=stats,jobs,reviews`);
+                        console.log('📊 Company/top fallback response:', data);
+                        const companiesData = data?.data?.data || data?.data || data?.companies || data || [];
+                        setCompanies(Array.isArray(companiesData) ? companiesData.slice(0, limit) : []);
+                        setError(null);
+                        
+                    } catch (topErr: any) {
+                        console.log('❌ /company/top failed, trying basic company endpoint...');
+                        
+                        try {
+                            // Fallback 2: Regular company endpoint
+                            const { data } = await apiCall.get(`/company?limit=${limit}`);
+                            console.log('📊 Basic Company API response:', data);
+                            const companiesData = data?.data?.data || data?.data || data?.companies || data || [];
+                            setCompanies(Array.isArray(companiesData) ? companiesData.slice(0, limit) : []);
+                            setError(null);
+                            
+                        } catch (basicErr: any) {
+                            throw basicErr; // Let the outer catch handle this
+                        }
+                    }
+                }
                 
-                setCompanies(topCompanies);
             } catch (err: any) {
-                // Silently handle backend connection issues and auth errors
-                if (err.response?.status === 404 || err.response?.status === 402 || err.code === 'ECONNREFUSED' || err.code === 'ERR_NETWORK') {
+                console.error('❌ All endpoints failed:', {
+                    error: err.message,
+                    status: err.response?.status,
+                    code: err.code
+                });
+                
+                // Handle different types of errors
+                if (err.code === 'ECONNREFUSED' || err.code === 'ERR_NETWORK') {
+                    // Network error - hide section
+                    setCompanies([]);
+                    setError(null);
+                } else if (err.response?.status === 404) {
+                    // Route not found - hide section gracefully
+                    console.warn('Companies endpoints not found, hiding section');
                     setCompanies([]);
                     setError(null);
                 } else {
-                    console.error('Top companies fetch error:', err);
-                    setError('Failed to fetch top companies');
+                    // Other errors - show error message
+                    setError(err.response?.data?.message || err.message || 'Failed to fetch top companies');
                 }
             } finally {
                 setLoading(false);

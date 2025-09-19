@@ -1,5 +1,7 @@
 "use client";
 import React from "react";
+import { formatIDR, formatCompactIDR, IDR_SALARY_RANGES } from "@/lib/currencyHelper";
+import { useFilterStats } from "@/hooks/useFilterStats";
 
 export type Filters = {
     date: string;
@@ -17,6 +19,8 @@ interface JobsFilterSectionProps {
 }
 
 const JobsFilterSection: React.FC<JobsFilterSectionProps> = ({ filters, onChange }) => {
+    const { stats, loading: statsLoading } = useFilterStats();
+
     return (
         <div className="bg-white rounded-xl shadow p-6">
             <aside className="space-y-6">
@@ -24,57 +28,62 @@ const JobsFilterSection: React.FC<JobsFilterSectionProps> = ({ filters, onChange
                 <div>
                     <h3 className="text-sm font-semibold mb-3 text-gray-900">Job Category</h3>
                     <div className="space-y-2">
-                        {[
-                            { label: "Software Engineering", count: "(3,924)" },
-                            { label: "Data Science", count: "(2,562)" },
-                            { label: "Product Management", count: "(1,247)" },
-                            { label: "Design", count: "(1,095)" },
-                            { label: "Marketing", count: "(755)" },
-                        ].map((cat) => (
-                            <label key={cat.label} className="flex items-center justify-between text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
-                                <div className="flex items-center gap-2">
-                                    <input
-                                        type="checkbox"
-                                        checked={filters.categories.includes(cat.label)}
-                                        onChange={() =>
-                                            onChange({
-                                                ...filters,
-                                                categories: filters.categories.includes(cat.label)
-                                                    ? filters.categories.filter((x: string) => x !== cat.label)
-                                                    : [...filters.categories, cat.label],
-                                            })
-                                        }
-                                        className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                    />
-                                    <span className="text-gray-700">{cat.label}</span>
-                                </div>
-                                <span className="text-gray-400 text-xs">{cat.count}</span>
-                            </label>
-                        ))}
+                        {statsLoading ? (
+                            <div className="text-sm text-gray-500">Loading...</div>
+                        ) : (
+                            Object.entries(stats.categories)
+                                .sort(([,a], [,b]) => b - a) // Sort by count descending
+                                .slice(0, 5) // Show top 5
+                                .map(([category, count]) => (
+                                    <label key={category} className="flex items-center justify-between text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={filters.categories.includes(category)}
+                                                onChange={() =>
+                                                    onChange({
+                                                        ...filters,
+                                                        categories: filters.categories.includes(category)
+                                                            ? filters.categories.filter((x: string) => x !== category)
+                                                            : [...filters.categories, category],
+                                                    })
+                                                }
+                                                className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                            />
+                                            <span className="text-gray-700">{category}</span>
+                                        </div>
+                                        <span className="text-gray-400 text-xs">({count})</span>
+                                    </label>
+                                ))
+                        )}
                     </div>
                 </div>
                 {/* Date Posted Filter */}
                 <div>
                     <h3 className="text-sm font-semibold mb-3 text-gray-900">Date Posted</h3>
                     <div className="space-y-2">
-                        {["Last 24 hours", "Last 3 days", "Last 7 days", "Anytime"].map((d) => {
-                            const count = d === "Anytime" ? "(9,999)" : d === "Last 24 hours" ? "(1,405)" : d === "Last 3 days" ? "(3,205)" : "(5,592)";
-                            return (
-                                <label key={d} className="flex items-center justify-between text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
-                                    <div className="flex items-center gap-2">
-                                        <input
-                                            type="radio"
-                                            name="date"
-                                            checked={filters.date === d}
-                                            onChange={() => onChange({ ...filters, date: d })}
-                                            className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
-                                        />
-                                        <span className="text-gray-700">{d}</span>
-                                    </div>
-                                    <span className="text-gray-400 text-xs">{count}</span>
-                                </label>
-                            );
-                        })}
+                        {statsLoading ? (
+                            <div className="text-sm text-gray-500">Loading...</div>
+                        ) : (
+                            ["Last 24 hours", "Last 3 days", "Last 7 days", "Anytime"].map((d) => {
+                                const count = stats.datePosted[d] || 0;
+                                return (
+                                    <label key={d} className="flex items-center justify-between text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="radio"
+                                                name="date"
+                                                checked={filters.date === d}
+                                                onChange={() => onChange({ ...filters, date: d })}
+                                                className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                                            />
+                                            <span className="text-gray-700">{d}</span>
+                                        </div>
+                                        <span className="text-gray-400 text-xs">({count})</span>
+                                    </label>
+                                );
+                            })
+                        )}
                     </div>
                 </div>
 
@@ -82,33 +91,33 @@ const JobsFilterSection: React.FC<JobsFilterSectionProps> = ({ filters, onChange
                 <div>
                     <h3 className="text-sm font-semibold mb-3 text-gray-900">Job Type</h3>
                     <div className="space-y-2">
-                        {[
-                            { label: "Full-time", count: "(9,999)" },
-                            { label: "Contract", count: "(2,865)" },
-                            { label: "Internship", count: "(1,247)" },
-                            { label: "Part-time", count: "(755)" },
-                            { label: "Temporary", count: "(143)" }
-                        ].map((type) => (
-                            <label key={type.label} className="flex items-center justify-between text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
-                                <div className="flex items-center gap-2">
-                                    <input
-                                        type="checkbox"
-                                        checked={filters.types.includes(type.label)}
-                                        onChange={() =>
-                                            onChange({
-                                                ...filters,
-                                                types: filters.types.includes(type.label)
-                                                    ? filters.types.filter((x: string) => x !== type.label)
-                                                    : [...filters.types, type.label],
-                                            })
-                                        }
-                                        className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                    />
-                                    <span className="text-gray-700">{type.label}</span>
-                                </div>
-                                <span className="text-gray-400 text-xs">{type.count}</span>
-                            </label>
-                        ))}
+                        {statsLoading ? (
+                            <div className="text-sm text-gray-500">Loading...</div>
+                        ) : (
+                            Object.entries(stats.jobTypes)
+                                .sort(([,a], [,b]) => b - a) // Sort by count descending
+                                .map(([jobType, count]) => (
+                                    <label key={jobType} className="flex items-center justify-between text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={filters.types.includes(jobType)}
+                                                onChange={() =>
+                                                    onChange({
+                                                        ...filters,
+                                                        types: filters.types.includes(jobType)
+                                                            ? filters.types.filter((x: string) => x !== jobType)
+                                                            : [...filters.types, jobType],
+                                                    })
+                                                }
+                                                className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                            />
+                                            <span className="text-gray-700">{jobType}</span>
+                                        </div>
+                                        <span className="text-gray-400 text-xs">({count})</span>
+                                    </label>
+                                ))
+                        )}
                     </div>
                 </div>
 
@@ -116,146 +125,254 @@ const JobsFilterSection: React.FC<JobsFilterSectionProps> = ({ filters, onChange
                 <div>
                     <h3 className="text-sm font-semibold mb-3 text-gray-900">Languages</h3>
                     <div className="space-y-2">
-                        {[
-                            { label: "English", count: "(6,739)" },
-                            { label: "Italian", count: "(1,249)" },
-                            { label: "Spanish", count: "(1,028)" },
-                            { label: "Indonesian", count: "(703)" },
-                            { label: "Turkish", count: "(456)" }
-                        ].map((lang) => (
-                            <label key={lang.label} className="flex items-center justify-between text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
-                                <div className="flex items-center gap-2">
-                                    <input
-                                        type="checkbox"
-                                        checked={filters.tools.includes(lang.label)}
-                                        onChange={() =>
-                                            onChange({
-                                                ...filters,
-                                                tools: filters.tools.includes(lang.label)
-                                                    ? filters.tools.filter((x: string) => x !== lang.label)
-                                                    : [...filters.tools, lang.label],
-                                            })
-                                        }
-                                        className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                    />
-                                    <span className="text-gray-700">{lang.label}</span>
-                                </div>
-                                <span className="text-gray-400 text-xs">{lang.count}</span>
-                            </label>
-                        ))}
+                        {statsLoading ? (
+                            <div className="text-sm text-gray-500">Loading...</div>
+                        ) : (
+                            Object.entries(stats.languages)
+                                .sort(([,a], [,b]) => b - a) // Sort by count descending
+                                .slice(0, 5) // Show top 5
+                                .map(([language, count]) => (
+                                    <label key={language} className="flex items-center justify-between text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={filters.tools.includes(language)}
+                                                onChange={() =>
+                                                    onChange({
+                                                        ...filters,
+                                                        tools: filters.tools.includes(language)
+                                                            ? filters.tools.filter((x: string) => x !== language)
+                                                            : [...filters.tools, language],
+                                                    })
+                                                }
+                                                className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                            />
+                                            <span className="text-gray-700">{language}</span>
+                                        </div>
+                                        <span className="text-gray-400 text-xs">({count})</span>
+                                    </label>
+                                ))
+                        )}
                     </div>
-                    <button className="text-indigo-600 text-sm mt-2 hover:text-indigo-700 font-medium">
-                        +15 more
-                    </button>
+                    {Object.keys(stats.languages).length > 5 && (
+                        <button className="text-indigo-600 text-sm mt-2 hover:text-indigo-700 font-medium">
+                            +{Object.keys(stats.languages).length - 5} more
+                        </button>
+                    )}
                 </div>
 
                 {/* Location Filter */}
                 <div>
                     <h3 className="text-sm font-semibold mb-3 text-gray-900">Location</h3>
                     <div className="space-y-2">
-                        {[
-                            { label: "United States", count: "(4,239)" },
-                            { label: "United Kingdom", count: "(1,119)" },
-                            { label: "Canada", count: "(1,020)" },
-                            { label: "Germany", count: "(923)" },
-                            { label: "India", count: "(362)" },
-                            { label: "Spain", count: "(279)" }
-                        ].map((loc) => (
-                            <label key={loc.label} className="flex items-center justify-between text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
-                                <div className="flex items-center gap-2">
-                                    <input
-                                        type="checkbox"
-                                        checked={filters.location.includes(loc.label)}
-                                        onChange={() =>
-                                            onChange({
-                                                ...filters,
-                                                location: filters.location.includes(loc.label)
-                                                    ? filters.location.filter((x: string) => x !== loc.label)
-                                                    : [...filters.location, loc.label],
-                                            })
-                                        }
-                                        className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                    />
-                                    <span className="text-gray-700">{loc.label}</span>
-                                </div>
-                                <span className="text-gray-400 text-xs">{loc.count}</span>
-                            </label>
-                        ))}
+                        {statsLoading ? (
+                            <div className="text-sm text-gray-500">Loading...</div>
+                        ) : (
+                            Object.entries(stats.locations)
+                                .sort(([,a], [,b]) => b - a) // Sort by count descending
+                                .slice(0, 6) // Show top 6
+                                .map(([location, count]) => (
+                                    <label key={location} className="flex items-center justify-between text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={filters.location.includes(location)}
+                                                onChange={() =>
+                                                    onChange({
+                                                        ...filters,
+                                                        location: filters.location.includes(location)
+                                                            ? filters.location.filter((x: string) => x !== location)
+                                                            : [...filters.location, location],
+                                                    })
+                                                }
+                                                className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                            />
+                                            <span className="text-gray-700">{location}</span>
+                                        </div>
+                                        <span className="text-gray-400 text-xs">({count})</span>
+                                    </label>
+                                ))
+                        )}
                     </div>
-                    <button className="text-indigo-600 text-sm mt-2 hover:text-indigo-700 font-medium">
-                        +68 more
-                    </button>
+                    {Object.keys(stats.locations).length > 6 && (
+                        <button className="text-indigo-600 text-sm mt-2 hover:text-indigo-700 font-medium">
+                            +{Object.keys(stats.locations).length - 6} more
+                        </button>
+                    )}
                 </div>
 
                 {/* Tools Filter */}
                 <div>
                     <h3 className="text-sm font-semibold mb-3 text-gray-900">Tools</h3>
                     <div className="space-y-2">
-                        {[
-                            { label: "Microsoft Word", count: "(2,976)" },
-                            { label: "Microsoft Excel", count: "(3,163)" },
-                            { label: "Figma", count: "(2,090)" },
-                            { label: "Canva", count: "(1,006)" },
-                            { label: "Photoshop", count: "(859)" },
-                            { label: "Illustrator", count: "(388)" }
-                        ].map((tool) => (
-                            <label key={tool.label} className="flex items-center justify-between text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
-                                <div className="flex items-center gap-2">
-                                    <input
-                                        type="checkbox"
-                                        checked={filters.tools.includes(tool.label)}
-                                        onChange={() =>
-                                            onChange({
-                                                ...filters,
-                                                tools: filters.tools.includes(tool.label)
-                                                    ? filters.tools.filter((x: string) => x !== tool.label)
-                                                    : [...filters.tools, tool.label],
-                                            })
-                                        }
-                                        className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                    />
-                                    <span className="text-gray-700">{tool.label}</span>
-                                </div>
-                                <span className="text-gray-400 text-xs">{tool.count}</span>
-                            </label>
-                        ))}
+                        {statsLoading ? (
+                            <div className="text-sm text-gray-500">Loading...</div>
+                        ) : (
+                            Object.entries(stats.tools)
+                                .sort(([,a], [,b]) => b - a) // Sort by count descending
+                                .slice(0, 6) // Show top 6
+                                .map(([tool, count]) => (
+                                    <label key={tool} className="flex items-center justify-between text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="checkbox"
+                                                checked={filters.tools.includes(tool)}
+                                                onChange={() =>
+                                                    onChange({
+                                                        ...filters,
+                                                        tools: filters.tools.includes(tool)
+                                                            ? filters.tools.filter((x: string) => x !== tool)
+                                                            : [...filters.tools, tool],
+                                                    })
+                                                }
+                                                className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                            />
+                                            <span className="text-gray-700">{tool}</span>
+                                        </div>
+                                        <span className="text-gray-400 text-xs">({count})</span>
+                                    </label>
+                                ))
+                        )}
                     </div>
-                    <button className="text-indigo-600 text-sm mt-2 hover:text-indigo-700 font-medium">
-                        +10 more
-                    </button>
+                    {Object.keys(stats.tools).length > 6 && (
+                        <button className="text-indigo-600 text-sm mt-2 hover:text-indigo-700 font-medium">
+                            +{Object.keys(stats.tools).length - 6} more
+                        </button>
+                    )}
                 </div>
 
                 {/* Salary Range */}
                 <div>
-                    <h3 className="text-sm font-semibold mb-3 text-gray-900">Salary</h3>
+                    <h3 className="text-sm font-semibold mb-3 text-gray-900">Gaji (IDR)</h3>
                     <div className="space-y-3">
                         <div className="flex justify-between text-sm text-gray-700">
-                            <span>Min. Salary</span>
-                            <span>Max. Salary</span>
+                            <span>Gaji Min.</span>
+                            <span>Gaji Max.</span>
                         </div>
                         <div className="flex justify-between text-sm font-medium">
-                            <span>$4,000</span>
-                            <span>$10,000</span>
+                            <span>{formatCompactIDR(IDR_SALARY_RANGES.min)}</span>
+                            <span>{formatCompactIDR(IDR_SALARY_RANGES.max)}</span>
                         </div>
-                        <div className="relative">
+                        
+                        {/* Dual Range Slider */}
+                        <div className="relative mt-4">
+                            {/* Min Salary Slider */}
                             <input
                                 type="range"
-                                min="4000"
-                                max="10000"
-                                value={filters.salaryMin}
-                                onChange={(e) => onChange({ ...filters, salaryMin: parseInt(e.target.value) })}
-                                className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
-                                style={{
-                                    background: `linear-gradient(to right, #e5e7eb 0%, #e5e7eb ${((filters.salaryMin - 4000) / (10000 - 4000)) * 100}%, #4f46e5 ${((filters.salaryMin - 4000) / (10000 - 4000)) * 100}%, #4f46e5 100%)`
-                                }}
+                                min={IDR_SALARY_RANGES.min}
+                                max={IDR_SALARY_RANGES.max}
+                                step={IDR_SALARY_RANGES.step}
+                                value={Math.min(filters.salaryMin, filters.salaryMax - IDR_SALARY_RANGES.step)}
+                                onChange={(e) => onChange({ 
+                                    ...filters, 
+                                    salaryMin: Math.min(parseInt(e.target.value), filters.salaryMax - IDR_SALARY_RANGES.step) 
+                                })}
+                                className="absolute w-full h-2 bg-transparent appearance-none cursor-pointer z-10 range-slider"
                             />
+                            
+                            {/* Max Salary Slider */}
+                            <input
+                                type="range"
+                                min={IDR_SALARY_RANGES.min}
+                                max={IDR_SALARY_RANGES.max}
+                                step={IDR_SALARY_RANGES.step}
+                                value={Math.max(filters.salaryMax, filters.salaryMin + IDR_SALARY_RANGES.step)}
+                                onChange={(e) => onChange({ 
+                                    ...filters, 
+                                    salaryMax: Math.max(parseInt(e.target.value), filters.salaryMin + IDR_SALARY_RANGES.step) 
+                                })}
+                                className="absolute w-full h-2 bg-transparent appearance-none cursor-pointer z-20 range-slider"
+                            />
+
+                            {/* Slider Track */}
+                            <div className="relative w-full h-2 bg-gray-200 rounded-lg">
+                                <div 
+                                    className="absolute h-2 bg-indigo-600 rounded-lg"
+                                    style={{
+                                        left: `${((Math.min(filters.salaryMin, filters.salaryMax - IDR_SALARY_RANGES.step) - IDR_SALARY_RANGES.min) / (IDR_SALARY_RANGES.max - IDR_SALARY_RANGES.min)) * 100}%`,
+                                        width: `${((Math.max(filters.salaryMax, filters.salaryMin + IDR_SALARY_RANGES.step) - Math.min(filters.salaryMin, filters.salaryMax - IDR_SALARY_RANGES.step)) / (IDR_SALARY_RANGES.max - IDR_SALARY_RANGES.min)) * 100}%`
+                                    }}
+                                />
+                            </div>
                         </div>
-                        <div className="text-center">
-                            <span className="text-xs text-gray-500">$0 - $5,000</span>
+
+                        {/* Current Selection Display */}
+                        <div className="text-center mt-4">
+                            <span className="text-xs text-gray-500">
+                                {formatCompactIDR(Math.min(filters.salaryMin, filters.salaryMax - IDR_SALARY_RANGES.step))} - {formatCompactIDR(Math.max(filters.salaryMax, filters.salaryMin + IDR_SALARY_RANGES.step))}
+                            </span>
+                        </div>
+
+                        {/* Quick Select Buttons */}
+                        <div className="mt-4 space-y-2">
+                            <div className="text-xs text-gray-600 font-medium">Pilihan Cepat:</div>
+                            <div className="flex flex-wrap gap-2">
+                                {[
+                                    { min: 0, max: 10000000, label: "0-10 Jt" },
+                                    { min: 10000000, max: 25000000, label: "10-25 Jt" },
+                                    { min: 25000000, max: 50000000, label: "25-50 Jt" },
+                                    { min: 0, max: 50000000, label: "Semua" }
+                                ].map((range, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => {
+                                            onChange({ 
+                                                ...filters, 
+                                                salaryMin: range.min,
+                                                salaryMax: range.max
+                                            });
+                                        }}
+                                        className="px-3 py-1 text-xs bg-gray-100 hover:bg-indigo-100 rounded-full transition-colors"
+                                    >
+                                        {range.label}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>
             </aside>
+            
+            {/* CSS untuk styling range slider */}
+            <style jsx>{`
+                .range-slider {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    background: transparent;
+                    cursor: pointer;
+                }
+
+                .range-slider::-webkit-slider-track {
+                    background: transparent;
+                }
+
+                .range-slider::-webkit-slider-thumb {
+                    -webkit-appearance: none;
+                    appearance: none;
+                    height: 20px;
+                    width: 20px;
+                    border-radius: 50%;
+                    background: #4f46e5;
+                    border: 2px solid #ffffff;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    cursor: pointer;
+                }
+
+                .range-slider::-moz-range-track {
+                    background: transparent;
+                }
+
+                .range-slider::-moz-range-thumb {
+                    height: 20px;
+                    width: 20px;
+                    border-radius: 50%;
+                    background: #4f46e5;
+                    border: 2px solid #ffffff;
+                    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                    cursor: pointer;
+                    border: none;
+                }
+            `}</style>
         </div>
     );
 };

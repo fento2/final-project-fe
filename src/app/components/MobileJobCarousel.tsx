@@ -10,13 +10,16 @@ interface Job {
     logo?: string;
     postedDate?: string;
     location?: string;
-    salary?: string;
+    salary?: string | number | null;
+    periodSalary?: string;
+    currency?: string;
     title: string;
     type?: string;
     description?: string;
     requirements?: string[];
     lat?: number;
     lng?: number;
+    slug?: string;
 }
 
 interface MobileJobCarouselProps {

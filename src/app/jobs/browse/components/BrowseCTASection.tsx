@@ -10,7 +10,7 @@ const BrowseCTASection: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
             <div className="md:col-span-2">
               <h2 className="text-2xl sm:text-3xl font-semibold leading-snug">
-                Join JobLinkup today and take the first step towards finding your dream job!
+                Join Horizon Jobs today and take the first step towards finding your dream job!
               </h2>
               <p className="mt-3 text-white/90 text-sm sm:text-base max-w-2xl">
                 With our user-friendly platform and up-to-date job listings, you'll be on your way to a fulfilling career in no time. Sign up now and see what opportunities await!

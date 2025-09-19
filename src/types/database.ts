@@ -24,6 +24,43 @@ export interface Company {
   website?: string;
   profile_picture?: string;
   user_id: number;
+  registrationDate?: string;
+  daysSinceRegistration?: number;
+  // Nested statistics objects from backend
+  jobStats?: {
+    total_jobs?: number;
+    active_jobs?: number;
+    open_positions?: number;
+  };
+  applicationStats?: {
+    total_applications?: number;
+    success_rate?: number;
+  };
+  engagementStats?: {
+    average_rating?: number;
+    rating?: number;
+    total_reviews?: number;
+    review_count?: number;
+  };
+  salaryStats?: {
+    average_salary?: number;
+    salary_range?: {
+      min?: number;
+      max?: number;
+    };
+  };
+  teamStats?: {
+    total_employees?: number;
+    employee_count?: number;
+  };
+  // Legacy fields for backward compatibility
+  rating?: number;
+  review_count?: number;
+  employee_count?: number;
+  total_employees?: number;
+  jobs_count?: number;
+  open_jobs?: number;
+  logo?: string;
 }
 
 export interface Profile {
