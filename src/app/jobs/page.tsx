@@ -15,244 +15,8 @@ type Job = {
     salaryMin?: number;
     salaryMax?: number;
     tags?: string[];
+    slug?: string;
 };
-
-type Filters = {
-    date: string;
-    types: string[];
-    tools: string[];
-    salaryMin: number;
-    salaryMax: number;
-};
-
-function SidebarFilters({
-    onChange,
-    filters,
-}: {
-    // filters: Record<string, any>;
-    // onChange: (next: Record<string, any>) => void;
-    filters: Filters;
-    onChange: React.Dispatch<React.SetStateAction<Filters>>;
-}) {
-    return (
-        <aside className="space-y-6">
-            <div>
-                <h3 className="text-sm font-semibold mb-2">Date Posted</h3>
-                {["Last 24 hours", "Last 3 days", "Last 7 days", "Anytime"].map((d) => (
-                    <label key={d} className="flex items-center gap-2 text-sm">
-                        <input
-                            type="radio"
-                            name="date"
-                            checked={filters.date === d}
-                            onChange={() => onChange({ ...filters, date: d })}
-                            className="form-radio"
-                        />
-                        {d}
-                    </label>
-                ))}
-            </div>
-
-            <div>
-                <h3 className="text-sm font-semibold mb-2">Job Type</h3>
-                {["Full Time", "Contract", "Internship", "Part-time"].map((t) => (
-                    <label key={t} className="flex items-center gap-2 text-sm">
-                        <input
-                            type="checkbox"
-                            checked={filters.types.includes(t)}
-                            onChange={() =>
-                                onChange({
-                                    ...filters,
-                                    types: filters.types.includes(t)
-                                        ? filters.types.filter((x: string) => x !== t)
-                                        : [...filters.types, t],
-                                })
-                            }
-                            className="form-checkbox"
-                        />
-                        {t}
-                    </label>
-                ))}
-            </div>
-
-            <div>
-                <h3 className="text-sm font-semibold mb-2">Languages / Tools</h3>
-                {["React", "Figma", "Photoshop", "Canva"].map((t) => (
-                    <label key={t} className="flex items-center gap-2 text-sm">
-                        <input
-                            type="checkbox"
-                            checked={filters.tools.includes(t)}
-                            onChange={() =>
-                                onChange({
-                                    ...filters,
-                                    tools: filters.tools.includes(t)
-                                        ? filters.tools.filter((x: string) => x !== t)
-                                        : [...filters.tools, t],
-                                })
-                            }
-                            className="form-checkbox"
-                        />
-                        {t}
-                    </label>
-                ))}
-            </div>
-
-            <div>
-                <h3 className="text-sm font-semibold mb-2">Salary</h3>
-                <div className="text-sm text-gray-600 mb-2">Min: ${filters.salaryMin} — Max: ${filters.salaryMax}</div>
-                <input
-                    type="range"
-                    min={0}
-                    max={200000}
-                    value={filters.salaryMax}
-                    onChange={(e) => onChange({ ...filters, salaryMax: Number(e.target.value) })}
-                    className="w-full"
-                />
-            </div>
-        </aside>
-    );
-}
-
-function JobCard({ job }: { job: Job }) {
-    const router = useRouter();
-    const description = [
-        "Bachelor's degree in design or related",
-        "5+ years of experience in UI design",
-        "Proficiency in Adobe Creative Suite",
-    ];
-
-    return (
-        <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col justify-between h-full">
-            <div>
-                {/* BARIS 1: Job title */}
-                <h3 className="text-lg font-semibold text-slate-900 mb-3">{job.title}</h3>
-
-                {/* BARIS 2: Logo + Company name */}
-                <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center flex-shrink-0">
-                        {/* <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden>
-                            <path d="M3 12h18" stroke="#6366F1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M12 3v18" stroke="#6366F1" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg> */}
-                        <Image
-                            src="https://images.unsplash.com/photo-1728577740843-5f29c7586afe?q=80&w=880&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                            alt="TEST"
-                            width={72}
-                            height={72}
-                            className="w-12 h-12 object-contain"
-                        />
-                    </div>
-                    <div className="text-sm text-gray-500">{job.company}</div>
-                </div>
-
-                {/* BARIS 3: Badge job type */}
-                <div className="mb-4">
-                    <span className="text-xs px-3 py-1 rounded-lg bg-indigo-50 text-indigo-700 font-medium">
-                        {job.type}
-                    </span>
-                </div>
-
-                {/* description */}
-                <ul className="mt-2 text-sm text-gray-600 space-y-2 list-disc list-inside">
-                    {description.map((d, i) => (
-                        <li key={i}>{d}</li>
-                    ))}
-                </ul>
-
-                <div className="mt-4 space-y-3">
-                    <div className="flex items-center gap-3 text-sm text-gray-600">
-                        <MapPin width={20} height={20} />
-                        {/* <svg className="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" aria-hidden>
-                            <path d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                            <circle cx="12" cy="9" r="2" fill="currentColor" />
-                        </svg> */}
-                        <div>{job.location}</div>
-                    </div>
-
-                    <div className="flex items-center gap-3 text-sm text-gray-600">
-                        {/* <svg className="w-5 h-5 text-gray-400" viewBox="0 0 24 24" fill="none" aria-hidden>
-                            <path d="M12 3v18" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                            <path d="M8 7h8a2 2 0 010 4H8a2 2 0 010-4z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                        </svg> */}
-                        <Banknote width={20} height={20} />
-                        <div>${job.salaryMin?.toLocaleString()} - ${job.salaryMax?.toLocaleString()} per year</div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="mt-6 flex items-center gap-4">
-                <button className="flex-1 px-4 py-3 bg-indigo-600 hover:bg-indigo-700 active:scale-95 transition text-white rounded-lg font-medium" onClick={() => router.push(`/jobs/${slugify(job.title)}`)}>
-                    Apply This Job
-                </button>
-                <button className="w-12 h-12 flex items-center justify-center border border-indigo-200 rounded-lg text-indigo-600 hover:bg-indigo-50">
-                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" aria-hidden>
-                        <path d="M6 3h12v18l-6-4-6 4V3z" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                </button>
-            </div>
-        </div>
-    );
-}
-
-function Pagination({
-    page,
-    totalPages,
-    onChange,
-}: {
-    page: number;
-    totalPages: number;
-    onChange: (p: number) => void;
-}) {
-    // buat window 5 halaman dengan page aktif di tengah bila memungkinkan
-    const visible = 5;
-    const half = Math.floor(visible / 2);
-    let start = Math.max(1, page - half);
-    let end = start + visible - 1;
-    if (end > totalPages) {
-        end = totalPages;
-        start = Math.max(1, end - visible + 1);
-    }
-    const pages = Array.from({ length: end - start + 1 }, (_, i) => start + i);
-
-    return (
-        <div className="flex items-center justify-center gap-6 mt-8">
-            <button
-                onClick={() => onChange(Math.max(1, page - 1))}
-                aria-label="Previous page"
-                className="p-2 rounded-full text-gray-700 hover:bg-gray-100 active:scale-95 transition"
-            >
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" aria-hidden>
-                    <path d="M15 18l-6-6 6-6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-            </button>
-
-            <div className="flex items-center gap-4">
-                {pages.map((p) => (
-                    <button
-                        key={p}
-                        onClick={() => onChange(p)}
-                        aria-current={p === page ? "page" : undefined}
-                        className={`w-10 h-10 flex items-center justify-center text-sm font-medium transition ${p === page
-                            ? "bg-indigo-600 text-white rounded-lg shadow"
-                            : "text-gray-700"
-                            }`}
-                    >
-                        {p.toString().padStart(2, "0")}
-                    </button>
-                ))}
-            </div>
-
-            <button
-                onClick={() => onChange(Math.min(totalPages, page + 1))}
-                aria-label="Next page"
-                className="p-2 rounded-full text-gray-700 hover:bg-gray-100 active:scale-95 transition"
-            >
-                <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" aria-hidden>
-                    <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-            </button>
-        </div>
-    );
-}
 
 function slugify(title: string) {
     // ganti slash dan karakter bermasalah lalu encode
@@ -260,6 +24,7 @@ function slugify(title: string) {
 }
 
 export default function JobsListPage() {
+    const router = useRouter();
     const [filters, setFilters] = useState({
         date: "Anytime",
         types: [] as string[],
@@ -274,6 +39,30 @@ export default function JobsListPage() {
     // Fetch jobs from backend
     const { jobs: backendJobs, loading, error } = useJobs({ limit: 50 });
 
+    // Extract featured companies from jobs data (companies that have job postings)
+    const featuredCompanies = useMemo(() => {
+        const companiesMap = new Map();
+        
+        backendJobs.forEach((job: any) => {
+            const company = job.Companies;
+            if (company && company.company_id && !companiesMap.has(company.company_id)) {
+                companiesMap.set(company.company_id, {
+                    company_id: company.company_id,
+                    name: company.name,
+                    profile_picture: company.profile_picture,
+                    website: company.website,
+                    // Count jobs for this company
+                    jobCount: backendJobs.filter((j: any) => j.Companies?.company_id === company.company_id).length
+                });
+            }
+        });
+        
+        // Convert to array and sort by job count (companies with more jobs first)
+        return Array.from(companiesMap.values())
+            .sort((a, b) => b.jobCount - a.jobCount)
+            .slice(0, 6); // Get top 6 companies
+    }, [backendJobs]);
+
     // Transform backend data to match frontend Job type
     const transformedJobs: Job[] = useMemo(() => {
         return backendJobs.map((job: any) => ({
@@ -285,6 +74,7 @@ export default function JobsListPage() {
             salaryMin: job.salary || 0,
             salaryMax: job.salary ? job.salary * 1.5 : 0,
             tags: job.skills?.map((skill: any) => skill.name) || [],
+            slug: job.slug || job.job_id?.toString() || job.id?.toString() || '',
         }));
     }, [backendJobs]);
 
@@ -299,6 +89,34 @@ export default function JobsListPage() {
 
     const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
     const shown = filtered.slice((page - 1) * perPage, page * perPage);
+
+    // Handle job card click
+    const handleJobClick = (job: Job) => {
+        if (job.slug) {
+            router.push(`/jobs/${job.slug}`);
+        } else {
+            router.push(`/jobs/${job.id}`);
+        }
+    };
+
+    // Handle company card click
+    const handleCompanyClick = (company: any) => {
+        // Priority: company slug > generated slug from name > company_id
+        let slug = company.slug;
+        
+        if (!slug && company.name) {
+            // Generate slug from company name
+            slug = company.name.toLowerCase()
+                .replace(/\s+/g, '-')
+                .replace(/[^a-z0-9-]/g, '')
+                .replace(/-+/g, '-')
+                .replace(/^-|-$/g, '');
+        }
+        
+        // Fallback to company_id if no slug can be generated
+        const finalSlug = slug || company.company_id;
+        router.push(`/jobs/companies/${finalSlug}`);
+    };
 
     return (
         <div className="min-h-screen bg-gray-50 py-8">
@@ -317,8 +135,8 @@ export default function JobsListPage() {
                             <span className="text-gray-700">Jobs</span>
                         </nav>
 
-                        <h1 className="text-4xl md:text-5xl font-extrabold text-indigo-900 mb-4">Browse Through Variety of Jobs</h1>
-                        <p className="text-gray-600 max-w-2xl">Find the perfect role from startups to enterprise teams — filter by date, job type, location, tools, and salary to quickly narrow results.</p>
+                        <h1 className="text-4xl md:text-5xl font-extrabold text-indigo-900 mb-4">Browse Through Variety of Jobs and Company</h1>
+                        <p className="text-gray-600 max-w-2xl">Find the Job and companies you like.</p>
                     </div>
                 </div>
 
@@ -346,10 +164,43 @@ export default function JobsListPage() {
                     ) : (
                         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-10">
                             {transformedJobs.slice(0, 6).map((job: Job) => (
-                                <div key={job.id} className="bg-white rounded-xl shadow p-4">
-                                    <h3 className="text-lg font-semibold mb-1">{job.title}</h3>
+                                <div 
+                                    key={job.id} 
+                                    className="bg-white rounded-xl shadow p-4 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer group"
+                                    onClick={() => handleJobClick(job)}
+                                >
+                                    <h3 className="text-lg font-semibold mb-1 group-hover:text-indigo-600 transition-colors">
+                                        {job.title}
+                                    </h3>
                                     <div className="text-sm text-gray-500 mb-2">{job.company}</div>
-                                    <div className="text-sm text-gray-600">{job.location} • <span className="font-medium">{job.type}</span></div>
+                                    <div className="text-sm text-gray-600 mb-3">
+                                        {job.location} • <span className="font-medium">{job.type}</span>
+                                    </div>
+                                    {job.salaryMin && job.salaryMin > 0 && (
+                                        <div className="text-sm text-green-600 font-medium">
+                                            Rp{job.salaryMin.toLocaleString('id-ID')}
+                                            {job.salaryMax && job.salaryMax > job.salaryMin && 
+                                                ` - Rp${job.salaryMax.toLocaleString('id-ID')}`
+                                            }
+                                        </div>
+                                    )}
+                                    {job.tags && job.tags.length > 0 && (
+                                        <div className="mt-3 flex flex-wrap gap-1">
+                                            {job.tags.slice(0, 3).map((tag, index) => (
+                                                <span 
+                                                    key={index} 
+                                                    className="bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-full"
+                                                >
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                            {job.tags.length > 3 && (
+                                                <span className="text-xs text-gray-400">
+                                                    +{job.tags.length - 3} more
+                                                </span>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             ))}
                         </div>
@@ -360,27 +211,97 @@ export default function JobsListPage() {
                         <a href="/jobs/companies" className="text-sm text-indigo-600 hover:underline">See all companies →</a>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                        {[
-                            { id: 'c1', name: 'Acme Corporation', loc: 'New York, NY' },
-                            { id: 'c2', name: 'Creative Solutions, Inc.', loc: 'San Francisco, CA' },
-                            { id: 'c3', name: 'App Works', loc: 'Los Angeles, CA' },
-                            { id: 'c4', name: 'Bright Future Solutions', loc: 'Chicago, IL' },
-                            { id: 'c5', name: 'Tech Works Inc.', loc: 'Austin, TX' },
-                            { id: 'c6', name: 'UX Labs', loc: 'Seattle, WA' },
-                        ].map((c) => (
-                            <div key={c.id} className="bg-white rounded-xl shadow p-4 flex items-center gap-4">
-                                <div className="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600">{c.name.charAt(0)}</div>
-                                <div>
-                                    <div className="font-semibold">{c.name}</div>
-                                    <div className="text-sm text-gray-500">{c.loc}</div>
+                    {loading ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                            {[...Array(6)].map((_, index) => (
+                                <div key={index} className="bg-white rounded-xl shadow p-4 flex items-center gap-4 animate-pulse">
+                                    <div className="w-12 h-12 rounded-full bg-gray-200"></div>
+                                    <div className="flex-1">
+                                        <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                                        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                                    </div>
+                                    <div className="w-8 h-4 bg-gray-200 rounded"></div>
                                 </div>
-                                <div className="ml-auto">
-                                    <a href={`/jobs/companies/${c.id}`} className="text-sm text-indigo-600 hover:underline">View</a>
+                            ))}
+                        </div>
+                    ) : error ? (
+                        <div className="text-center py-8">
+                            <p className="text-gray-500">Failed to load companies</p>
+                        </div>
+                    ) : featuredCompanies.length === 0 ? (
+                        <div className="text-center py-8">
+                            <p className="text-gray-500">No companies with job postings available</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                            {featuredCompanies.map((company: any) => (
+                                <div 
+                                    key={company.company_id} 
+                                    className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition-all duration-300 hover:-translate-y-1 cursor-pointer group"
+                                    onClick={() => handleCompanyClick(company)}
+                                >
+                                    {/* Header with Logo and Company Info */}
+                                    <div className="flex items-start gap-4 mb-4">
+                                        <div className="w-14 h-14 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 overflow-hidden flex-shrink-0">
+                                            {company.profile_picture ? (
+                                                <Image
+                                                    src={company.profile_picture}
+                                                    alt={company.name}
+                                                    width={56}
+                                                    height={56}
+                                                    className="rounded-xl object-cover"
+                                                />
+                                            ) : (
+                                                <span className="font-bold text-xl">
+                                                    {company.name.charAt(0).toUpperCase()}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <h3 className="font-bold text-lg text-gray-900 mb-1 truncate group-hover:text-indigo-600 transition-colors">
+                                                {company.name}
+                                            </h3>
+                                            <div className="text-sm text-gray-500 mb-2">
+                                                {company.jobCount} job{company.jobCount !== 1 ? 's' : ''} available
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Company Stats */}
+                                    <div className="space-y-2 mb-4">
+                                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                            <span>{company.location || 'Multiple Locations'}</span>
+                                        </div>
+                                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2M16 6v6a6 6 0 01-12 0V6" />
+                                            </svg>
+                                            <span className="font-medium text-indigo-600">
+                                                {company.jobCount} Open Position{company.jobCount !== 1 ? 's' : ''}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Action Button */}
+                                    <div className="mt-auto pt-4 border-t border-gray-100">
+                                        <div className="flex items-center justify-between">
+                                            <span className="text-sm text-gray-500">View Company</span>
+                                            <div className="text-sm text-indigo-600 group-hover:text-indigo-700 transition-colors font-medium flex items-center gap-1">
+                                                <span>View Jobs</span>
+                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

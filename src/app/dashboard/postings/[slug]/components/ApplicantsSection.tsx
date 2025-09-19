@@ -8,6 +8,8 @@ import { apiCall } from "@/helper/apiCall";
 import ApplicantCard from "./ApplicantCard";
 import ApplicantFilter from "./FiltersApplicant";
 import HeaderApplication from "./HeaderApplicationSection";
+import { toSEO } from "@/helper/toTitleCase";
+import { Status } from "../applicant/components/ApplicantAction";
 
 
 export type ApplicantFrontend = {
@@ -42,6 +44,7 @@ const ApplicantSection = () => {
     const [education, setEducation] = useState(searchParams.get("education") || "all");
     const [sortBy, setSortBy] = useState(searchParams.get("sort-by") || "appliedOn");
     const [gender, setGender] = useState(searchParams.get("gender") || "all");
+    const [status, setStatus] = useState(Status.SUBMITTED as string)
     const [sortOrder, setSortOrder] = useState<"asc" | "desc">(
         (searchParams.get("sort-order") as "asc" | "desc") || "asc"
     );
@@ -80,12 +83,14 @@ const ApplicantSection = () => {
             if (education !== "all") params.set("education", education);
             if (sortBy) params.set("sortBy", sortBy);
             if (gender) params.set("gender", gender);
+            if (status) params.set("status", status);
             if (sortOrder) params.set("sortOrder", sortOrder);
             params.set("limit", limit.toString());
             params.set("offset", offset.toString());
 
             const { data } = await apiCall.get(`/applications/company/list/${slug}?${params.toString()}`);
             if (data.success) {
+                console.log('run', data)
                 if (reset) {
                     setApplicants(data.data.data);
                 } else {
@@ -111,7 +116,8 @@ const ApplicantSection = () => {
         if (education !== "all") params.set("education", education);
         if (sortBy) params.set("sort-by", sortBy);
         if (sortOrder) params.set("sort-order", sortOrder);
-        if (gender !== "all") params.set("gender", gender);
+        if (gender !== "all") params.set("gender", toSEO(gender));
+        if (status) params.set("status", toSEO(status));
         params.set("page", page.toString());
         router.replace(`?${params.toString()}`);
     };
@@ -120,7 +126,7 @@ const ApplicantSection = () => {
     useEffect(() => {
         setPage(1);
         getData(true, 1);
-    }, [debouncedSearch, minAge, maxAge, minSalary, maxSalary, education, sortBy, sortOrder, gender]);
+    }, [debouncedSearch, minAge, maxAge, minSalary, maxSalary, education, sortBy, sortOrder, gender, status]);
 
     useEffect(() => {
         if (page === 1) return;
@@ -129,7 +135,7 @@ const ApplicantSection = () => {
 
     useEffect(() => {
         updateUrl();
-    }, [search, minAge, maxAge, minSalary, maxSalary, education, sortBy, sortOrder, gender, page]);
+    }, [search, minAge, maxAge, minSalary, maxSalary, education, sortBy, sortOrder, gender, page, status]);
 
     const hasMore = applicants.length < total;
 
@@ -157,6 +163,8 @@ const ApplicantSection = () => {
                     setMaxSalary={setMaxSalary}
                     gender={gender}
                     setGender={setGender}
+                    status={status}
+                    setStatus={setStatus}
                     education={education}
                     setEducation={setEducation}
                     sortBy={sortBy}

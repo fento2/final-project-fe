@@ -38,7 +38,7 @@ const WithSosmed = ({ role, setLoading, url, remember }: WithSosmedProps) => {
         setIsLogin(true)
         setShowSignIn(false)
         setShowSignUp(false)
-        setAuth(data.data.email, data.data.role, data.data.profile_picture)
+  setAuth(data.data.email, (data.data.role || '').toUpperCase(), data.data.profile_picture)
         toast.success(data.message)
         console.log(data)
       }

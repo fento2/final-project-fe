@@ -1,0 +1,37 @@
+{
+  "version": 1.1,
+  "atDirectives": [
+    {
+      "name": "@tailwind",
+      "description": "Includes Tailwind CSS styles"
+    },
+    {
+      "name": "@apply",
+      "description": "Applies utility classes"
+    },
+    {
+      "name": "@layer",
+      "description": "Defines a Tailwind CSS layer"
+    },
+    {
+      "name": "@variants",
+      "description": "Defines custom variants"
+    },
+    {
+      "name": "@responsive",
+      "description": "Generates responsive variants"
+    },
+    {
+      "name": "@screen",
+      "description": "Generates styles for specific screen sizes"
+    },
+    {
+      "name": "@theme",
+      "description": "Defines theme configuration inline"
+    },
+    {
+      "name": "@custom-variant",
+      "description": "Defines custom variants"
+    }
+  ]
+}

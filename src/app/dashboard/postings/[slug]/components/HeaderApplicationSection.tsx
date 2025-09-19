@@ -21,7 +21,14 @@ export const HeaderApplication: React.FC<HeaderApplicationProps> = ({
     return (
         <>
             <CardHeader className="flex flex-col gap-4">
-                <CardTitle className="text-center">Applicants ({total})</CardTitle>
+                <div className="space-y-1">
+                    <CardTitle className="text-xl font-bold">
+                        {total} Applicants Found
+                    </CardTitle>
+                    <p className="text-sm text-muted-foreground">
+                        Click on a card to view full details of each applicant
+                    </p>
+                </div>
 
                 {/* Search */}
                 <div className="relative flex items-center gap-2 w-full">

@@ -1,5 +1,5 @@
 "use client";
-import { Building2, FilePen, FileInput, MessagesSquare } from "lucide-react";
+import { Building2, FilePen, FileInput, MessagesSquare, ChartLine } from "lucide-react";
 import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
@@ -21,14 +21,9 @@ const menus = [
     href: "/dashboard/postings",
   },
   {
-    title: "Applicants",
-    icon: FileInput,
-    href: "/dashboard/applicants",
-  },
-  {
-    title: "Aplications",
-    icon: MessagesSquare,
-    href: "/dashboard/aplications", // <- tadi typo: "aplications"
+    title: "Analytics",
+    icon: ChartLine,
+    href: "/dashboard/analytics",
   },
 ];
 

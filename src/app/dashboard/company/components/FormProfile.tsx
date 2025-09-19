@@ -117,7 +117,7 @@ const FormCompanyProfile = ({
             Description Company
           </span>
           {editing && (
-            <TextEditor value={desc} setValue={setDesc} profile={true} />
+            <TextEditor value={desc} setValue={setDesc} profile={false} />
           )}
           <div className="mt-2">
             {!editing && (

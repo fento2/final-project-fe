@@ -15,9 +15,10 @@ export const useAuthRole = (validRole: string) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (role !== validRole && (!isLogin || !checkLogin)) {
+    if (checkLogin) return;
+
+    if (!isLogin || role !== validRole) {
       router.replace("/");
-      console.log("protect run");
     }
-  }, [role, validRole, isLogin, checkLogin]);
+  }, [role, validRole, isLogin, checkLogin, router]);
 };

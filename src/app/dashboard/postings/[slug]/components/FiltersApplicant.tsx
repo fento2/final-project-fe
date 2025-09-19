@@ -8,6 +8,7 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { toTitleCase } from "@/helper/toTitleCase";
+import { Status } from "../applicant/components/ApplicantAction";
 
 type ApplicantFilterProps = {
     minAge: string;
@@ -22,6 +23,8 @@ type ApplicantFilterProps = {
     setEducation: (val: string) => void;
     gender: string
     setGender: (val: string) => void
+    status: string
+    setStatus: (val: string) => void
     sortBy: string;
     setSortBy: (val: string) => void;
     sortOrder: "asc" | "desc";
@@ -43,6 +46,8 @@ const ApplicantFilter = ({
     setSortBy,
     gender,
     setGender,
+    status,
+    setStatus,
     sortOrder,
     setSortOrder,
 
@@ -88,6 +93,21 @@ const ApplicantFilter = ({
                     onChange={(e) => setMaxSalary(e.target.value)}
                     className="w-full"
                 />
+            </div>
+            <div>
+                <label className="block text-sm font-medium mb-1">Status</label>
+                <Select value={status} onValueChange={setStatus}>
+                    <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {[Status.SUBMITTED, Status.INTERVIEW, Status.ACCEPTED, Status.REJECTED].map((v, idx) => (
+                            <SelectItem key={idx} value={v}>
+                                {toTitleCase(v)}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
             </div>
             <div>
                 <label className="block text-sm font-medium mb-1">Gender</label>

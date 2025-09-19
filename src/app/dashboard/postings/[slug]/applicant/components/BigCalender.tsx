@@ -8,14 +8,16 @@ import {
     Event,
     SlotInfo,
 } from "react-big-calendar";
-import withDragAndDrop, { EventInteractionArgs } from "react-big-calendar/lib/addons/dragAndDrop";
+import withDragAndDrop, {
+    EventInteractionArgs,
+} from "react-big-calendar/lib/addons/dragAndDrop";
 import { format, parse, startOfWeek, getDay } from "date-fns";
+import { id } from "date-fns/locale";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
-import { id } from "date-fns/locale";
 
+// Localizer
 const locales = { "id-ID": id };
-
 const localizer = dateFnsLocalizer({
     format,
     parse: (dateString: string) => new Date(dateString),
@@ -24,54 +26,58 @@ const localizer = dateFnsLocalizer({
     locales,
 });
 
-// export interface supaya parent bisa import
+// Interface event
 export interface InterviewEvent extends Event {
     id: number;
-    isFixed?: boolean;
+    isFixed?: boolean; // dari backend (readonly)
     location?: string;
 }
 
 const DnDCalendar = withDragAndDrop(BigCalendar);
 
 interface InterviewCalendarProps {
-    existingEvents: InterviewEvent[];
-    newSchedule?: InterviewEvent | null;
-    onNewScheduleChange?: (schedule: InterviewEvent | null) => void;
+    existingEvents: InterviewEvent[]; // jadwal dari backend (readonly)
+    editableSchedule?: InterviewEvent | null; // event yang bisa di-create / edit
+    onScheduleChange?: (schedule: InterviewEvent | null) => void;
 }
 
 const InterviewCalendar: React.FC<InterviewCalendarProps> = ({
     existingEvents,
-    newSchedule,
-    onNewScheduleChange,
+    editableSchedule,
+    onScheduleChange,
 }) => {
     const [currentDate, setCurrentDate] = useState(new Date());
-    const events = [...existingEvents, ...(newSchedule ? [newSchedule] : [])];
+    const [view, setView] = useState(Views.WEEK);
 
+    // gabungin jadwal backend + editable
+    const events = [
+        ...existingEvents,
+        ...(editableSchedule ? [editableSchedule] : []),
+    ];
+
+    // Create new schedule
     const handleSelectSlot = ({ start, end }: SlotInfo) => {
-        // Cek kalau sudah ada newSchedule
-        if (newSchedule) {
-            alert("You can only add 1 new interview schedule!");
+        if (editableSchedule) {
+            alert("Hanya bisa buat 1 jadwal baru sekaligus!");
             return;
         }
 
-        // Cek overlap dengan existingEvents
-        const overlap = existingEvents.some(event => {
-            if (!event.start || !event.end) return false;
-            return start < event.end && end > event.start;
-        });
-
+        // cek overlap
+        const overlap = existingEvents.some(
+            (ev) => start < (ev.end as Date) && end > (ev.start as Date)
+        );
         if (overlap) {
-            alert("This time slot overlaps with an existing interview!");
+            alert("Waktu bertabrakan dengan jadwal lain!");
             return;
         }
 
-        const title = prompt("Enter interview title:", "New Interview");
+        const title = prompt("Masukkan judul interview:", "Interview Baru");
         if (!title) return;
 
-        const location = prompt("Enter interview location:", "Online / Office");
+        const location = prompt("Masukkan lokasi/Zoom:", "Online / Office");
         if (location === null) return;
 
-        const createdEvent: InterviewEvent = {
+        const newEvent: InterviewEvent = {
             id: Date.now(),
             title,
             start,
@@ -80,64 +86,77 @@ const InterviewCalendar: React.FC<InterviewCalendarProps> = ({
             isFixed: false,
         };
 
-        onNewScheduleChange?.(createdEvent);
+        onScheduleChange?.(newEvent);
     };
 
+    // Edit event (title, location, delete)
     const handleSelectEvent = (event: InterviewEvent) => {
-        if (newSchedule?.id !== event.id) return;
+        if (editableSchedule?.id !== event.id) return;
 
-        const newTitle = prompt("Edit interview title:", event.title as string);
+        const newTitle = prompt("Edit judul interview:", event.title as string);
         if (newTitle === null) return;
+
         if (newTitle === "") {
-            if (confirm(`Delete event "${event.title}"?`)) {
-                onNewScheduleChange?.(null);
+            if (confirm(`Hapus event "${event.title}"?`)) {
+                onScheduleChange?.(null);
             }
             return;
         }
 
-        const newLocation = prompt("Edit interview location:", event.location ?? "");
+        const newLocation = prompt("Edit lokasi:", event.location ?? "");
         if (newLocation === null) return;
 
-        onNewScheduleChange?.({ ...event, title: newTitle, location: newLocation });
+        onScheduleChange?.({
+            ...event,
+            title: newTitle,
+            location: newLocation,
+        });
     };
 
+    // Drag & Drop
     const handleEventDrop = (args: EventInteractionArgs<InterviewEvent>) => {
         const { event, start, end } = args;
-        if (newSchedule?.id !== event.id) return;
+        if (editableSchedule?.id !== event.id) return;
+
         const startDate = start instanceof Date ? start : new Date(start);
         const endDate = end instanceof Date ? end : new Date(end);
 
-        // Cek overlap saat drag & drop
-        const overlap = existingEvents.some(ev => {
-            if (!ev.start || !ev.end) return false;
-            return ev.id !== event.id && startDate < ev.end && endDate > ev.start;
-        });
+        const overlap = existingEvents.some(
+            (ev) =>
+                ev.id !== event.id &&
+                startDate < (ev.end as Date) &&
+                endDate > (ev.start as Date)
+        );
         if (overlap) {
-            alert("This new position overlaps with an existing interview!");
+            alert("Posisi baru bertabrakan dengan jadwal lain!");
             return;
         }
 
-        onNewScheduleChange?.({ ...event, start: startDate, end: endDate });
+        onScheduleChange?.({ ...event, start: startDate, end: endDate });
     };
 
+    // Resize event
     const handleEventResize = (args: EventInteractionArgs<InterviewEvent>) => {
         const { event, start, end } = args;
-        if (newSchedule?.id !== event.id) return;
+        if (editableSchedule?.id !== event.id) return;
+
         const startDate = start instanceof Date ? start : new Date(start);
         const endDate = end instanceof Date ? end : new Date(end);
 
-        // Cek overlap saat resize
-        const overlap = existingEvents.some(ev => {
-            if (!ev.start || !ev.end) return false;
-            return ev.id !== event.id && startDate < ev.end && endDate > ev.start;
-        });
+        const overlap = existingEvents.some(
+            (ev) =>
+                ev.id !== event.id &&
+                startDate < (ev.end as Date) &&
+                endDate > (ev.start as Date)
+        );
         if (overlap) {
-            alert("Resized time overlaps with an existing interview!");
+            alert("Durasi baru bertabrakan dengan jadwal lain!");
             return;
         }
 
-        onNewScheduleChange?.({ ...event, start: startDate, end: endDate });
+        onScheduleChange?.({ ...event, start: startDate, end: endDate });
     };
+
 
     return (
         <div style={{ height: "80vh", padding: "1rem" }}>
@@ -147,7 +166,9 @@ const InterviewCalendar: React.FC<InterviewCalendarProps> = ({
                 date={currentDate}
                 onNavigate={(d) => setCurrentDate(d)}
                 defaultView={Views.WEEK}
-                views={{ week: true }}
+                views={{ month: true, week: true, day: true, agenda: true }}
+                view={view}                  // controlled view
+                onView={(newView) => setView(newView as any)} // update state
                 selectable
                 resizable
                 onSelectSlot={handleSelectSlot}
@@ -156,16 +177,31 @@ const InterviewCalendar: React.FC<InterviewCalendarProps> = ({
                 onEventResize={handleEventResize}
                 step={30}
                 timeslots={1}
-                style={{ height: "100%" }}
                 toolbar
                 eventPropGetter={(event: InterviewEvent) => {
                     if (event.isFixed) {
-                        return { style: { backgroundColor: "#f87171", color: "white", pointerEvents: "none" } };
+                        return {
+                            style: {
+                                backgroundColor: "#f87171", // merah = fix (readonly)
+                                color: "white",
+                                pointerEvents: "none",
+                            },
+                        };
                     }
-                    if (newSchedule?.id === event.id) {
-                        return { style: { backgroundColor: "#10b981", color: "white" } }; // new = hijau
+                    if (editableSchedule?.id === event.id) {
+                        return {
+                            style: {
+                                backgroundColor: "#10b981", // hijau = editable
+                                color: "white",
+                            },
+                        };
                     }
-                    return { style: { backgroundColor: "#3b82f6", color: "white" } };
+                    return {
+                        style: {
+                            backgroundColor: "#3b82f6", // biru = default
+                            color: "white",
+                        },
+                    };
                 }}
             />
         </div>
