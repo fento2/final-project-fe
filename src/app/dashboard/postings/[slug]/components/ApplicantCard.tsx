@@ -1,12 +1,14 @@
-import { CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Edit2, MoreVertical } from "lucide-react";
+import { FileText, Edit2, MoreVertical, Mail, Wallet, User, GraduationCap, Calendar, Slash } from "lucide-react";
 import { toTitleCase } from "@/helper/toTitleCase";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { SetStateAction } from "react";
 import { ApplicantFrontend } from "./ApplicantsSection";
 import { useParams, useRouter } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
+import { Status } from "../applicant/components/ApplicantAction";
+import { cn } from "@/lib/utils";
 
 type ApplicantCardProps = {
     applicants: ApplicantFrontend[];
@@ -20,6 +22,13 @@ const ApplicantCard = ({ applicants, loading, showFilters, hasMore, setPage }: A
     const router = useRouter()
     const params = useParams()
     const { slug } = params
+
+    const bgBadge = {
+        [Status.SUBMITTED]: "bg-yellow-100 text-yellow-800",
+        [Status.INTERVIEW]: "bg-blue-100 text-blue-800",
+        [Status.ACCEPTED]: "bg-green-100 text-green-800",
+        [Status.REJECTED]: "bg-red-100 text-red-800",
+    } as any;
     //skeleton Card
     const LoadingCard = () => (
         <div className="border p-4 rounded-md animate-pulse mb-3 flex gap-4">
@@ -33,7 +42,8 @@ const ApplicantCard = ({ applicants, loading, showFilters, hasMore, setPage }: A
     );
 
     return (
-        <CardContent className={`overflow-y-auto   ${showFilters ? "max-h-[244px]" : "max-h-[500px]"} thin-scrollbar`}>
+        <CardContent className={`relative overflow-y-auto   ${showFilters ? "max-h-[300px]" : "max-h-[550px]"} thin-scrollbar`}>
+            <div className="sticky top-0 h-0.5 mb-2 rounded-md bg-gray-300"></div>
             {loading && applicants.length === 0 ? (
                 Array.from({ length: 4 }).map((_, i) => <LoadingCard key={i} />)
             ) : applicants.length === 0 ? (
@@ -41,25 +51,56 @@ const ApplicantCard = ({ applicants, loading, showFilters, hasMore, setPage }: A
             ) : (
                 <div className="space-y-4">
                     {applicants.map((app, idx) => (
-                        <div key={idx}
+                        <div
+                            key={idx}
+                            className="hover:shadow-lg transition-shadow cursor-pointer border rounded-lg"
                             onClick={() => router.push(`/dashboard/postings/${slug}/applicant?id=${app.application_id}`)}
-                            className="border rounded-lg p-4 hover:shadow-md transition-shadow flex gap-4 items-start cursor-pointer">
-                            {/* Avatar */}
-                            <Avatar className="w-16 h-16 flex-shrink-0">
-                                <AvatarImage src={app.profile_picture ?? "/default-avatar.png"} alt={app.name} />
-                                <AvatarFallback>{app.name?.[0]}</AvatarFallback>
-                            </Avatar>
+                        >
+                            <div className="flex gap-4 p-4 items-start">
+                                {/* Avatar */}
+                                <div className="space-y-4">
+                                    <Avatar className="w-20 h-20 border">
+                                        <AvatarImage src={app.profile_picture ?? "/default-avatar.png"} alt={app.name} />
+                                        <AvatarFallback>{app.name?.[0]}</AvatarFallback>
+                                    </Avatar>
+                                    <Badge className={cn(bgBadge[app.status], 'hover:bg-white hover:text-black')} >
+                                        {app.status}
+                                    </Badge>
+                                </div>
 
-                            {/* Info */}
-                            <div className="flex-1">
-                                <h3 className="font-semibold text-lg">{app.name}</h3>
-                                <p className="text-sm text-muted-foreground">{app.email}</p>
-                                <p className="text-sm">Score: <span className="font-medium">{app.score ?? "-"}</span></p>
-                                <p className="text-sm">Expected Salary: <span className="font-medium">Rp {(app.expected_salary ?? 0).toLocaleString()}</span></p>
-                                <p className="text-sm">Age: <span className="font-medium">{app.age ?? "-"}</span></p>
-                                <p className="text-sm">Gender: <span className="font-medium">{app.gender ?? "-"}</span></p>
-                                <p className="text-sm">Education: <span className="font-medium">{toTitleCase(app.education ?? "-")}</span></p>
-                                <p className="text-sm text-muted-foreground">Applied on {new Date(app.appliedOn).toLocaleDateString()}</p>
+                                {/* Info */}
+                                <div className="flex-1 space-y-1">
+
+                                    <h3 className="font-semibold text-lg">{app.name}</h3>
+
+                                    <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                                        <Mail className="w-4 h-4" /> {app.email}
+                                    </p>
+
+                                    <p className="flex items-center gap-2 text-sm">
+                                        <Wallet className="w-4 h-4" /> Expected Salary:{" "}
+                                        <span className="font-medium">Rp {(app.expected_salary ?? 0).toLocaleString()}</span>
+                                    </p>
+
+                                    <p className="flex items-center gap-2 text-sm">
+                                        <User className="w-4 h-4" /> Age: <span className="font-medium">{app.age ?? "-"}</span> |{" "}
+                                        {toTitleCase(app.gender ?? "-")}
+                                    </p>
+
+                                    <p className="flex items-center gap-2 text-sm">
+                                        <GraduationCap className="w-4 h-4" /> Education:{" "}
+                                        <span className="font-medium">{toTitleCase(app.education ?? "-")}</span>
+                                    </p>
+
+                                    <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                                        <Calendar className="w-4 h-4" /> Applied on{" "}
+                                        {new Date(app.appliedOn).toLocaleDateString()}
+                                    </p>
+
+                                    <p className="text-sm">
+                                        Score: <span className="font-medium">{app.score ?? "-"}</span>
+                                    </p>
+                                </div>
                             </div>
                         </div>
                     ))}
@@ -79,6 +120,7 @@ const ApplicantCard = ({ applicants, loading, showFilters, hasMore, setPage }: A
                     </Button>
                 </div>
             )}
+            <div className="sticky bottom-0 h-0.5 mt-2 rounded-md bg-gray-300"></div>
         </CardContent>
     );
 };

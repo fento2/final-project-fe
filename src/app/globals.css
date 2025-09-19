@@ -205,7 +205,7 @@
 /* Untuk Firefox */
 .thin-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: rgba(0,0,0,0.3) rgba(0,0,0,0.05);
+  scrollbar-color: rgba(165, 165, 165, 0.3) rgba(150, 147, 147, 0.05);
 }
 
 /* Line clamp utility */

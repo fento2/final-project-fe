@@ -4,24 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, } from "@/components/ui/dialog";
 import { GraduationCap, Plus } from "lucide-react";
 import UniversityAutocomplete from "./FormUnivAutoComplete";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/components/basic-toast";
 import { useEducationStore } from "@/lib/zustand/educationStorage";
 import DateForm from "./DateForm";
-import {
-    createEducationFetch,
-    editEducationFetch,
-    getEducationDetailFetch,
-} from "@/fetch/educationFetch";
+import { createEducationFetch, editEducationFetch, getEducationDetailFetch, } from "@/fetch/educationFetch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toTitleCase } from "@/helper/toTitleCase";
 const EducationForm = () => {
@@ -111,7 +101,6 @@ const EducationForm = () => {
             handleClose();
         }
     };
-
     return (
         <Dialog open={open} onOpenChange={(val) => !val && handleClose()}>
             <DialogTrigger asChild>
