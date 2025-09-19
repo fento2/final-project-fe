@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import DetailPostingWithApplicant from "./components/DetailJobPosting";
+import DetailPosting from "./components/DetailJobPosting";
 import ApplicantSection from "./components/ApplicantsSection";
 import DetailApplicationPage from "./components/DetailApplication";
 
@@ -23,9 +23,6 @@ const DetailPostings = () => {
   const params = useParams();
   const { slug } = params;
   const { showForm, setShowForm } = usePreselectionStore()
-  const [sortOption, setSortOption] = useState("appliedAt"); // appliedAt / status
-  const [sortDirection, setSortDirection] = useState("desc"); // asc / desc
-  const [filterStatus, setFilterStatus] = useState("all"); // all / Pending / Accepted / Rejected
   const router = useRouter()
   const {
     questions,
@@ -65,9 +62,9 @@ const DetailPostings = () => {
     reader.readAsArrayBuffer(file);
   };
   return (
-    <div className="space-y-6 container mx-auto md:px-20 px-8 my-8 ">
+    <div className="space-y-6 container mx-auto md:px-20 px-8 my-8">
       <div className="grid lg:grid-cols-3 grid-cols-1 gap-6">
-        <DetailPostingWithApplicant />
+        <DetailPosting />
         {/* preselectiontest */}
         {showForm && (
           <div
