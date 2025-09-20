@@ -23,9 +23,11 @@ type Company = {
 type Props = {
     company: Company;
     onOpen?: () => void;
+    hasWorkExperience?: boolean;
+    loadingUserCompany?: boolean;
 }
 
-export default function AboutCompany({ company, onOpen }: Props) {
+export default function AboutCompany({ company, onOpen, hasWorkExperience, loadingUserCompany }: Props) {
     return (
         <aside className="sticky top-30 lg:col-span-1 space-y-6">
             <div className="rounded-2xl border shadow-sm p-6">
@@ -84,8 +86,17 @@ export default function AboutCompany({ company, onOpen }: Props) {
                     </div>
                 </div>
 
-                <button className="mt-6 w-full border rounded-xl py-2.5 font-semibold hover:bg-gray-50" onClick={() => onOpen?.()}>
-                    Write Review About Company
+                <button 
+                    className="mt-6 w-full border rounded-xl py-2.5 font-semibold hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed" 
+                    onClick={() => onOpen?.()} 
+                    disabled={loadingUserCompany}
+                >
+                    {loadingUserCompany 
+                        ? "Loading..." 
+                        : hasWorkExperience 
+                            ? "Write Review" 
+                            : "Write Review About Company"
+                    }
                 </button>
 
                 <div className="mt-6 text-xs text-gray-500">

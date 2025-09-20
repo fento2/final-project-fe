@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { notFound } from "next/navigation";
+import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Calendar, Clock, ArrowLeft, Share2 } from "lucide-react";
@@ -13,13 +13,9 @@ import SearchWidget from "./components/SearchWidget";
 import Comments from "./components/Comments";
 import "./blog-detail.css";
 
-interface BlogPageProps {
-    params: {
-        slug: string;
-    };
-}
-
-export default function BlogPage({ params }: BlogPageProps) {
+export default function BlogPage() {
+    const params = useParams<{ slug: string | string[] }>();
+    const slug = Array.isArray(params?.slug) ? params.slug[0] : params?.slug;
     const [post, setPost] = useState<BlogPost | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -30,11 +26,11 @@ export default function BlogPage({ params }: BlogPageProps) {
             setLoading(true);
             setError(null);
             
-            console.log('Fetching blog post:', params.slug);
+            console.log('Fetching blog post:', slug);
             
             // Coba fetch post spesifik berdasarkan slug
             try {
-                const { data } = await apiCall.get(`/blog/${params.slug}`);
+                const { data } = await apiCall.get(`/blog/${slug}`);
                 console.log('Single post response:', data);
                 
                 // Transform backend data to match frontend BlogPost interface
@@ -92,8 +88,8 @@ export default function BlogPage({ params }: BlogPageProps) {
                     
                     if (Array.isArray(postsData)) {
                         const foundPost = postsData.find((p: any) => 
-                            p.slug === params.slug || 
-                            p.title.toLowerCase().replace(/\s+/g, '-') === params.slug
+                            p.slug === slug || 
+                            p.title.toLowerCase().replace(/\s+/g, '-') === slug
                         );
                         
                         if (foundPost) {
@@ -141,8 +137,10 @@ export default function BlogPage({ params }: BlogPageProps) {
     };
 
     useEffect(() => {
+        if (!slug) return;
         fetchPost();
-    }, [params.slug]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [slug]);
 
     if (loading) {
         return (
