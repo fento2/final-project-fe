@@ -77,6 +77,18 @@ export default function AuthButtons() {
                                         </DropdownMenuItem>
                                     </motion.div>
 
+                                    {/* Profile page (USER) */}
+                                    {role === 'USER' && (
+                                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                            <DropdownMenuItem
+                                                onClick={() => router.push('/profile/user')}
+                                                className="text-lg px-4 py-2 rounded-md"
+                                            >
+                                                Profile
+                                            </DropdownMenuItem>
+                                        </motion.div>
+                                    )}
+
                                     <DropdownMenuSeparator className="w-full" />
 
                                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>

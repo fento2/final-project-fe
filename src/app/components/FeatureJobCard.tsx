@@ -1,7 +1,5 @@
-"use client";
-
-import React from "react";
-import { MapPin, DollarSign, Clock, Calendar } from "lucide-react";
+// components/FeatureJobCard.tsx
+import { Calendar, MapPin, DollarSign, Clock, Building, Star } from "lucide-react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -10,65 +8,54 @@ import { useAuthStore } from "@/lib/zustand/authStore";
 import { getCompanyDetailUrl } from "@/helper/companySlugHelper";
 import { generateJobSlug } from "@/helper/slugHelper";
 
-interface Job {
-    id: string | number;
+interface FeatureJobCardProps {
     company: string;
-    logo?: string;
-    postedDate?: string;
-    location?: string;
-    salary?: string | number | null;
+    logo: string;
+    postedDate: string;
+    location: string;
+    salary: string | number | null;
     periodSalary?: string;
     currency?: string;
     title: string;
-    type?: string;
-    description?: string;
-    requirements?: string[];
-    lat?: number;
-    lng?: number;
+    type: string;
+    description: string;
+    daysLeft: number;
     slug?: string;
+    jobId?: string | number;
 }
 
-interface JobCardProps {
-    job: Job;
-    index: number;
-    coords: { lat: number; lng: number } | null;
-}
-
-const JobCard: React.FC<JobCardProps> = ({ job, index, coords }) => {
+const FeatureJobCard = ({
+    company,
+    logo,
+    postedDate,
+    location,
+    salary,
+    periodSalary,
+    currency,
+    title,
+    type,
+    description,
+    daysLeft,
+    slug,
+    jobId,
+}: FeatureJobCardProps) => {
     const router = useRouter();
     const { role, isLogin } = useAuthStore();
 
     // Only show apply functionality for USER role
     const canApplyJobs = isLogin && role === 'USER';
 
-    const formatDistance = (lat1: number, lng1: number, lat2: number, lng2: number) => {
-        const R = 6371; // Radius of the Earth in kilometers
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLng = (lng2 - lng1) * Math.PI / 180;
-        const a =
-            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLng / 2) * Math.sin(dLng / 2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        const distance = R * c;
-        return distance < 1 ? `${Math.round(distance * 1000)}m` : `${distance.toFixed(1)}km`;
-    };
-
-    const distance = coords && job.lat && job.lng
-        ? formatDistance(coords.lat, coords.lng, job.lat, job.lng)
-        : null;
-
-    const handleJobClick = () => {
+    const handleApplyClick = () => {
         if (!canApplyJobs) {
             console.warn('Job applications are only available for job seekers (USER role)');
             return;
         }
         
         // Navigate to application form
-        const jobSlug = job.slug || generateJobSlug({
-            title: job.title,
-            company: job.company,
-            jobType: job.type,
+        const jobSlug = slug || generateJobSlug({
+            title: title,
+            company: company,
+            jobType: type,
             category: 'general'
         });
         router.push(`/jobs/${jobSlug}/apply`);
@@ -76,12 +63,12 @@ const JobCard: React.FC<JobCardProps> = ({ job, index, coords }) => {
 
     const handleCompanyClick = () => {
         // Navigate to company detail page
-        const companyData = { name: job.company };
+        const companyData = { name: company };
         const companyUrl = getCompanyDetailUrl(companyData);
         router.push(companyUrl);
     };
 
-    // Format salary to IDR using backend data
+    // Format salary to IDR using backend data (same as DiscoveryJobCard)
     const formatSalary = (salaryValue: string | number | null | undefined, currency?: string, period?: string) => {
         if (!salaryValue || salaryValue === "Competitive") return "Competitive";
         
@@ -107,15 +94,12 @@ const JobCard: React.FC<JobCardProps> = ({ job, index, coords }) => {
         
         return `${formatCurrency(idrAmount)}/${periodText}`;
     };
-
-    // Calculate days left (random for demo, in real app would come from job data)
-    const daysLeft = Math.floor(Math.random() * 30) + 1;
-
+    
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.1 }}
+            transition={{ duration: 0.3 }}
             whileHover={{ y: -5 }}
             className="h-full"
         >
@@ -125,8 +109,8 @@ const JobCard: React.FC<JobCardProps> = ({ job, index, coords }) => {
                     <div className="flex items-center gap-3">
                         <div className="relative">
                             <Image
-                                src={job.logo || "https://images.unsplash.com/photo-1662057168154-89300791ad6e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGxvZ28lMjBjb21wYW55fGVufDB8fDB8fHww"}
-                                alt={job.company}
+                                src={logo}
+                                alt={company}
                                 width={48}
                                 height={48}
                                 className="w-12 h-12 object-cover rounded-xl"
@@ -134,43 +118,44 @@ const JobCard: React.FC<JobCardProps> = ({ job, index, coords }) => {
                             <div className="absolute -top-1 -right-1 bg-green-500 rounded-full w-4 h-4 border-2 border-white"></div>
                         </div>
                         <div>
-                            <h4 className="font-bold text-gray-800 leading-tight">{job.company}</h4>
+                            <h3 className="font-medium text-gray-700 text-sm">{company}</h3>
                             <div className="flex items-center gap-1 mt-1">
                                 <Calendar className="w-3 h-3 text-gray-400" />
-                                <span className="text-xs text-gray-500">{job.postedDate || "Recently"}</span>
+                                <span className="text-xs text-gray-500">{postedDate}</span>
                             </div>
                         </div>
                     </div>
-                    
-                    {/* Job Type Badge */}
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                        {job.type || "Full-time"}
-                    </span>
+                    <div className="flex flex-col items-end gap-1">
+                        <span className="px-2 py-1 text-xs bg-blue-50 text-blue-700 rounded-md font-medium">
+                            {type}
+                        </span>
+                        <div className="flex items-center gap-1">
+                            <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                            <span className="text-xs text-gray-500">4.8</span>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Job Title */}
                 <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-indigo-600 transition-colors">
-                    {job.title}
+                    {title}
                 </h3>
 
-                {/* Job Info */}
+                {/* Location and Salary */}
                 <div className="space-y-2 mb-4">
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                         <MapPin className="w-4 h-4 text-gray-400" />
-                        <span>{job.location}</span>
-                        {distance && (
-                            <span className="text-indigo-600 font-medium">({distance})</span>
-                        )}
+                        <span>{location}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                         <DollarSign className="w-4 h-4 text-gray-400" />
-                        <span className="font-medium text-green-600">{formatSalary(job.salary, job.currency, job.periodSalary)}</span>
+                        <span className="font-medium text-green-600">{formatSalary(salary, currency, periodSalary)}</span>
                     </div>
                 </div>
 
                 {/* Description */}
                 <p className="text-sm text-gray-600 mb-6 flex-1 line-clamp-3">
-                    {job.description || "No description available"}
+                    {description}
                 </p>
 
                 {/* Footer */}
@@ -184,7 +169,7 @@ const JobCard: React.FC<JobCardProps> = ({ job, index, coords }) => {
                     
                     {canApplyJobs ? (
                         <button 
-                            onClick={handleJobClick}
+                            onClick={handleApplyClick}
                             className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors duration-200 group-hover:scale-105"
                         >
                             Apply Now
@@ -203,4 +188,4 @@ const JobCard: React.FC<JobCardProps> = ({ job, index, coords }) => {
     );
 };
 
-export default JobCard;
+export default FeatureJobCard;
