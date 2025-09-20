@@ -311,7 +311,9 @@ const JobsFilterSection: React.FC<JobsFilterSectionProps> = ({ filters, onChange
                                     { min: 0, max: 10000000, label: "0-10 Jt" },
                                     { min: 10000000, max: 25000000, label: "10-25 Jt" },
                                     { min: 25000000, max: 50000000, label: "25-50 Jt" },
-                                    { min: 0, max: 50000000, label: "Semua" }
+                                    { min: 50000000, max: 100000000, label: "50-100 Jt" },
+                                    { min: 100000000, max: 200000000, label: "100-200 Jt" },
+                                    { min: 0, max: 200000000, label: "Semua" }
                                 ].map((range, index) => (
                                     <button
                                         key={index}

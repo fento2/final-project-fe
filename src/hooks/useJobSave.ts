@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { apiCall } from '@/helper/apiCall';
 import { useAuth } from './useAuth';
 import { useRouter } from 'next/navigation';
+import { useAuthStore } from '@/lib/zustand/authStore';
 
 interface UseJobSaveReturn {
   isSaved: boolean;
@@ -14,16 +15,18 @@ export const useJobSave = (jobId: string | number): UseJobSaveReturn => {
   const [isSaved, setIsSaved] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const { role, isLogin } = useAuthStore();
   const router = useRouter();
 
   // Check if job is saved when component mounts or jobId changes
   useEffect(() => {
     // Wait for auth check to finish to avoid flicker, then attempt check.
     // Server will return 401 if not logged in, which we handle gracefully.
-    if (!authLoading && jobId) {
+    // Only check for USER role - companies shouldn't save jobs
+    if (!authLoading && jobId && isLogin && role === 'USER') {
       checkSaveStatus();
     }
-  }, [jobId, authLoading]);
+  }, [jobId, authLoading, isLogin, role]);
 
   const checkSaveStatus = async (): Promise<void> => {
     if (!jobId) return;
@@ -47,6 +50,15 @@ export const useJobSave = (jobId: string | number): UseJobSaveReturn => {
   const toggleSave = async (): Promise<void> => {
     if (!jobId) {
       console.error('Job ID is required');
+      return;
+    }
+
+    // Only allow USER role to save jobs
+    if (!isLogin || role !== 'USER') {
+      console.warn('Job saving is only available for job seekers (USER role)');
+      if (!isLogin) {
+        router.push('/login');
+      }
       return;
     }
 

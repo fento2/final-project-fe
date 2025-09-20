@@ -6,6 +6,9 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import DOMPurify from "dompurify";
 import { useJobSave } from "@/hooks/useJobSave";
+import { useAuthStore } from "@/lib/zustand/authStore";
+import { getCompanyDetailUrl } from "@/helper/companySlugHelper";
+import { generateJobSlug } from "@/helper/slugHelper";
 
 interface Job {
     id: string;
@@ -31,7 +34,12 @@ interface BrowseJobCardProps {
 
 const BrowseJobCard: React.FC<BrowseJobCardProps> = ({ job }) => {
     const router = useRouter();
+    const { role, isLogin } = useAuthStore();
     const { isSaved, isLoading, toggleSave } = useJobSave(job.id);
+
+    // Only show save and apply functionality for USER role
+    const canSaveJobs = isLogin && role === 'USER';
+    const canApplyJobs = isLogin && role === 'USER';
 
     const handleCardClick = () => {
         if (job.slug) {
@@ -39,6 +47,32 @@ const BrowseJobCard: React.FC<BrowseJobCardProps> = ({ job }) => {
         } else {
             router.push(`/jobs/${job.id}`);
         }
+    };
+
+    const handleApplyClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!canApplyJobs) {
+            // Could show a toast/alert here explaining why they can't apply
+            console.warn('Job applications are only available for job seekers (USER role)');
+            return;
+        }
+        
+        // Navigate to application form
+        const jobSlug = job.slug || generateJobSlug({
+            title: job.title,
+            company: job.company,
+            jobType: job.type,
+            category: job.category
+        });
+        router.push(`/jobs/${jobSlug}/apply`);
+    };
+
+    const handleCompanyClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        // Navigate to company detail page
+        const companyData = { name: job.company };
+        const companyUrl = getCompanyDetailUrl(companyData);
+        router.push(companyUrl);
     };
 
     const getTimeSincePosted = (dateString?: string) => {
@@ -155,36 +189,44 @@ const BrowseJobCard: React.FC<BrowseJobCardProps> = ({ job }) => {
 
                 {/* Action Buttons */}
                 <div className="flex items-center gap-3">
-                    <Button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            handleCardClick();
-                        }}
-                        className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg h-10"
-                    >
-                        Apply This Job
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            toggleSave();
-                        }}
-                        disabled={isLoading}
-                        className={`rounded-lg w-10 h-10 flex-shrink-0 transition-colors ${
-                            isSaved 
-                                ? 'border-indigo-300 bg-indigo-50 text-indigo-600 hover:bg-indigo-100' 
-                                : 'border-gray-300 hover:bg-gray-50'
-                        }`}
-                        title={isSaved ? 'Remove from saved jobs' : 'Save this job'}
-                    >
-                        {isSaved ? (
-                            <BookmarkCheck className="w-4 h-4" />
-                        ) : (
-                            <Bookmark className="w-4 h-4" />
-                        )}
-                    </Button>
+                    {canApplyJobs ? (
+                        <Button
+                            onClick={handleApplyClick}
+                            className={`${canSaveJobs ? 'flex-1' : 'w-full'} bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg h-10`}
+                        >
+                            Apply This Job
+                        </Button>
+                    ) : (
+                        <Button
+                            onClick={handleCompanyClick}
+                            className={`${canSaveJobs ? 'flex-1' : 'w-full'} bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg h-10`}
+                        >
+                            View Company
+                        </Button>
+                    )}
+                    {canSaveJobs && (
+                        <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                toggleSave();
+                            }}
+                            disabled={isLoading}
+                            className={`rounded-lg w-10 h-10 flex-shrink-0 transition-colors ${
+                                isSaved 
+                                    ? 'border-indigo-300 bg-indigo-50 text-indigo-600 hover:bg-indigo-100' 
+                                    : 'border-gray-300 hover:bg-gray-50'
+                            }`}
+                            title={isSaved ? 'Remove from saved jobs' : 'Save this job'}
+                        >
+                            {isSaved ? (
+                                <BookmarkCheck className="w-4 h-4" />
+                            ) : (
+                                <Bookmark className="w-4 h-4" />
+                            )}
+                        </Button>
+                    )}
                 </div>
             </div>
         </div>

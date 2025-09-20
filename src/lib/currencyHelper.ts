@@ -25,6 +25,6 @@ export const formatCompactIDR = (amount: number): string => {
 // Indonesian salary ranges (in IDR)
 export const IDR_SALARY_RANGES = {
     min: 0, // Rp 0
-    max: 50000000, // 50 juta
+    max: 200000000, // 200 juta
     step: 1000000 // 1 juta
 };

@@ -1,112 +1,10 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { apiCall } from "@/helper/apiCall";
 import { useJobs } from "@/hooks/useJobs";
 import BrowseJobCard from "./BrowseJobCard";
 import { Filters } from "./JobsFilterSection";
 import { toTitleCase } from "@/helper/toTitleCase";
-
-// Mock data generator for demonstration when backend is unavailable
-const generateMockJobs = (): Job[] => {
-    const companies = [
-        { name: "TechCorp Indonesia", logo: "/images/logo.png" },
-        { name: "DataScience Solutions", logo: "/images/logo.png" },
-        { name: "DevStudio Jakarta", logo: "/images/logo.png" },
-        { name: "CloudTech Asia", logo: "/images/logo.png" },
-        { name: "AI Innovation Labs", logo: "/images/logo.png" },
-        { name: "WebFlow Indonesia", logo: "/images/logo.png" },
-        { name: "Mobile Apps Nusantara", logo: "/images/logo.png" },
-        { name: "StartupHub Jakarta", logo: "/images/logo.png" },
-        { name: "BigData Corporation", logo: "/images/logo.png" },
-        { name: "Digital Innovation", logo: "/images/logo.png" },
-        { name: "Tech Startup Indo", logo: "/images/logo.png" },
-        { name: "Software House JKT", logo: "/images/logo.png" },
-        { name: "Fintech Indonesia", logo: "/images/logo.png" },
-        { name: "E-commerce Tech", logo: "/images/logo.png" },
-        { name: "Gaming Studio ID", logo: "/images/logo.png" },
-    ];
-
-    const jobTitles = [
-        "Frontend Developer", "Backend Developer", "Full Stack Developer",
-        "Data Scientist", "Product Manager", "UI/UX Designer",
-        "DevOps Engineer", "Mobile Developer", "QA Engineer",
-        "Marketing Manager", "Business Analyst", "Project Manager",
-        "Machine Learning Engineer", "Software Architect", "Database Administrator",
-        "React Developer", "Node.js Developer", "Python Developer",
-        "Java Developer", "iOS Developer", "Android Developer",
-        "Digital Marketing Specialist", "Content Creator", "SEO Specialist",
-        "Graphic Designer", "Motion Graphics Designer", "3D Artist"
-    ];
-
-    const locations = [
-        "Jakarta Pusat", "Jakarta Selatan", "Jakarta Barat", "Jakarta Utara", "Jakarta Timur",
-        "Bandung", "Surabaya", "Yogyakarta", "Medan", "Semarang", 
-        "Malang", "Denpasar", "Tangerang", "Depok", "Bekasi",
-        "Bogor", "Makassar", "Palembang", "Batam", "Balikpapan"
-    ];
-
-    const jobTypes: Job["type"][] = ["Full Time", "Part-time", "Contract", "Remote", "Hybrid"];
-    const categories = ["Technology", "Marketing", "Design", "Data Science", "Management", "Finance", "Sales", "Operations"];
-
-    return Array.from({ length: 45 }, (_, index) => {
-        const company = companies[index % companies.length];
-        const title = jobTitles[index % jobTitles.length];
-        const location = locations[index % locations.length];
-        const jobType = jobTypes[index % jobTypes.length];
-        const category = categories[index % categories.length];
-        const salaryMin = 8000000 + (index % 15) * 2000000; // 8-38 juta
-        const salaryMax = salaryMin + 5000000 + (index % 8) * 2000000; // +5-21 juta
-        
-        // Generate proper slug from title and company
-        const baseSlug = `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${company.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
-        const slug = `${baseSlug}-${index + 1}`;
-
-        return {
-            id: `job-${index + 1}`,
-            job_id: `job-${index + 1}`, // Add job_id for backend compatibility
-            title: title,
-            company: company.name,
-            Companies: { // Add Companies object for compatibility
-                name: company.name,
-                profile_picture: company.logo
-            },
-            type: jobType,
-            job_type: jobType, // Add job_type for backend compatibility
-            location: location,
-            city: location, // Add city for compatibility
-            salaryMin: salaryMin,
-            salaryMax: salaryMax,
-            salary: salaryMin, // Add salary field
-            currency: "IDR",
-            periodSalary: "month",
-            salaryDisplay: `IDR ${salaryMin.toLocaleString()} - ${salaryMax.toLocaleString()}`,
-            category: category,
-            Category: category, // Add Category for compatibility
-            requirements: `Join ${company.name} as a ${title}. We're looking for talented individuals to work on exciting projects in ${category.toLowerCase()}. 
-
-Key Responsibilities:
-• Develop and maintain high-quality software solutions
-• Collaborate with cross-functional teams
-• Participate in code reviews and technical discussions
-• Stay up-to-date with industry best practices
-
-Requirements:
-• Bachelor's degree in Computer Science or related field
-• 2+ years of relevant experience
-• Strong problem-solving skills
-• Excellent communication abilities`,
-            description: `Join ${company.name} as a ${title}. We're looking for talented individuals to work on exciting projects in ${category.toLowerCase()}. Competitive salary and great work environment.`,
-            skills: ["JavaScript", "React", "Node.js", "TypeScript", "Python", "Java", "MySQL", "MongoDB", "AWS", "Docker"].slice(0, 4 + (index % 4)),
-            tags: ["JavaScript", "React", "Node.js", "TypeScript", "Python", "Java", "MySQL", "MongoDB", "AWS", "Docker"].slice(0, 4 + (index % 4)),
-            slug: slug,
-            companyLogo: company.logo,
-            createdAt: new Date(Date.now() - (index * 2 * 24 * 60 * 60 * 1000)).toISOString(),
-            created_at: new Date(Date.now() - (index * 2 * 24 * 60 * 60 * 1000)).toISOString(),
-            expiredAt: new Date(Date.now() + (30 - index % 30) * 24 * 60 * 60 * 1000).toISOString(),
-            expired_at: new Date(Date.now() + (30 - index % 30) * 24 * 60 * 60 * 1000).toISOString(),
-        };
-    });
-};
 
 interface Job {
     id: string;
@@ -125,6 +23,103 @@ interface Job {
     createdAt?: string;
     expiredAt?: string;
 }
+
+interface JobsGridSectionProps {
+    filters: Filters;
+}
+
+// Enhanced hook to fetch jobs with filters from backend
+const useJobsWithFilters = (filters: Filters, page: number, perPage: number = 12) => {
+    const [jobs, setJobs] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [pagination, setPagination] = useState({
+        page: 1,
+        limit: perPage,
+        total: 0,
+        totalPages: 0
+    });
+
+    const fetchJobs = async () => {
+        try {
+            setLoading(true);
+            const params = new URLSearchParams();
+            
+            // Add pagination
+            params.append("page", page.toString());
+            params.append("limit", perPage.toString());
+            
+            // Add filter parameters
+            if (filters.categories.length > 0) {
+                params.append("category", filters.categories.join(','));
+            }
+            if (filters.location.length > 0) {
+                params.append("location", filters.location.join(','));
+            }
+            if (filters.types.length > 0) {
+                params.append("jobType", filters.types.join(','));
+            }
+            if (filters.salaryMin > 0) {
+                params.append("salaryMin", filters.salaryMin.toString());
+            }
+            if (filters.salaryMax < 50000000) {
+                params.append("salaryMax", filters.salaryMax.toString());
+            }
+            
+            console.log('🔍 Fetching jobs with params:', params.toString());
+
+            // Try both endpoints
+            let data;
+            try {
+                const response = await apiCall.get(`/postings?${params.toString()}`);
+                data = response.data;
+            } catch (postingsError) {
+                // Fallback to jobs endpoint
+                const response = await apiCall.get(`/jobs?${params.toString()}`);
+                data = response.data;
+            }
+
+            console.log('📦 Received job data:', data);
+
+            // Handle backend response structure
+            const jobsData = data?.data?.data || data?.data || data || [];
+            const paginationData = data?.data?.pagination || data?.pagination;
+            
+            setJobs(Array.isArray(jobsData) ? jobsData : []);
+            
+            if (paginationData) {
+                setPagination({
+                    page: paginationData.page || page,
+                    limit: paginationData.limit || perPage,
+                    total: paginationData.total || jobsData.length,
+                    totalPages: paginationData.totalPages || Math.ceil((paginationData.total || jobsData.length) / perPage)
+                });
+            } else {
+                // Fallback pagination calculation
+                setPagination({
+                    page: page,
+                    limit: perPage,
+                    total: jobsData.length,
+                    totalPages: Math.ceil(jobsData.length / perPage)
+                });
+            }
+            
+            setError(null);
+        } catch (err: any) {
+            console.error('❌ Error fetching jobs:', err);
+            setError('Failed to fetch jobs');
+            setJobs([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchJobs();
+    }, [filters, page]);
+
+    return { jobs, loading, error, pagination, refetch: fetchJobs };
+};
 
 interface JobsGridSectionProps {
     filters: Filters;
@@ -192,11 +187,7 @@ const Pagination: React.FC<{
 };
 
 const JobsGridSection: React.FC<JobsGridSectionProps> = ({ filters }) => {
-    // Fetch all jobs with a high limit to get all available jobs
-    const { jobs, loading, error } = useJobs({ 
-        limit: 1000, // Set high limit to get all jobs
-        page: 1 
-    });
+    const { jobs, loading, error } = useJobs();
     const [page, setPage] = useState(1);
     const perPage = 9;
 
@@ -237,16 +228,9 @@ const JobsGridSection: React.FC<JobsGridSectionProps> = ({ filters }) => {
 
     // Transform backend data to match our Job interface
     const transformedJobs: Job[] = useMemo(() => {
-        let jobsList = Array.isArray(jobs) ? jobs : [];
-        
-        // If backend returns no data or very few jobs, use mock data
-        if (jobsList.length < 5) {
-            console.log('🎭 Using mock data - backend returned insufficient jobs:', jobsList.length);
-            return generateMockJobs();
-        }
-
+        const list = Array.isArray(jobs) ? jobs : [];
         const baseURL = apiCall?.defaults?.baseURL || "";
-        return jobsList
+        return list
             .map((job: any, idx: number) => {
                 if (!job) return null;
                 const idRaw = job.id ?? job.job_id ?? job._id ?? job.slug ?? `job-${idx}`;
@@ -281,7 +265,7 @@ const JobsGridSection: React.FC<JobsGridSectionProps> = ({ filters }) => {
                 return {
                     id,
                     title: job.title || 'Untitled Position',
-                    company: job.Companies?.name,
+                    company: job.Companies?.name ,
                     type,
                     location,
                     salaryMin: salaryNum || 0,
@@ -290,7 +274,7 @@ const JobsGridSection: React.FC<JobsGridSectionProps> = ({ filters }) => {
                     category: getCategoryDisplay(job.category || job.Category || job.category_name),
                     description: job.requirements || '',
                     tags,
-                    slug: job.slug,
+                    slug: job.slug ,
                     companyLogo: job.Companies?.profile_picture,
                     createdAt: job.createdAt || job.created_at,
                     expiredAt: job.expiredAt || job.expired_at,
