@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import FeatureJobCard from "./JobCard";
+import FeatureJobCard from "./FeatureJobCard";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useFeaturedJobs } from "@/hooks/useJobs";
 

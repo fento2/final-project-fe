@@ -19,7 +19,21 @@ const Schema = z.object({
 
 type FormValues = z.infer<typeof Schema>;
 
-export default function AddUserCompanyModal({ isOpen, onClose, onSaved, item }: { isOpen: boolean; onClose: () => void; onSaved?: () => void; item: Company; }) {
+export default function AddUserCompanyModal({ 
+    isOpen, 
+    onClose, 
+    onSaved, 
+    item, 
+    title = "Tambah Riwayat Kerja",
+    description 
+}: { 
+    isOpen: boolean; 
+    onClose: () => void; 
+    onSaved?: () => void; 
+    item: Company;
+    title?: string;
+    description?: string;
+}) {
     const { register, handleSubmit, control, reset, formState } = useForm<FormValues>({
         resolver: zodResolver(Schema),
         defaultValues: {
@@ -82,7 +96,10 @@ export default function AddUserCompanyModal({ isOpen, onClose, onSaved, item }: 
         <Dialog open={isOpen} onOpenChange={(v) => { if (!v) onClose(); }}>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Tambah Riwayat Kerja</DialogTitle>
+                    <DialogTitle>{title}</DialogTitle>
+                    {description && (
+                        <p className="text-sm text-gray-600 mt-2">{description}</p>
+                    )}
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="grid gap-3">

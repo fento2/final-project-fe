@@ -15,6 +15,7 @@ import { LogOut, UserCircle2 } from "lucide-react";
 import { toTitleCase } from "@/helper/toTitleCase";
 import { motion, AnimatePresence } from "framer-motion";
 import { handleLogOut } from "@/helper/handleLogout";
+import { apiCall } from "@/helper/apiCall";
 
 export default function AuthButtons() {
     const { setShowSignIn, setShowSignUp } = useAuthUIStore();
@@ -25,7 +26,6 @@ export default function AuthButtons() {
         return (
             <DropdownMenu>
                 <div className="relative">
-                    <div className="w-0.5 h-10 bg-neutral-400 absolute top-0 right-16" />
                     <DropdownMenuTrigger asChild>
                         <div className="flex items-center cursor-pointer">
                             <Avatar className="w-10 h-10 shadow-lg">
@@ -76,6 +76,31 @@ export default function AuthButtons() {
                                             Dashboard
                                         </DropdownMenuItem>
                                     </motion.div>
+
+                                    {/* Profile page (USER) */}
+                                    {role === 'USER' && (
+                                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                                            <DropdownMenuItem
+                                                onClick={async () => {
+                                                    try {
+                                                        const res = await apiCall.get('/account/get-data/user');
+                                                        const u = res?.data?.data ?? res?.data ?? {};
+                                                        const username = u?.username || u?.user?.username || '';
+                                                        if (username) {
+                                                            router.push(`/profile/${encodeURIComponent(username)}`);
+                                                        } else {
+                                                            router.push('/dashboard/profile');
+                                                        }
+                                                    } catch {
+                                                        router.push('/dashboard/profile');
+                                                    }
+                                                }}
+                                                className="text-lg px-4 py-2 rounded-md"
+                                            >
+                                                Profile
+                                            </DropdownMenuItem>
+                                        </motion.div>
+                                    )}
 
                                     <DropdownMenuSeparator className="w-full" />
 

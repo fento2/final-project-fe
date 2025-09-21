@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MoreHorizontal, Plus, X } from "lucide-react";
 import Image from "next/image";
 import { Label } from "@/components/ui/label";
 import { WorkHistoryModal } from "./components/WorkHistoryModal";
+import { apiCall } from "@/helper/apiCall";
+import { toDateStartTimestamp } from "@/lib/formatDate";
+import { generateCompanySlug } from "@/helper/companySlugHelper";
 
 interface Job {
     nameJob: string;
@@ -13,35 +16,11 @@ interface Job {
     wage: string;
     periodStart: string;
     periodEnd: string;
+    companyLogo?: string | null;
 }
 
-const jobs: Job[] = [
-    {
-        nameJob: "Peaceful Retreat Space",
-        nameCompany: "PT. Maju Mundur",
-        status: "Current",
-        wage: "$610,000",
-        periodStart: "2025/07/01",
-        periodEnd: "now",
-    },
-    {
-        nameJob: "Happy Lagoon Farm",
-        nameCompany: "PT. Mundur Maju",
-        status: "Past",
-        wage: "$880,000",
-        periodStart: "2025/01/01",
-        periodEnd: "2025/06/30",
-    },
-    {
-        nameJob: "Green Hangout Place",
-        nameCompany: "PT. Gak Mundur Mundur",
-        status: "Past",
-        wage: "$650,000",
-        periodStart: "2024/01/01",
-        periodEnd: "2024/12/31",
-    },
-    // tambahkan data lain sesuai kebutuhan
-];
+// initial placeholder (will be replaced by backend data on load)
+const jobs: Job[] = [];
 
 const statusColors: Record<Job["status"], string> = {
     "Current": "bg-green-100 text-green-700",
@@ -54,11 +33,13 @@ export default function MyJobsPage() {
     const [search, setSearch] = useState("");
     const [filterJobStatus, setFilterJobStatus] = useState("All");
     const [page, setPage] = useState(1);
-    const totalPages = 5
+    const pageSize = 10;
 
     // make jobs editable locally so modal can add new item
     const [jobList, setJobList] = useState<Job[]>(jobs);
     const [showModal, setShowModal] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
 
     // form state for modal
     const [form, setForm] = useState({
@@ -102,6 +83,92 @@ export default function MyJobsPage() {
         });
     }
 
+    // helper: build absolute URL if backend returns relative path
+    function toAbsolute(url?: string | null): string | null {
+        if (!url || typeof url !== "string") return null;
+        if (/^https?:\/\//i.test(url)) return url;
+        const beBase = process.env.NEXT_PUBLIC_URL_BE || "";
+        if (!beBase) return url;
+        return `${beBase}${url.startsWith("/") ? "" : "/"}${url}`;
+    }
+
+    // map experiences to UI Jobs and enrich with company logos
+    async function mapExperiencesToJobsWithLogos(data: any[]): Promise<Job[]> {
+        const toYmd = (d: Date | null) =>
+            d && !Number.isNaN(d.getTime())
+                ? `${d.getFullYear()}/${String(d.getMonth() + 1).padStart(2, "0")}/${String(d.getDate()).padStart(2, "0")}`
+                : "";
+
+        const mappedBase: Job[] = (Array.isArray(data) ? data : []).map((exp) => {
+            const start = exp?.startDate ? new Date(exp.startDate) : null;
+            const end = exp?.endDate ? new Date(exp.endDate) : null;
+            return {
+                nameJob: exp?.position || "-",
+                nameCompany: exp?.name || "-",
+                status: end ? "Past" : "Current",
+                wage: "-",
+                periodStart: toYmd(start),
+                periodEnd: end ? toYmd(end) : "",
+            } as Job;
+        });
+
+        // fetch logos per unique company name
+        const names = Array.from(
+            new Set(
+                mappedBase
+                    .map((m) => m.nameCompany)
+                    .filter((n) => n && n !== "-")
+            )
+        );
+
+        const logoByName = new Map<string, string | null>();
+        await Promise.all(
+            names.map(async (name) => {
+                try {
+                    const slug = generateCompanySlug(name);
+                    if (!slug) return;
+                    const res = await apiCall.get(`/company/name/${slug}`);
+                    const company = res?.data?.data ?? res?.data ?? {};
+                    const logo = toAbsolute(company?.profile_picture) || null;
+                    logoByName.set(name, logo);
+                } catch (e) {
+                    // ignore failures for individual lookups
+                    logoByName.set(name, null);
+                }
+            })
+        );
+
+        const enriched = mappedBase.map((m) => ({
+            ...m,
+            companyLogo: logoByName.get(m.nameCompany) ?? null,
+        }));
+
+        // sort newest start first
+        enriched.sort((a, b) => new Date(b.periodStart || 0).getTime() - new Date(a.periodStart || 0).getTime());
+        return enriched;
+    }
+
+    // fetch experiences from backend and map to UI shape + logos
+    useEffect(() => {
+        const fetchExperiences = async () => {
+            try {
+                setLoading(true);
+                setError("");
+                const res = await apiCall.get("/experiences");
+                const data: any[] = res?.data?.data ?? res?.data ?? [];
+                const mapped = await mapExperiencesToJobsWithLogos(data);
+                setJobList(mapped);
+                // reset to first page when new data arrives
+                setPage(1);
+            } catch (e: any) {
+                setError(e?.response?.data?.message || e?.message || "Failed to load work history");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchExperiences();
+    }, []);
+
     const filteredJobs = jobList.filter(
         (job) => {
             const matchesSearch = job.nameJob.toLowerCase().includes(search.toLowerCase()) ||
@@ -111,6 +178,15 @@ export default function MyJobsPage() {
             return matchesSearch && matchesStatus;
         }
     );
+
+    // pagination derived values
+    const totalPages = Math.max(1, Math.ceil(filteredJobs.length / pageSize));
+    const currentPage = Math.min(page, totalPages);
+    const startIdx = (currentPage - 1) * pageSize;
+    const endIdx = startIdx + pageSize;
+    const pagedJobs = filteredJobs.slice(startIdx, endIdx);
+    const resultsStart = filteredJobs.length === 0 ? 0 : startIdx + 1;
+    const resultsEnd = Math.min(endIdx, filteredJobs.length);
 
     return (
         <div className="p-6 md:pl-24">
@@ -133,7 +209,7 @@ export default function MyJobsPage() {
 
                 <input
                     type="text"
-                    placeholder="Search ID, location"
+                    placeholder="Search job or company"
                     className="border rounded-lg px-3 py-2 w-64"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
@@ -153,12 +229,11 @@ export default function MyJobsPage() {
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredJobs.map((job) => (
+                        {pagedJobs.map((job) => (
                             <tr key={job.nameCompany} className="border-t">
                                 <td className="px-6 py-4 flex items-center gap-3">
                                     <Image
-                                        // src={job.image}
-                                        src="https://images.unsplash.com/photo-1612810806563-4cb8265db55f?q=80&w=627&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                                        src={job.companyLogo || "/images/logo.png"}
                                         alt={job.nameJob}
                                         width={48}
                                         height={48}
@@ -186,6 +261,13 @@ export default function MyJobsPage() {
                                 </td> */}
                             </tr>
                         ))}
+                        {pagedJobs.length === 0 && (
+                            <tr>
+                                <td className="px-6 py-8 text-center text-gray-500" colSpan={6}>
+                                    {loading ? "Loading..." : error ? error : "No work history found"}
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -193,16 +275,36 @@ export default function MyJobsPage() {
             {/* Pagination */}
             <div className="flex justify-between items-center mt-4">
                 <span className="text-sm text-gray-500">
-                    Results: 1 - {filteredJobs.length} of {jobList.length}
+                    Results: {resultsStart} - {resultsEnd} of {filteredJobs.length}
                 </span>
                 <div className="flex gap-2">
-                    <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+                    <Pagination page={currentPage} totalPages={totalPages} onChange={setPage} />
                 </div>
             </div>
 
             <WorkHistoryModal
                 open={showModal}
                 onClose={() => setShowModal(false)}
+                onAdd={async (job) => {
+                    try {
+                        // map modal fields to backend payload
+                        await apiCall.post("/experiences", {
+                            name: job.nameCompany,
+                            position: job.nameJob,
+                            startDate: toDateStartTimestamp(job.periodStart),
+                            endDate: job.periodEnd ? toDateStartTimestamp(job.periodEnd) : null,
+                            description: null,
+                        });
+                        // refresh list
+                        const res = await apiCall.get("/experiences");
+                        const data: any[] = res?.data?.data ?? res?.data ?? [];
+                        const mapped = await mapExperiencesToJobsWithLogos(data);
+                        setJobList(mapped);
+                        setPage(1);
+                    } catch (e) {
+                        // swallow error for now; could add toast
+                    }
+                }}
             />
         </div>
     );

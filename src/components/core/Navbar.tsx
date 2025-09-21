@@ -1,12 +1,16 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import AuthButtons from "./AuthButton";
 import MobileNav from "./MobileNav";
 import SignUp from "./SignUp";
 import SignIn from "./SignIn";
 import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
+import SearchUserModal from "@/components/core/SearchUserModal";
+import { useUserSearchSuggestions } from "@/hooks/useUserSearchSuggestions";
+import Image from "next/image";
+import { generateCompanySlug } from "@/helper/companySlugHelper";
 
 const menus = [
   { label: "Home", href: "/" },
@@ -19,8 +23,40 @@ const menus = [
 
 const Navbar: React.FC = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const { showSignIn, showSignUp } = useAuthUIStore();
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [showModal, setShowModal] = useState(false);
+  const [submittedQuery, setSubmittedQuery] = useState("");
+  const [showSuggest, setShowSuggest] = useState(false);
+  const suggestRef = useRef<HTMLDivElement>(null);
+  const { suggestions } = useUserSearchSuggestions(query);
+  const buildCompanySlug = (name?: string, username?: string, slug?: string) => {
+    if (slug && slug.trim()) return slug;
+    // Prefer company name if provided from API
+    if (name && name.trim()) return generateCompanySlug(name);
+    // Best-effort: derive from username by stripping common suffix and normalizing
+    if (username) {
+      const base = username
+        .replace(/[_-]?company$/i, "") // remove trailing "company"
+        .replace(/[_-]+/g, " "); // treat underscores/hyphens as spaces
+      return generateCompanySlug(base);
+    }
+    return "";
+  };
+
+  const isCompanyUser = (user: any): boolean => {
+    // Check role first
+    const role = user?.role?.toString?.()?.toUpperCase?.();
+    if (role === "COMPANY" || role === "COMPANIES") return true;
+    
+    // Fallback: check username pattern
+    const username = user?.username?.toString?.()?.toLowerCase?.();
+    if (username?.includes("_company") || username?.endsWith("company")) return true;
+    
+    return false;
+  };
   const findActiveMenu = (pathname: string) => {
     const matched = menus.filter((m) => pathname.startsWith(m.href));
 
@@ -37,6 +73,16 @@ const Navbar: React.FC = () => {
   useEffect(() => {
     setActive(findActiveMenu(pathname));
   }, [pathname]);
+
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (suggestRef.current && !suggestRef.current.contains(e.target as Node)) {
+        setShowSuggest(false);
+      }
+    };
+    document.addEventListener("mousedown", onClick);
+    return () => document.removeEventListener("mousedown", onClick);
+  }, []);
 
 
   return (
@@ -67,6 +113,74 @@ const Navbar: React.FC = () => {
 
         {/* Right side */}
         <div className="flex items-center gap-2">
+          {/* Desktop search bar */}
+          <form
+            className="hidden lg:flex items-center mr-3"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const q = query.trim();
+              if (!q) return;
+              setSubmittedQuery(q);
+              setShowModal(true);
+              setShowSuggest(false);
+            }}
+          >
+            <div className="relative" ref={suggestRef}>
+              <div className="flex items-center border rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-indigo-500">
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    setShowSuggest(true);
+                  }}
+                  onFocus={() => setShowSuggest(true)}
+                  placeholder="Search user by username..."
+                  className="px-3 py-2 w-56 text-sm outline-none"
+                  aria-label="Search user"
+                />
+                <button
+                  type="submit"
+                  className="px-2 py-2 text-sm bg-indigo-600 text-white hover:bg-indigo-700"
+                  aria-label="Search"
+                >
+                  Search
+                </button>
+              </div>
+
+              {/* Suggestions dropdown */}
+              {showSuggest && query.trim().length >= 2 && suggestions.length > 0 && (
+                <div className="absolute left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 w-72">
+                  {suggestions.map((s, i) => (
+                    <button
+                      type="button"
+                      key={`${s.username}-${i}`}
+                      className="w-full flex items-center gap-3 px-3 py-2 hover:bg-gray-50 text-left"
+                      onClick={() => {
+                        setShowSuggest(false);
+                        // If suggestion is a company, go to company detail by slug
+                        if (isCompanyUser(s)) {
+                          const slug = buildCompanySlug(s.name, s.username, s.slug);
+                          return router.push(`/jobs/companies/${slug}`);
+                        }
+                        // Otherwise, open user modal
+                        setQuery(s.username);
+                        setSubmittedQuery(s.username);
+                        setShowModal(true);
+                      }}
+                    >
+                      <Image src={s.profile_picture || "/images/logo.png"} alt="avatar" width={24} height={24} className="rounded-full object-cover" />
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium text-gray-900">@{s.username}</span>
+                        <span className="text-xs text-gray-600">{s.name || (s.role ? s.role : "")}</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </form>
+
           <div className="lg:flex items-center gap-2 hidden">
             <AuthButtons />
           </div>
@@ -101,6 +215,7 @@ const Navbar: React.FC = () => {
       {/* Modals */}
       {showSignIn && <SignIn />}
       {showSignUp && <SignUp />}
+      <SearchUserModal open={showModal} onOpenChange={setShowModal} username={submittedQuery} />
     </nav>
   );
 };
