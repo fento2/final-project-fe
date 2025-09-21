@@ -28,6 +28,7 @@ export const UserSubscriptionSchema = z.object({
     end_date: z.date().optional(),
     createAt: z.date().optional(),
     updatedAt: z.date().optional(),
+    proof_url: z.string().optional().nullable(),
     payment_status: z.nativeEnum(PaymentStatus),
 });
 
@@ -60,6 +61,7 @@ export const UserSubscriptionActiveSchema = z.object({
     createAt: z.date().optional(),
     updatedAt: z.date().optional(),
     payment_status: z.enum(PaymentStatus),
+    proof_url: z.string().optional().nullable(),
     subscription: SubscriptionSchema,
     user: UserSchema,
 });

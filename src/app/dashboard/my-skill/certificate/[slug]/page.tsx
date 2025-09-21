@@ -79,7 +79,7 @@ export default function DetailCertificatePage() {
             {dataCertificate && (
                 <div className="max-w-3xl mx-auto">
                     {/* Certificate Preview */}
-                    <div ref={certificateRef} className="bg-white border rounded-xl shadow-sm p-8 mb-6 hidden">
+                    <div ref={certificateRef} className="bg-white border rounded-xl shadow-sm p-8 mb-6">
                         <div className="text-center mb-8 border-b pb-6">
                             <h1 className="text-4xl font-bold text-gray-800 mb-2">Certificate of Completion</h1>
                             <p className="text-lg text-gray-600">This is to certify that</p>

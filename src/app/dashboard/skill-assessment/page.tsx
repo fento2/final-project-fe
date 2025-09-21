@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import SubmitDialog from "./_components/SubmitDialog";
+import { UserSubscriptionActiveDTO } from "@/types/userSubscription";
 
 interface SkillAssessment {
     assessment_id: number;
@@ -21,21 +22,16 @@ export default function SkillAssessmentListPage() {
     const [error, setError] = useState("");
     const [totalSkillAssessments, setTotalSkillAssessments] = useState(0);
     const [questionCounts, setQuestionCounts] = useState<Record<number, number>>({});
-    const [activeSub, setActiveSub] = useState(false);
     const [activeSubPro, setActiveSubPro] = useState(0);
 
     const fetchData = async () => {
         try {
             setLoading(true);
             setError("");
+
             const res = await apiCall.get("/skillAssessments");
-            const sub = await apiCall.get("/userSubscription");
-            if (sub.data.data.length === 0) {
-                setError("You are not subscribed. Please subscribe to increase your quota and access skill assessments.");
-            }
             setData(res.data?.data || res.data || []);
 
-            // 
             const counts: Record<number, number> = {};
             const resQ = await apiCall.get("/questions");
             const questions = resQ?.data?.data ?? [];
@@ -45,12 +41,9 @@ export default function SkillAssessmentListPage() {
                     counts[id] = (counts[id] || 0) + 1;
                 }
             });
-            console.log(resQ.data.data);
             setQuestionCounts(counts);
         } catch (e: any) {
-            setError(
-                e?.response?.data?.message || e?.message || "Failed to load data"
-            );
+            setError(e?.response?.data?.message || e?.message || "Failed to load data");
         } finally {
             setLoading(false);
         }
@@ -59,16 +52,23 @@ export default function SkillAssessmentListPage() {
     const checkSubscription = async () => {
         try {
             const result = await apiCall.get("/userSubscription/user-subscription-active");
-            if (result.data.data) {
-                setActiveSub(true);
-                if (result.data.data.subscription.name === "Pro Plan") {
-                    setActiveSubPro(Infinity);
-                } else {
-                    setActiveSubPro(2);
-                }
-            }
+            const resultData: UserSubscriptionActiveDTO = result.data.data;
+
             const { data } = await apiCall.get("/userAssessments");
             setTotalSkillAssessments(data.data.length);
+
+            if (resultData) {
+                if (resultData.payment_status === "APPROVED") {
+                    if (resultData.subscription.name === "Pro Plan") {
+                        setActiveSubPro(Infinity);
+                    } else if (resultData.subscription.name === "Standart") {
+                        setActiveSubPro(2);
+                    }
+                } else {
+                    setActiveSubPro(0);
+                    setError("You are not subscribed or your subscription payment is not completed. Please subscribe or complete your payment to increase your quota and access skill assessments.");
+                }
+            }
         } catch (error: any) {
             setError(error.response.data.message || error.message || "Failed to check subscription")
         }
@@ -104,19 +104,17 @@ export default function SkillAssessmentListPage() {
                 </Button>
             </div>
 
-            {error && (
+            {error ? (
                 <div className="text-sm rounded-md border border-red-200 bg-red-50 px-3 py-2 text-red-600">
                     {error}
                 </div>
-            )}
-
-            {
+            ) : (
                 totalSkillAssessments >= activeSubPro && (
                     <div className="text-sm rounded-md border border-red-200 bg-red-50 px-3 py-2 text-red-600">
                         You've already taken skill assessments twice in the last 30 days. To increase your quota and continue taking more assessments, please subscribe to a plan.
                     </div>
                 )
-            }
+            )}
 
             <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {loading &&
@@ -165,7 +163,7 @@ export default function SkillAssessmentListPage() {
                         <CardFooter className="flex justify-end">
                             <div onClick={(e) => e.stopPropagation()}>
                                 <SubmitDialog
-                                    disabled={totalSkillAssessments >= activeSubPro || !!error || !questionCounts[item.assessment_id] || !activeSub}
+                                    disabled={totalSkillAssessments >= activeSubPro || !!error || !questionCounts[item.assessment_id]}
                                     onConfirm={() => handleStart(item.assessment_id, item.skill_name)}
                                     triggerLabel="Take skill"
                                     title="Ready to start?"

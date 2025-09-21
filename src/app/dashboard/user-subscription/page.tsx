@@ -6,11 +6,14 @@ import { UserSubscriptionsGetDTO, UserSubscriptionUpdateShcema } from "@/types/u
 import { RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import SubmitDialog from "../skill-assessment/_components/SubmitDialog";
+import Image from "next/image";
 
 export default function UserSubscriptionPage() {
     const [data, setData] = useState<UserSubscriptionsGetDTO[]>([])
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const closeImage = () => setSelectedImage(null);
 
     useEffect(() => {
         fetchData();
@@ -89,6 +92,7 @@ export default function UserSubscriptionPage() {
                             <col className="w-48" />
                             <col className="w-48" />
                             <col className="w-48" />
+                            <col className="w-48" />
                         </colgroup>
                         <thead className="bg-gray-50 text-sm text-gray-600">
                             <tr>
@@ -100,6 +104,7 @@ export default function UserSubscriptionPage() {
                                 <th className="px-4 py-2 text-left font-medium">Created At</th>
                                 <th className="px-4 py-2 text-left font-medium">Updated At</th>
                                 <th className="px-4 py-2 text-left font-medium">Payment Status</th>
+                                <th className="px-4 py-2 text-left font-medium">Proof of Payment</th>
                                 <th className="px-4 py-2 text-left font-medium">Actions</th>
                             </tr>
                         </thead>
@@ -138,16 +143,21 @@ export default function UserSubscriptionPage() {
                                     <td className="px-4 py-2">{item.userSubscriptionSchema.createAt && formatDateID(item.userSubscriptionSchema.createAt.toString())}</td>
                                     <td className="px-4 py-2">{item.userSubscriptionSchema.updatedAt && formatDateID(item.userSubscriptionSchema.updatedAt.toString())}</td>
                                     <td className="px-4 py-2">{item.userSubscriptionSchema.payment_status}</td>
+                                    <td className="px-4 py-2">
+                                        {
+                                            item.userSubscriptionSchema.proof_url && (
+                                                <button type="button" onClick={() => setSelectedImage(item.userSubscriptionSchema.proof_url || null)} className="p-0 border-0 bg-transparent cursor-pointer">
+                                                    <Image width={48} height={48} src={item.userSubscriptionSchema.proof_url} alt={item.subscription.name} />
+                                                </button>
+                                            )
+                                        }
+                                    </td>
                                     <td className="px-2 py-1">
                                         {
-                                            item.userSubscriptionSchema.payment_status === "PENDING" ? (
+                                            item.userSubscriptionSchema.payment_status === "PENDING" && (
                                                 <div className="flex gap-2">
                                                     <SubmitDialog variant="delete" onConfirm={() => handleReject(item.userSubscriptionSchema.user_subscription_id)} buttonTitle="Reject" triggerLabel="Reject" title="Reject subscription?" description={`Reject subscription (ID User : ${item.userSubscriptionSchema.user_id}) - (Subscription name : ${item.subscription.name})?`} />
                                                     <SubmitDialog variant="success" onConfirm={() => handleApprove(item.userSubscriptionSchema.user_subscription_id)} buttonTitle="Approve" triggerLabel="Approve" title="Approve subscription?" description={`Approve subscription (ID User : ${item.userSubscriptionSchema.user_id}) - (Subscription name : ${item.subscription.name})?`} />
-                                                </div>
-                                            ) : (
-                                                <div>
-
                                                 </div>
                                             )
                                         }
@@ -158,6 +168,26 @@ export default function UserSubscriptionPage() {
                     </table>
                 </div>
             </div>
+
+            {selectedImage && (
+                <div
+                    role="dialog"
+                    aria-modal="true"
+                    onClick={closeImage}
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+                >
+                    <div onClick={(e) => e.stopPropagation()} className="relative max-w-[90vw] max-h-[90vh]">
+                        <button
+                            onClick={closeImage}
+                            className="absolute top-2 right-2 z-50 rounded bg-white/80 px-2 py-1 text-sm"
+                        >
+                            Close
+                        </button>
+                        {/* using native img for natural sizing inside the modal */}
+                        <img src={selectedImage} alt="Proof" className="max-w-full max-h-[85vh] rounded shadow-lg" />
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
