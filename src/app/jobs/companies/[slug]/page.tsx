@@ -6,6 +6,7 @@ import { CheckCircle2, Share2, Bookmark, } from "lucide-react";
 import { apiCall } from "../../../../helper/apiCall";
 import ReviewSection from "./_components/ReviewSection";
 import AddUserCompanyModal from "@/app/dashboard/review-company/_components/AddUserCompanyModal";
+import ReviewCompanyModal from "@/app/dashboard/review-company/_components/ReviewCompanyModal";
 import { useEffect, useState } from "react";
 import ReadOnlyQuill from "@/app/dashboard/components/ReadOnlyReactQuil";
 import { UserCompanyItem } from "@/types/userCompany";
@@ -15,6 +16,9 @@ import JobListCompany from "./_components/JobListCompany";
 import AboutCompany from "./_components/AboutCompany";
 import CTA from "./_components/CTA";
 import formatCurrency from "@/lib/formatCurrency";
+import { useAuth } from "@/hooks/useAuth";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 
 type Company = {
     company_id: number;
@@ -32,17 +36,75 @@ type Company = {
 
 export default function CompanyDetailPage() {
     const [openModalCreateReview, setOpenModalCreateReview] = useState<boolean>(false);
+    const [openReviewModal, setOpenReviewModal] = useState<boolean>(false);
+    const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
     const [company, setCompany] = useState<Company>();
+    const [userCompany, setUserCompany] = useState<UserCompanyItem | null>(null);
+    const [loadingUserCompany, setLoadingUserCompany] = useState<boolean>(false);
     const { slug } = useParams();
+    const { user } = useAuth();
 
     const fetchData = async () => {
         const result = await apiCall.get(`/company/name/${slug}`);
         setCompany(result.data.data);
     }
 
+    const fetchUserCompany = async () => {
+        if (!user || !company) return;
+        
+        setLoadingUserCompany(true);
+        try {
+            // Check if user has existing work experience with this company
+            const result = await apiCall.get(`/user-companies`);
+            const userCompanies = result.data?.data || [];
+            const existingRelation = userCompanies.find((uc: UserCompanyItem) => 
+                uc.company?.company_id === company.company_id
+            );
+            setUserCompany(existingRelation || null);
+        } catch (error) {
+            console.log("Error fetching user companies:", error);
+        } finally {
+            setLoadingUserCompany(false);
+        }
+    }
+
+    const handleWriteReview = () => {
+        if (!user) {
+            setShowLoginModal(true);
+            return;
+        }
+
+        if (loadingUserCompany) {
+            return; // Don't do anything while loading
+        }
+
+        if (userCompany) {
+            // User already has work experience with this company, open review modal directly
+            setOpenReviewModal(true);
+        } else {
+            // User doesn't have work experience, need to add it first
+            setOpenModalCreateReview(true);
+        }
+    }
+
+    const handleWorkExperienceAdded = () => {
+        setOpenModalCreateReview(false);
+        fetchUserCompany(); // Refresh user company data
+        // After adding work experience, automatically open review modal
+        setTimeout(() => {
+            setOpenReviewModal(true);
+        }, 500);
+    }
+
     useEffect(() => {
         fetchData();
     }, [])
+
+    useEffect(() => {
+        if (company && user) {
+            fetchUserCompany();
+        }
+    }, [company, user])
 
     if (!company) return null;
 
@@ -139,7 +201,12 @@ export default function CompanyDetailPage() {
 
                 {/* Sidebar */}
                 <div className="">
-                    <AboutCompany company={company} onOpen={() => setOpenModalCreateReview(true)} />
+                    <AboutCompany 
+                        company={company} 
+                        onOpen={handleWriteReview} 
+                        hasWorkExperience={!!userCompany}
+                        loadingUserCompany={loadingUserCompany}
+                    />
                 </div>
             </main>
 
@@ -151,7 +218,66 @@ export default function CompanyDetailPage() {
                 <ReviewSection companyName={company.name} />
             </div>
 
-            <AddUserCompanyModal item={company} isOpen={openModalCreateReview} onClose={() => setOpenModalCreateReview(false)} />
+            {company && (
+                <AddUserCompanyModal 
+                    item={{
+                        company_id: company.company_id,
+                        name: company.name,
+                        email: company.email || null,
+                        phone: company.phone || null,
+                        description: company.description || null,
+                        website: company.website || null,
+                        profile_picture: company.profile_picture || null
+                    }} 
+                    isOpen={openModalCreateReview} 
+                    onClose={() => setOpenModalCreateReview(false)} 
+                    onSaved={handleWorkExperienceAdded}
+                    title="Tambah Riwayat Kerja untuk Review"
+                    description="Untuk menulis review, Anda perlu menambahkan riwayat kerja di perusahaan ini terlebih dahulu. Setelah itu, Anda dapat memberikan review."
+                />
+            )}
+            
+            {userCompany && (
+                <ReviewCompanyModal
+                    isOpen={openReviewModal}
+                    item={userCompany}
+                    onClose={() => setOpenReviewModal(false)}
+                    onSaved={() => {
+                        setOpenReviewModal(false);
+                        // Optionally refresh the review section
+                        window.location.reload();
+                    }}
+                />
+            )}
+            
+            {/* Login Required Modal */}
+            <Dialog open={showLoginModal} onOpenChange={setShowLoginModal}>
+                <DialogContent className="sm:max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Only User can Review</DialogTitle>
+                        <DialogDescription>
+                            Silakan daftar sebagai user terlebih dahulu untuk menulis review.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter className="flex gap-2 sm:justify-end">
+                        <Button 
+                            variant="outline" 
+                            onClick={() => setShowLoginModal(false)}
+                        >
+                            Tutup
+                        </Button>
+                        <Button 
+                            onClick={() => {
+                                setShowLoginModal(false);
+                                // Redirect to login page
+                                window.location.href = '/';
+                            }}
+                        >
+                            Home
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

@@ -18,7 +18,7 @@ interface Job {
 interface WorkHistoryModalProps {
     open: boolean;
     onClose: () => void;
-    // onAdd: (job: Job) => void;
+    onAdd: (job: Job) => void;
 }
 
 const initialForm: Job = {
@@ -30,7 +30,7 @@ const initialForm: Job = {
     periodEnd: "",
 };
 
-export function WorkHistoryModal({ open, onClose }: WorkHistoryModalProps) {
+export function WorkHistoryModal({ open, onClose, onAdd }: WorkHistoryModalProps) {
     const [form, setForm] = useState<Job>(initialForm);
 
     // reset saat dibuka
@@ -40,10 +40,6 @@ export function WorkHistoryModal({ open, onClose }: WorkHistoryModalProps) {
 
     function handleChange<K extends keyof Job>(key: K, value: Job[K]) {
         setForm((s) => ({ ...s, [key]: value }));
-    }
-
-    function onAdd(job: Job) {
-
     }
 
     function handleSubmit(e: React.FormEvent) {
