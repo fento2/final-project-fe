@@ -42,8 +42,7 @@ const ApplicantCard = ({ applicants, loading, showFilters, hasMore, setPage }: A
     );
 
     return (
-        <CardContent className={`relative overflow-y-auto   ${showFilters ? "max-h-[300px]" : "max-h-[550px]"} thin-scrollbar`}>
-            <div className="sticky top-0 h-0.5 mb-2 rounded-md bg-gray-300"></div>
+        <CardContent className={`relative overflow-y-auto max-h-[550px] thin-scrollbar bg-neutral-50 p-2 rounded-lg border`}>
             {loading && applicants.length === 0 ? (
                 Array.from({ length: 4 }).map((_, i) => <LoadingCard key={i} />)
             ) : applicants.length === 0 ? (
@@ -53,12 +52,12 @@ const ApplicantCard = ({ applicants, loading, showFilters, hasMore, setPage }: A
                     {applicants.map((app, idx) => (
                         <div
                             key={idx}
-                            className="hover:shadow-lg transition-shadow cursor-pointer border rounded-lg"
+                            className="hover:shadow-lg transition-shadow cursor-pointer border rounded-lg bg-white"
                             onClick={() => router.push(`/dashboard/postings/${slug}/applicant?id=${app.application_id}`)}
                         >
-                            <div className="flex gap-4 p-4 items-start">
+                            <div className="flex gap-4 p-4 flex-col sm:flex-row">
                                 {/* Avatar */}
-                                <div className="space-y-4">
+                                <div className="space-y-4 mx-auto flex flex-col items-center">
                                     <Avatar className="w-20 h-20 border">
                                         <AvatarImage src={app.profile_picture ?? "/default-avatar.png"} alt={app.name} />
                                         <AvatarFallback>{app.name?.[0]}</AvatarFallback>
@@ -120,7 +119,6 @@ const ApplicantCard = ({ applicants, loading, showFilters, hasMore, setPage }: A
                     </Button>
                 </div>
             )}
-            <div className="sticky bottom-0 h-0.5 mt-2 rounded-md bg-gray-300"></div>
         </CardContent>
     );
 };

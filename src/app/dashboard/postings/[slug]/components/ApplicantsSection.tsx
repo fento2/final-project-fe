@@ -10,6 +10,7 @@ import ApplicantFilter from "./FiltersApplicant";
 import HeaderApplication from "./HeaderApplicationSection";
 import { toSEO } from "@/helper/toTitleCase";
 import { Status } from "../applicant/components/ApplicantAction";
+import { useJobDetailStore } from "@/lib/zustand/detailJobStore";
 
 
 export type ApplicantFrontend = {
@@ -31,8 +32,10 @@ const ApplicantSection = () => {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { slug } = useParams();
+    const preSelectionTest = useJobDetailStore((state) => state.jobDetail?.preselection_test)
 
     const [showFilters, setShowFilters] = useState(false);
+
 
     // Filter & sorting states
     const [search, setSearch] = useState(searchParams.get("search") || "");
@@ -97,6 +100,7 @@ const ApplicantSection = () => {
                     setApplicants((prev) => [...prev, ...data.data.data]);
                 }
                 setTotal(data.data.total);
+                console.log("ini", data)
             }
         } catch (error) {
             console.error(error);
@@ -126,7 +130,7 @@ const ApplicantSection = () => {
     useEffect(() => {
         setPage(1);
         getData(true, 1);
-    }, [debouncedSearch, minAge, maxAge, minSalary, maxSalary, education, sortBy, sortOrder, gender, status]);
+    }, [debouncedSearch, minAge, maxAge, minSalary, maxSalary, education, sortBy, sortOrder, gender, status, preSelectionTest]);
 
     useEffect(() => {
         if (page === 1) return;
@@ -135,7 +139,7 @@ const ApplicantSection = () => {
 
     useEffect(() => {
         updateUrl();
-    }, [search, minAge, maxAge, minSalary, maxSalary, education, sortBy, sortOrder, gender, page, status]);
+    }, [search, minAge, maxAge, minSalary, maxSalary, education, sortBy, sortOrder, gender, page, status, preSelectionTest]);
 
     const hasMore = applicants.length < total;
 

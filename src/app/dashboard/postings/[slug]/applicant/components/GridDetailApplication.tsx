@@ -32,6 +32,7 @@ const GridDetailApplication = () => {
         try {
             const { data } = await apiCall.get(`/applications/detail/${application_id}`);
             if (data.success) setApplicant(data.data);
+            console.log(data)
         } catch (error) {
             console.error(error);
         }
