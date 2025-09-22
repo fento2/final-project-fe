@@ -10,7 +10,7 @@ import { usePreselectionStore } from "@/lib/zustand/preselectionStore";
 import * as XLSX from "xlsx";
 import DetailPosting from "./components/DetailJobPosting";
 import ApplicantSection from "./components/ApplicantsSection";
-import DetailApplicationPage from "./components/DetailApplication";
+
 
 const DetailPostings = () => {
   const params = useParams();
@@ -122,8 +122,7 @@ const DetailPostings = () => {
         </div>
       </div>
 
-      {/* Detail Application Page */}
-      <DetailApplicationPage />
+
     </div>
   );
 };

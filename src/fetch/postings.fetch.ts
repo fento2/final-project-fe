@@ -132,3 +132,14 @@ export const updateJobPostingFetch = async (
     setLoading(false);
   }
 };
+
+export const getApplicantIdFetch = async (job_id: number) => {
+  try {
+    const { data } = await apiCall.get(`/postings/applicant_id/${job_id}`);
+    if (data.success) {
+      return data;
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
