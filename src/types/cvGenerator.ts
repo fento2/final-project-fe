@@ -20,6 +20,25 @@ export interface Profiles {
     user_id: number;
 }
 
+export interface Education {
+    education_id: number;
+    university: string;
+    degree: string;
+    fieldOfStudy: string;
+    startDate: string;
+    endDate: string | null;
+    description?: string | null;
+    user_id: number;
+}
+
+export interface AssessmentCertificate {
+    assessment_certificate_id: number;
+    user_assessment_id: number;
+    certificate_code: string;
+    createAt: string;
+    updatedAt: string;
+}
+
 export interface UserAssessment {
     user_assessment_id: number;
     assessment_id: number;
@@ -28,13 +47,19 @@ export interface UserAssessment {
     date_taken: string;
     createAt: string;
     updatedAt: string;
-    assessment_certificates?: {
-        assessment_certificate_id: number;
-        user_assessment_id: number;
-        certificate_code: string;
-        createAt: string;
-        updatedAt: string;
-    } | null;
+    assessment_certificates?: AssessmentCertificate | null;
+}
+
+export interface Skill {
+    id: number;
+    name: string;
+}
+
+export interface UserSkill {
+    id: number;
+    userId: number;
+    skillId: number;
+    skill?: Skill;
 }
 
 export interface BackendUser {
@@ -49,9 +74,9 @@ export interface BackendUser {
     createdAt: string;
     updatedAt: string;
     profiles?: Profiles | null;
-    education?: any[];
+    education?: Education[];
     experience?: Experience[];
-    userSkills?: { skill_name: string; level?: string }[];
+    userSkills?: UserSkill[];
     user_assessment?: UserAssessment[];
 }
 
