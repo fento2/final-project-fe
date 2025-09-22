@@ -31,8 +31,8 @@ export default function SkillAssessmentPage() {
             if (isNaN(start.getTime())) {
                 setTimeLeft(2 * 60 * 60);
             } else {
-                const TWO_HOURS_MS = 2 * 60 * 60 * 1000;
-                const end = new Date(start.getTime() + TWO_HOURS_MS);
+                const EXAM_DURATION = 30 * 60 * 1000;
+                const end = new Date(start.getTime() + EXAM_DURATION);
                 const remainingSec = Math.max(0, Math.ceil((end.getTime() - Date.now()) / 1000));
                 setTimeLeft(remainingSec);
             }

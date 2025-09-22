@@ -20,6 +20,7 @@ export default function SubscriptionTable({ data, loading, error = "" }: Props) 
                         <col className="w-40" />
                         <col className="w-48" />
                         <col className="w-48" />
+                        <col className="w-30" />
                     </colgroup>
                     <thead className="bg-gray-50 text-sm text-gray-600">
                         <tr>
@@ -28,6 +29,7 @@ export default function SubscriptionTable({ data, loading, error = "" }: Props) 
                             <th className="px-4 py-2 text-left font-medium">Price</th>
                             <th className="px-4 py-2 text-left font-medium">Start Date</th>
                             <th className="px-4 py-2 text-left font-medium">End Date</th>
+                            <th className="px-4 py-2 text-left font-medium">Payment Status</th>
                         </tr>
                     </thead>
                     <tbody className="text-sm">
@@ -62,6 +64,7 @@ export default function SubscriptionTable({ data, loading, error = "" }: Props) 
                                 <td className="px-4 py-2">{formatCurrency(item.subscription.price)} / month</td>
                                 <td className="px-4 py-2">{item.start_date && formatDateID(item.start_date.toString())}</td>
                                 <td className="px-4 py-2">{item.end_date && formatDateID(item.end_date.toString())}</td>
+                                <td className="px-4 py-2">{item.payment_status}</td>
                             </tr>
                         ))}
                     </tbody>

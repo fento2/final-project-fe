@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Separator } from "@/components/ui/separator";
 import { apiCall } from "@/helper/apiCall";
 import formatCurrency from "@/lib/formatCurrency";
-import formatDateID, { formatDateIDDateOnly } from "@/lib/formatDate";
+import { formatDateIDDateOnly } from "@/lib/formatDate";
 import { UserSubscriptionActiveDTO } from "@/types/userSubscription";
 import { CalendarDays } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -25,6 +25,9 @@ export default function SubscriptionPage() {
     const [showSubscription, setShowSubscription] = useState(false);
     const [selectedSubscription, setSelectedSubscription] = useState<Subscription>();
 
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [uploading, setUploading] = useState(false);
+
     const fetchData = async () => {
         try {
             setLoading(true);
@@ -34,7 +37,6 @@ export default function SubscriptionPage() {
             setSubsHistory(result.data.data);
             const resSubscription = await apiCall.get("/subscription");
             setSubscription(resSubscription.data.data);
-            console.log(res.data.data);
         } catch (error) {
             console.log(error);
         } finally {
@@ -46,18 +48,47 @@ export default function SubscriptionPage() {
         alert("TES");
     }
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSelectedFile(e.target.files?.[0] ?? null);
+    };
+
+    const handleUpload = async () => {
+        if (!selectedFile || !activeSub) {
+            alert("No file selected or no active subscription.");
+            return;
+        }
+        setUploading(true);
+        try {
+            const id = (activeSub as any).user_subscription_id ?? (activeSub as any).id;
+            if (!id) throw new Error("Subscription id not found");
+
+            const form = new FormData();
+            form.append("proof", selectedFile);
+
+            await apiCall.patch(`/userSubscription/${id}`, form);
+
+            alert("Proof uploaded successfully");
+            setSelectedFile(null);
+            await fetchData();
+        } catch (err) {
+            console.error(err);
+            alert("Upload failed");
+        } finally {
+            setUploading(false);
+        }
+    };
+
     useEffect(() => {
         fetchData();
     }, [])
 
     return (
         <div className="w-full px-3 py-4 md:pl-26 md:pr-10">
-            {activeSub ? (
+            {activeSub && activeSub.payment_status !== "REJECTED" ? (
                 <Card className="w-full max-w-sm mx-auto">
                     <CardHeader>
                         <div className="flex items-center space-x-4">
                             <Avatar className="h-12 w-12">
-                                {/* Jika ada URL gambar, bisa dimasukkan ke AvatarImage */}
                                 <AvatarImage src="" alt={activeSub.user?.username} />
                                 <AvatarFallback>{activeSub.user.name}</AvatarFallback>
                             </Avatar>
@@ -86,11 +117,11 @@ export default function SubscriptionPage() {
                                         Pending
                                     </Badge>
                                 )}
-                                {activeSub.payment_status === "REJECTED" && (
+                                {/* {activeSub.payment_status === "REJECTED" && (
                                     <Badge variant="destructive">
                                         Rejected
                                     </Badge>
-                                )}
+                                )} */}
                             </div>
                         </div>
                         <Separator />
@@ -110,18 +141,20 @@ export default function SubscriptionPage() {
                     </CardContent>
                     <CardFooter className="grid gap-3">
                         {
-                            activeSub.subscription.name == "Basic Plan" && (
-                                // <Button variant="outline" className="w-full">
-                                //     Upgrade Subs
-                                // </Button>
+                            activeSub.subscription.name !== "Pro Plan" && (
                                 <SubmitDialog onConfirm={() => handleUpgrade()} buttonTitle="Upgrade" variant="success" triggerLabel="Upgrade" title="Are you sure you want to upgrade?" description="Upgrading will change your subscription plan. Do you want to continue?" />
                             )
                         }
-                        <div className="flex flex-col gap-2">
-                            <Label>Upload proof of payment</Label>
-                            <Input type="file" />
-                            <Button className="bg-green-600 hover:bg-green-700">Submit</Button>
-                        </div>
+                        {
+                            activeSub.payment_status === "PENDING" && !activeSub.proof_url && (
+                                <div className="flex flex-col gap-2">
+                                    <Label>Upload proof of payment</Label>
+                                    <Input type="file" accept="image/*" onChange={handleFileChange} />
+                                    {selectedFile && <div className="text-sm text-muted-foreground">{selectedFile.name}</div>}
+                                    <Button className="bg-green-600 hover:bg-green-700" onClick={handleUpload} disabled={uploading || !selectedFile}>{uploading ? "Uploading..." : "Submit"}</Button>
+                                </div>
+                            )
+                        }
                         {/* <Button variant="destructive" className="w-full">
                                 <XCircle className="mr-2 h-4 w-4" /> Batalkan Langganan
                             </Button> */}
