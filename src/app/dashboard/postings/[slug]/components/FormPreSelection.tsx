@@ -103,7 +103,7 @@ const FormPreselectionTest = ({
 
       {/* Input Passing Score */}
       <div className="mb-4">
-        <Label className="ml-2 text-lg">Passing Score (%)</Label>
+        <Label className="ml-2 text-lg">Passing Score</Label>
         <Input
           type="number"
           min={0}

@@ -14,6 +14,8 @@ import { formatDateIDDateOnly } from "@/lib/formatDate";
 import { generateJobSlug } from "@/helper/slugHelper";
 import { getCompanyDetailUrl } from "@/helper/companySlugHelper";
 import BrowseCTASection from "@/app/jobs/browse/components/BrowseCTASection";
+import ReadOnlyQuill from "@/app/dashboard/components/ReadOnlyReactQuil";
+
 
 function toAbsoluteUrl(url?: string): string {
     if (!url) return "/images/logo.png";
@@ -53,11 +55,11 @@ function SafeHtml({ html, className }: { html: string; className?: string }) {
 const SimilarJobCard = ({ job }: { job: any }) => {
     const { role, isLogin } = useAuthStore();
     const { isSaved, isLoading, toggleSave } = useJobSave(job.job_id);
-    
+
     // Only show save and apply functionality for USER role
     const canSaveJobs = isLogin && role === 'USER';
     const canApplyJobs = isLogin && role === 'USER';
-    
+
     // Generate proper slug for navigation
     const jobSlug = job.slug || generateJobSlug({
         title: job.title,
@@ -72,13 +74,13 @@ const SimilarJobCard = ({ job }: { job: any }) => {
         const companyUrl = getCompanyDetailUrl(companyData);
         window.open(companyUrl, '_blank');
     };
-    
+
     return (
         <div key={job.job_id} className="bg-white rounded-lg p-6 shadow-md hover:shadow-lg transition-all duration-300">
             <h4 className="font-semibold text-gray-900 mb-2 line-clamp-2">
                 {job.title}
             </h4>
-            
+
             <div className="flex flex-wrap gap-2 mb-4">
                 {job.job_type && (
                     <span className="px-2 py-1 text-xs bg-purple-50 text-purple-700 rounded font-medium">
@@ -91,22 +93,22 @@ const SimilarJobCard = ({ job }: { job: any }) => {
                     </span>
                 )}
             </div>
-            
+
             <div className="text-gray-700 text-sm mb-4 flex items-center gap-1">
                 <Banknote className="w-4 h-4" />
                 <span>{formatCurrency(job.salary, { currency: job.currency || "IDR" })}</span>
             </div>
-            
+
             <div className="flex items-center justify-between">
                 {canApplyJobs ? (
-                    <Link 
-                        href={`/jobs/${jobSlug}/apply`} 
+                    <Link
+                        href={`/jobs/${jobSlug}/apply`}
                         className={`bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors ${canSaveJobs ? '' : 'flex-1 text-center'}`}
                     >
                         Apply This Job
                     </Link>
                 ) : (
-                    <button 
+                    <button
                         onClick={handleCompanyClick}
                         className={`bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors ${canSaveJobs ? '' : 'flex-1'}`}
                     >
@@ -115,14 +117,13 @@ const SimilarJobCard = ({ job }: { job: any }) => {
                 )}
                 {canSaveJobs && (
                     <div className="flex items-center gap-2">
-                        <button 
+                        <button
                             onClick={toggleSave}
                             disabled={isLoading}
-                            className={`p-2 transition-colors ${
-                                isSaved 
-                                    ? 'text-blue-600 hover:text-blue-700' 
-                                    : 'text-gray-400 hover:text-blue-600'
-                            }`}
+                            className={`p-2 transition-colors ${isSaved
+                                ? 'text-blue-600 hover:text-blue-700'
+                                : 'text-gray-400 hover:text-blue-600'
+                                }`}
                             title={isSaved ? 'Remove from saved jobs' : 'Save this job'}
                         >
                             {isSaved ? (
@@ -148,33 +149,33 @@ export default function JobDetailPage() {
 
     // Fetch single job by slug from backend
     const { job: currentJob, loading, error } = useJobBySlug(slug);
-    
+
     // Fallback: Get all jobs to find the one with matching slug
     const { jobs: allJobs, loading: allJobsLoading } = useJobs({ limit: 1000 });
-    
+
     // Find job from all jobs list if direct fetch failed
     const fallbackJob = useMemo(() => {
         if (currentJob || !allJobs || allJobs.length === 0) return null;
-        
+
         // Try to find by slug first
         let found = allJobs.find((job: any) => job.slug === slug);
-        
+
         // If not found by slug, try by ID
         if (!found) {
             found = allJobs.find((job: any) => job.id === slug || job.job_id === slug);
         }
-        
+
         return found || null;
     }, [currentJob, allJobs, slug]);
-    
+
     // Use current job or fallback
     const displayJob = currentJob || fallbackJob;
     const isLoading = loading && allJobsLoading;
-    
+
     // Only show save and apply functionality for USER role
     const canSaveJobs = isLogin && role === 'USER';
     const canApplyJobs = isLogin && role === 'USER';
-    
+
     // Job save functionality
     const { isSaved, isLoading: isSaveLoading, toggleSave } = useJobSave(displayJob?.job_id || (displayJob as any)?.id || '');
 
@@ -206,7 +207,7 @@ export default function JobDetailPage() {
             <div className="max-w-4xl mx-auto px-6 py-24 text-center">
                 <h1 className="text-2xl font-semibold text-gray-800 mb-2">Job not found</h1>
                 <p className="text-gray-500 mb-6">
-                    {error?.includes('logged in') 
+                    {error?.includes('logged in')
                         ? "You may need to be logged in to view detailed job information."
                         : "We couldn't load this job. It may have been removed or the link is invalid."
                     }
@@ -238,7 +239,7 @@ export default function JobDetailPage() {
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Hero Header Section with Background Image */}
-            <div 
+            <div
                 className="relative bg-cover bg-center bg-no-repeat"
                 style={{
                     backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/images/bg_hero.jpg')`
@@ -267,7 +268,7 @@ export default function JobDetailPage() {
                     {/* Job Header */}
                     <div className="text-white">
                         <h1 className="text-4xl md:text-5xl font-bold mb-4">{jobTitle}</h1>
-                        
+
                         <div className="flex items-center gap-4 mb-6">
                             <Image
                                 src={companyLogo}
@@ -308,7 +309,7 @@ export default function JobDetailPage() {
                         {/* Action Buttons */}
                         <div className="flex flex-wrap gap-3">
                             {canApplyJobs ? (
-                                <Link 
+                                <Link
                                     href={`/jobs/${slug}/apply`}
                                     className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors inline-block"
                                 >
@@ -320,14 +321,13 @@ export default function JobDetailPage() {
                                 </div>
                             )}
                             {canSaveJobs && (
-                                <button 
+                                <button
                                     onClick={toggleSave}
                                     disabled={isSaveLoading}
-                                    className={`px-6 py-3 rounded-lg transition-colors flex items-center gap-2 font-semibold ${
-                                        isSaved 
-                                            ? 'bg-indigo-600 hover:bg-indigo-700 text-white border border-indigo-600' 
-                                            : 'bg-white/10 hover:bg-white/20 text-white border border-white/30'
-                                    }`}
+                                    className={`px-6 py-3 rounded-lg transition-colors flex items-center gap-2 font-semibold ${isSaved
+                                        ? 'bg-indigo-600 hover:bg-indigo-700 text-white border border-indigo-600'
+                                        : 'bg-white/10 hover:bg-white/20 text-white border border-white/30'
+                                        }`}
                                     title={isSaved ? 'Remove from saved jobs' : 'Save this job'}
                                 >
                                     {isSaved ? (
@@ -354,11 +354,12 @@ export default function JobDetailPage() {
                         {/* Job Description */}
                         <div className="bg-white rounded-xl shadow-sm p-8 mb-8">
                             <h3 className="text-2xl font-bold text-gray-900 mb-4">Job Description</h3>
-                                                        {displayJob?.description ? (
-                                <SafeHtml 
-                                    html={displayJob.description}
-                                    className="text-gray-700 text-base leading-relaxed job-description" 
-                                />
+                            {displayJob?.description ? (
+                                // <SafeHtml
+                                //     html={displayJob.description}
+                                //     className="text-gray-700 text-base leading-relaxed job-description"
+                                // />
+                                <ReadOnlyQuill value={displayJob.description} />
                             ) : (
                                 <p className="text-gray-500 italic">No description available for this position.</p>
                             )}
@@ -427,7 +428,7 @@ export default function JobDetailPage() {
 
                             <h5 className="font-bold text-gray-900 mb-3">Company Overview</h5>
                             {displayJob?.Company?.description ? (
-                                <SafeHtml 
+                                <SafeHtml
                                     html={displayJob.Company.description}
                                     className="text-gray-700 leading-relaxed prose prose-sm max-w-none [&_*]:text-inherit"
                                 />
@@ -505,7 +506,7 @@ export default function JobDetailPage() {
                 {/* Related Jobs Section */}
                 <section className="mt-16">
                     <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">Related Jobs</h3>
-                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {related.jobs
                             .filter((job: any) => job.job_id !== displayJob?.job_id)
                             .slice(0, 6)

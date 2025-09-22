@@ -13,52 +13,53 @@ import formatCurrency from "@/lib/formatCurrency";
 import { submitApplication } from "@/fetch/applicationFetch";
 import { validateFile, formatSalaryInput, extractSalaryValue } from "@/validation/application.validation";
 import Image from "next/image";
+import { useAuthRole } from "@/helper/authRole";
+import { apiCall } from "@/helper/apiCall";
+import { isAxiosError } from "axios";
 
 interface ApplicationFormData {
     expected_salary: string;
     cv: File | null;
-    cover_letter?: string;
 }
 
 export default function ApplyJobPage() {
+    useAuthRole('USER')
     const router = useRouter();
     const params = useParams();
     const slug = params.slug as string;
-    const { isLogin, role } = useAuthStore();
-    
     const { job: currentJob, loading, error } = useJobBySlug(slug);
-    
+
     const [formData, setFormData] = useState<ApplicationFormData>({
         expected_salary: "",
         cv: null,
-        cover_letter: ""
     });
-    
+
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState("");
     const [dragActive, setDragActive] = useState(false);
+    const [checkLoading, setCheckLoading] = useState(false)
 
-    // Redirect if not logged in or not a USER
+    const checkIfAlreadySubmit = async () => {
+        try {
+            setCheckLoading(true)
+            await apiCall.get(`/preselection/check-if-already-submit/${currentJob?.job_id}`)
+        } catch (error) {
+            if (isAxiosError(error)) {
+                if (error.status === 403) {
+                    router.replace(`/selection/${currentJob?.slug}`)
+                }
+            }
+            console.log(error)
+        } finally {
+            setCheckLoading(false)
+        }
+    }
+
     useEffect(() => {
-        if (!isLogin) {
-            router.push(`/auth/login?redirect=/jobs/${slug}/apply`);
-            return;
+        if (currentJob?.preselection_test) {
+            checkIfAlreadySubmit()
         }
-        
-        if (role !== 'USER') {
-            router.push(`/jobs/${slug}`);
-            return;
-        }
-    }, [isLogin, role, router, slug]);
-
-    // Handle form input changes
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
+    }, [currentJob?.preselection_test])
 
     // Handle file upload
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -105,18 +106,18 @@ export default function ApplyJobPage() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setSubmitError("");
-        
+
         // Validation
         if (!formData.expected_salary) {
             setSubmitError("Expected salary is required.");
             return;
         }
-        
+
         if (!formData.cv) {
             setSubmitError("CV upload is required.");
             return;
         }
-        
+
         const salaryNum = extractSalaryValue(formData.expected_salary);
         if (isNaN(salaryNum) || salaryNum <= 0) {
             setSubmitError("Please enter a valid salary amount.");
@@ -134,18 +135,17 @@ export default function ApplyJobPage() {
         }
 
         setIsSubmitting(true);
-        
+
         try {
             await submitApplication({
                 expected_salary: salaryNum,
                 cv: formData.cv,
                 job_id: currentJob?.job_id || 0,
-                cover_letter: formData.cover_letter || undefined
             });
-            
+
             // Redirect to My Applications dashboard after successful apply
             router.push(`/dashboard/my-applications`);
-            
+
         } catch (error: any) {
             console.error('Application submission error:', error);
             setSubmitError(error.message || "Failed to submit application. Please try again.");
@@ -164,7 +164,7 @@ export default function ApplyJobPage() {
         }));
     };
 
-    if (loading) {
+    if (loading && !checkLoading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">
@@ -236,9 +236,9 @@ export default function ApplyJobPage() {
                                     <p className="text-sm text-gray-600">{currentJob.location}</p>
                                 </div>
                             </div>
-                            
+
                             <h2 className="text-xl font-bold text-gray-900 mb-2">{currentJob.title}</h2>
-                            
+
                             <div className="space-y-2 text-sm">
                                 <div className="flex items-center gap-2">
                                     <Briefcase className="w-4 h-4 text-gray-400" />
@@ -289,11 +289,10 @@ export default function ApplyJobPage() {
                                 <div className="space-y-2">
                                     <Label htmlFor="cv">Upload CV/Resume *</Label>
                                     <div
-                                        className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
-                                            dragActive 
-                                                ? 'border-blue-400 bg-blue-50' 
-                                                : 'border-gray-300 hover:border-gray-400'
-                                        }`}
+                                        className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${dragActive
+                                            ? 'border-blue-400 bg-blue-50'
+                                            : 'border-gray-300 hover:border-gray-400'
+                                            }`}
                                         onDragEnter={handleDrag}
                                         onDragLeave={handleDrag}
                                         onDragOver={handleDrag}
@@ -306,7 +305,7 @@ export default function ApplyJobPage() {
                                             onChange={handleFileChange}
                                             className="hidden"
                                         />
-                                        
+
                                         {formData.cv ? (
                                             <div className="flex items-center justify-center gap-2">
                                                 <FileText className="w-6 h-6 text-green-600" />
@@ -334,23 +333,6 @@ export default function ApplyJobPage() {
                                             </div>
                                         )}
                                     </div>
-                                </div>
-
-                                {/* Cover Letter (Optional) */}
-                                <div className="space-y-2">
-                                    <Label htmlFor="cover_letter">Cover Letter (Optional)</Label>
-                                    <Textarea
-                                        id="cover_letter"
-                                        name="cover_letter"
-                                        value={formData.cover_letter}
-                                        onChange={handleInputChange}
-                                        placeholder="Tell us why you're interested in this position and what makes you a great fit..."
-                                        rows={4}
-                                        className="resize-none"
-                                    />
-                                    <p className="text-sm text-gray-500">
-                                        Introduce yourself and explain why you're the right candidate for this role
-                                    </p>
                                 </div>
 
                                 {/* Submit Button */}
