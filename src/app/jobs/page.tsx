@@ -208,7 +208,8 @@ export default function JobsListPage() {
 
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-2xl font-semibold">Featured Companies</h2>
-                        <a href="/jobs/companies" className="text-sm text-indigo-600 hover:underline">See all companies →</a>
+                        {/* <a href="/jobs/companies" className="text-sm text-indigo-600 hover:underline">See all companies →</a> */}
+                        <a href="/jobs/company" className="text-sm text-indigo-600 hover:underline">See all companies →</a>
                     </div>
 
                     {loading ? (
