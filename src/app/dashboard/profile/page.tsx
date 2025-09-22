@@ -10,6 +10,7 @@ import ExperienceForm from "./components/ExperienceForm";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Briefcase, GraduationCap } from "lucide-react";
 import { useAuthRole } from "@/helper/authRole";
+import ProfileCvGeneratorSection from "./sections/ProfileCvGeneratorSection";
 
 const ProfileUser = () => {
   useAuthRole('USER')
@@ -30,6 +31,7 @@ const ProfileUser = () => {
         <TabsList className="w-full">
           <TabsTrigger value="general">General</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
+          <TabsTrigger value="cvgenerator">CV Generator</TabsTrigger>
         </TabsList>
 
         {/* General → Personal Data, Education, Experience */}
@@ -92,6 +94,10 @@ const ProfileUser = () => {
         {/* Security Settings */}
         <TabsContent value="security">
           <Security />
+        </TabsContent>
+
+        <TabsContent value="cvgenerator">
+          <ProfileCvGeneratorSection />
         </TabsContent>
       </Tabs>
     </div >
