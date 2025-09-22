@@ -129,47 +129,70 @@ export const useJobBySlug = (slug: string) => {
                 setError(null);
                 console.log('🔍 Fetching job with slug:', slug);
                 
-                // If backend requires auth for individual jobs, try to find the job from the general listing first
+                // Try to find job from the public jobs listing (usually not auth-protected)
                 let job = null;
-                
                 try {
-                    console.log('🌐 Fetching all jobs to find job by slug');
-                    const { data: allJobsData } = await apiCall.get('/postings');
-                    console.log('✅ Got jobs list:', allJobsData);
-                    
-                    // Handle backend response structure: { success, message, data: { data: [...] } }
+                    console.log('🌐 Fetching all jobs (/jobs) to find job by slug');
+                    const { data: allJobsData } = await apiCall.get('/jobs');
                     const jobsArray = allJobsData?.data?.data || allJobsData?.data || allJobsData || [];
-                    console.log('📦 Jobs array:', jobsArray);
-                    
                     if (Array.isArray(jobsArray)) {
-                        // Find job by slug in the array
                         job = jobsArray.find((j: any) => j.slug === slug || j.job_id?.toString() === slug);
-                        console.log('🔍 Found job in listing:', job);
+                        console.log('🔍 Found job in /jobs listing:', job);
                     }
-                } catch (listError: any) {
-                    console.log('❌ Failed to get jobs list:', listError.response?.status, listError.message);
+                } catch (listErrorJobs: any) {
+                    console.log('❌ Failed to get /jobs list:', listErrorJobs.response?.status, listErrorJobs.message);
+                    // Fallback to /postings list if /jobs fails
+                    try {
+                        console.log('🌐 Fetching all postings (/postings) to find job by slug');
+                        const { data: allPostingsData } = await apiCall.get('/postings');
+                        const postingsArray = allPostingsData?.data?.data || allPostingsData?.data || allPostingsData || [];
+                        if (Array.isArray(postingsArray)) {
+                            job = postingsArray.find((j: any) => j.slug === slug || j.job_id?.toString() === slug);
+                            console.log('🔍 Found job in /postings listing:', job);
+                        }
+                    } catch (listErrorPostings: any) {
+                        console.log('❌ Failed to get /postings list:', listErrorPostings.response?.status, listErrorPostings.message);
+                    }
                 }
                 
-                // If not found in listing, try direct endpoints (they might work with cookies/session)
+                // If not found in listing, try direct endpoints. Prefer /jobs endpoints first as they are likely public
                 if (!job) {
                     try {
-                        console.log('🌐 Trying /postings/slug/${slug}');
-                        const response = await apiCall.get(`/postings/slug/${slug}`);
+                        console.log('🌐 Trying /jobs/slug/${slug}');
+                        const response = await apiCall.get(`/postings/get-detail/${slug}`);
                         const data = response.data;
-                        console.log('✅ Success with /postings/slug:', data);
+                        console.log('✅ Success with /jobs/slug:', data);
                         job = data?.data?.data ?? data?.data ?? data;
-                    } catch (slugError: any) {
-                        console.log('❌ /postings/slug failed:', slugError.response?.status, slugError.message);
+                    } catch (slugJobsError: any) {
+                        console.log('❌ /jobs/slug failed:', slugJobsError.response?.status, slugJobsError.message);
                         
                         try {
-                            console.log('🌐 Trying /postings/${slug} (as ID)');
-                            const response = await apiCall.get(`/postings/${slug}`);
+                            console.log('🌐 Trying /jobs/${slug} (as ID)');
+                            const response = await apiCall.get(`/jobs/${slug}`);
                             const data = response.data;
-                            console.log('✅ Success with /postings as ID:', data);
+                            console.log('✅ Success with /jobs as ID:', data);
                             job = data?.data?.data ?? data?.data ?? data;
-                        } catch (idError: any) {
-                            console.log('❌ All direct endpoints failed');
-                            // Don't throw here, we'll check if we found job from listing below
+                        } catch (idJobsError: any) {
+                            console.log('❌ /jobs as ID failed:', idJobsError.response?.status, idJobsError.message);
+                            // Finally fallback to postings endpoints (may require auth)
+                            try {
+                                console.log('🌐 Trying /postings/slug/${slug}');
+                                const response = await apiCall.get(`/postings/slug/${slug}`);
+                                const data = response.data;
+                                console.log('✅ Success with /postings/slug:', data);
+                                job = data?.data?.data ?? data?.data ?? data;
+                            } catch (slugPostingsError: any) {
+                                console.log('❌ /postings/slug failed:', slugPostingsError.response?.status, slugPostingsError.message);
+                                try {
+                                    console.log('🌐 Trying /postings/${slug} (as ID)');
+                                    const response = await apiCall.get(`/postings/${slug}`);
+                                    const data = response.data;
+                                    console.log('✅ Success with /postings as ID:', data);
+                                    job = data?.data?.data ?? data?.data ?? data;
+                                } catch (idPostingsError: any) {
+                                    console.log('❌ All direct endpoints failed');
+                                }
+                            }
                         }
                     }
                 }

@@ -6,9 +6,12 @@ import { useRouter } from "next/navigation";
 import { Search, MapPin } from "lucide-react";
 import { useSearchSuggestions, usePopularSearches, SearchSuggestion } from "@/hooks/useSearchSuggestions";
 import SuggestionDropdown from "@/components/ui/SuggestionDropdown";
+import { useAuth } from "@/hooks/useAuth";
+import { useAuthStore } from "@/lib/zustand/authStore";
 
 const HeroSection = () => {
 	const router = useRouter();
+	const { user, loading } = useAuth();
 	const [keyword, setKeyword] = useState("");
 	const [location, setLocation] = useState("");
 	
@@ -24,6 +27,17 @@ const HeroSection = () => {
 	const { suggestions: keywordSuggestions } = useSearchSuggestions(keyword, 'all');
 	const { suggestions: locationSuggestions } = useSearchSuggestions(location, 'location');
 	const { popularSearches } = usePopularSearches();
+	const { role: storeRole, isLogin: storeIsLogin } = useAuthStore();
+
+	// Check if user is a company
+	const isCompanyUser = () => {
+		// Prefer immediate feedback from client store when available
+		if (storeIsLogin && (storeRole || '').toUpperCase() === 'COMPANY') return true;
+		// Fallback to API-backed auth hook
+		if (loading) return false;
+		if (!user) return false;
+		return user.role === 'COMPANY';
+	};
 
 	// Close dropdowns when clicking outside
 	useEffect(() => {
@@ -154,10 +168,17 @@ const HeroSection = () => {
 				<div className="relative z-10 flex flex-col items-center justify-center w-full h-full px-4 sm:px-6 py-12 sm:py-16 md:py-20">
 					<span className="block text-center text-base font-semibold text-[#4F46E5] mb-6">The Only Job Marketplace</span>
 					<h1 className="text-center text-4xl sm:text-5xl md:text-6xl font-bold text-[#18181B] mb-4 leading-tight">
-						Find Your Dream<br />Job with Us
+						{isCompanyUser() ? (
+							<>Find the best employees<br />with us</>
+						) : (
+							<>Find Your Dream<br />Job with Us</>
+						)}
 					</h1>
 					<p className="text-center text-base sm:text-lg text-[#52525B] mb-8 max-w-2xl px-2">
-						Discover your next career move with Horizon Jobs, the go-to job marketplace for job seekers and employers.
+						{isCompanyUser() 
+							? "Connect with top talent and build your dream team with Horizon Jobs, the premier recruitment platform for employers."
+							: "Discover your next career move with Horizon Jobs, the go-to job marketplace for job seekers and employers."
+						}
 					</p>
 					<form onSubmit={handleSubmit} className="flex flex-col md:flex-row items-center w-full max-w-5xl gap-3 sm:gap-4 mb-8 px-2">
 						{/* Keyword Search with Suggestions */}
