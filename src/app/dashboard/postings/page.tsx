@@ -39,7 +39,7 @@ const PostingsPage = () => {
 
   const perPage = 6;
 
-  // update URL ketika state berubah
+  // update url ketika state berubah
   useEffect(() => {
     const params = new URLSearchParams();
     if (search) params.set("search", toSEO(search));
@@ -92,6 +92,11 @@ const PostingsPage = () => {
   }, [search, sort, category, currentPage]);
   ;
 
+  useEffect(() => {
+    router.prefetch('/dashboard/postings/create')
+    console.log('ini jalan')
+  }, [])
+
   return (
     <div className="md:px-20 px-4 space-y-6 container mx-auto my-8">
       {/* Header */}
@@ -108,7 +113,7 @@ const PostingsPage = () => {
       {/* Search & Filters */}
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
         <div className="relative sm:w-1/2">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5" />
           <Input
             placeholder="Search job..."
             value={search}
@@ -121,16 +126,6 @@ const PostingsPage = () => {
         </div>
 
         <div className="flex gap-2">
-          <Select value={sort} onValueChange={(v) => setSort(v)}>
-            <SelectTrigger className="w-[150px] py-6 text-lg">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="desc" className="py-4 text-lg">Desc</SelectItem>
-              <SelectItem value="asc" className="py-4 text-lg">Asc</SelectItem>
-            </SelectContent>
-          </Select>
-
           <Select
             value={category}
             onValueChange={(v) => {
@@ -145,6 +140,16 @@ const PostingsPage = () => {
               {categories.map((cat) => (
                 <SelectItem key={cat} value={cat} className="py-4 text-lg">{toTitleCase(cat)}</SelectItem>
               ))}
+            </SelectContent>
+          </Select>
+
+          <Select value={sort} onValueChange={(v) => setSort(v)}>
+            <SelectTrigger className="w-[150px] py-6 text-lg">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="desc" className="py-4 text-lg">Desc</SelectItem>
+              <SelectItem value="asc" className="py-4 text-lg">Asc</SelectItem>
             </SelectContent>
           </Select>
         </div>
