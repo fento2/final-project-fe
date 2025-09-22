@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Briefcase, GraduationCap } from "lucide-react";
 import { useAuthRole } from "@/helper/authRole";
 import ProfileCvGeneratorSection from "./sections/ProfileCvGeneratorSection";
+import ProfileSkillsSection from "./sections/ProfileSkillsSection";
 
 const ProfileUser = () => {
   useAuthRole('USER')
@@ -85,6 +86,12 @@ const ProfileUser = () => {
                 <CardContent className="space-y-4 overflow-y-auto max-h-[600px]">
                   <ExperienceCard />
                 </CardContent>
+              </Card>
+            </div>
+
+            <div>
+              <Card>
+                <ProfileSkillsSection />
               </Card>
             </div>
           </section>

@@ -1,7 +1,11 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import type { BackendUser, CVData } from "@/types/cvGenerator";
 import { usePrint } from "@/hooks/usePrint";
+import { apiCall } from "@/helper/apiCall";
+import { UserSubscriptionActiveDTO } from "@/types/userSubscription";
+import { Button } from "@/components/ui/button";
 
 type Props = {
     user: BackendUser | null;
@@ -12,16 +16,38 @@ type Props = {
 export default function CVPreviewWithGenerate({ user, cvData, btnLabel = "Generate / Print CV" }: Props) {
     const previewRef = useRef<HTMLDivElement | null>(null);
     const handlePrint = usePrint(previewRef, `CV_${user?.name ?? user?.username ?? "profile"}`);
+    const [subActive, setSubActive] = useState(false);
+
+    const checkSub = async () => {
+        try {
+            const result = await apiCall.get("/userSubscription");
+            const data: UserSubscriptionActiveDTO = result.data.data;
+
+            if (Array.isArray(data) && data.length > 0) {
+                setSubActive(true);
+            } else {
+                setSubActive(false);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    useEffect(() => {
+        checkSub()
+    }, [])
 
     return (
         <div>
-            <button
+            <Button
                 type="button"
                 onClick={handlePrint}
-                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 w-full"
+                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 w-full print:hidden"
+                // aria-label="Generate and print CV"
+                disabled={!subActive}
             >
                 {btnLabel}
-            </button>
+            </Button>
 
             <div className="mt-6 border-t pt-4">
                 <h3 className="text-lg font-semibold mb-2">Preview</h3>
@@ -29,7 +55,7 @@ export default function CVPreviewWithGenerate({ user, cvData, btnLabel = "Genera
 
             <div ref={previewRef} className="">
                 <div className="flex flex-col items-center">
-                    <p className="font-semibold">{user?.profiles?.name}</p>
+                    <p className="font-semibold">{user?.name ?? user?.username}</p>
                     <p className="text-gray-600">{cvData.headline}</p>
 
                     <div className="flex justify-center text-sm text-gray-600 gap-2 mt-2">
@@ -52,7 +78,20 @@ export default function CVPreviewWithGenerate({ user, cvData, btnLabel = "Genera
                     </div>
                 </div>
 
-                <p className="mt-4">{cvData.summary}</p>
+                <p className="mt-4 text-sm text-gray-700">{cvData.summary}</p>
+
+                {user?.education?.length ? (
+                    <div className="mt-4">
+                        <p className="text-sm font-medium">Education</p>
+                        <ul className="text-sm text-gray-700 list-disc pl-5">
+                            {user.education.map((ed) => (
+                                <li key={ed.education_id}>
+                                    {ed.university} — {ed.degree} in {ed.fieldOfStudy} ({new Date(ed.startDate).getFullYear()} - {ed.endDate ? new Date(ed.endDate).getFullYear() : "Present"})
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                ) : null}
 
                 {user?.experience?.length ? (
                     <div className="mt-4">
@@ -66,6 +105,21 @@ export default function CVPreviewWithGenerate({ user, cvData, btnLabel = "Genera
                         </ul>
                     </div>
                 ) : null}
+
+                {user?.userSkills && user.userSkills.length > 0 && (
+                    <div className="mt-6">
+                        <p className="text-sm font-medium mb-2">Skills</p>
+                        <ul className="text-sm text-gray-700 list-disc pl-5">
+                            {
+                                user.userSkills.map((val) => (
+                                    <li key={val.id}>
+                                        {val.skill?.name}
+                                    </li>
+                                ))
+                            }
+                        </ul>
+                    </div>
+                )}
 
                 <div className="mt-6">
                     <p className="text-sm font-medium mb-2">Certificates</p>

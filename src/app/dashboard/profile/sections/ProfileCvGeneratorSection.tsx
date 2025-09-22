@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { apiCall } from "@/helper/apiCall";
 import Image from "next/image";
 import type { BackendUser, CVData, Experience } from "@/types/cvGenerator";
@@ -34,7 +34,6 @@ export default function ProfileCvGeneratorSection() {
     const [user, setUser] = useState<BackendUser | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
-    const cvRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         let mounted = true;
@@ -44,8 +43,8 @@ export default function ProfileCvGeneratorSection() {
             try {
                 const res = await apiCall.get("/account/cv/generator");
                 const raw = res.data?.data ?? res.data;
+                const extracted: BackendUser | null = Array.isArray(raw) ? (raw[0] ?? null) : (raw ?? null);
 
-                const extracted: BackendUser | null = Array.isArray(raw) ? (raw[0] ?? null) : raw ?? null;
                 if (mounted) {
                     setUser(extracted);
                     if (extracted) {
@@ -69,29 +68,39 @@ export default function ProfileCvGeneratorSection() {
     function deriveHeadline(u: BackendUser): string {
         const latest = getLatestExperience(u.experience);
         if (latest?.position) return latest.position;
-        if (u.userSkills && u.userSkills.length) return `${u.userSkills[0].skill_name} Professional`;
+        const firstSkill = u.userSkills?.[0].skill?.name;
+        if (firstSkill) return `${firstSkill} Professional`;
         return "Professional";
     }
 
     function deriveSummary(u: BackendUser): string {
-        const name = u.profiles?.name || u.name || u.username;
+        const name = u.profiles?.name || u.name || u.username || "Professional";
         const latest = getLatestExperience(u.experience);
         const yrs = yearsOfExperience(u.experience);
         const company = latest?.name;
         const position = latest?.position;
 
         const parts: string[] = [];
-        parts.push(`${name} is a${position ? " " + position : ""}${yrs ? ` with ${yrs}+ years of experience` : ""}${company ? ` at ${company}` : ""}.`);
+        const headerParts: string[] = [];
+        if (position) headerParts.push(position);
+        if (yrs) headerParts.push(`${yrs}+ years`);
+        if (company) headerParts.push(`at ${company}`);
+        parts.push(`${name}${headerParts.length ? ` — ${headerParts.join(" • ")}` : ""}.`);
+
         if (u.user_assessment && u.user_assessment.length) {
-            const passed = u.user_assessment.filter(a => a.score >= 60);
-            if (passed.length) {
-                parts.push(`Certified in ${passed.length} assessment${passed.length > 1 ? "s" : ""}.`);
-            }
+            const passed = u.user_assessment.filter(a => typeof a.score === "number" && a.score >= 60);
+            if (passed.length) parts.push(`Certified in ${passed.length} assessment${passed.length > 1 ? "s" : ""}.`);
         }
+
         if (u.userSkills && u.userSkills.length) {
-            const skills = u.userSkills.slice(0, 5).map(s => s.skill_name).join(", ");
+            const skills = u.userSkills
+                .slice(0, 5)
+                .map(s => s.skill?.name ?? (s as any).skill_name ?? "")
+                .filter(Boolean)
+                .join(", ");
             if (skills) parts.push(`Key skills: ${skills}.`);
         }
+
         return parts.join(" ");
     }
 
@@ -117,8 +126,7 @@ export default function ProfileCvGeneratorSection() {
             {error && <p className="text-sm text-red-600">Error: {error}</p>}
 
             {!loading && !error && (
-                <>
-                    {/* Info ringkas dari profil */}
+                <div>
                     {user && (
                         <div className="mb-6 p-4 border rounded-lg bg-gray-50">
                             <div className="flex items-center gap-4">
@@ -126,8 +134,8 @@ export default function ProfileCvGeneratorSection() {
                                     <Image width={48} height={48} src={user.profiles.profile_picture} alt={user.profiles?.name || user.name || user.username || "Profile"} className="w-12 h-12 rounded-full object-cover" />
                                 )}
                                 <div>
-                                    <p className="font-semibold">{user.profiles?.name}</p>
-                                    <p className="text-sm text-gray-600">{user.email}{user.profiles?.phone ? ` • ${user.profiles.phone}` : ""}</p>
+                                    <p className="font-semibold">{user.profiles?.name ?? user.name ?? user.username}</p>
+                                    <p className="text-sm text-gray-600">{user.profiles?.email ?? user.email}{user.profiles?.phone ? ` • ${user.profiles.phone}` : ""}</p>
                                     {getLatestExperience(user.experience) && (
                                         <p className="text-xs text-gray-500">
                                             Latest: {getLatestExperience(user.experience)?.position} @ {getLatestExperience(user.experience)?.name}
@@ -138,7 +146,6 @@ export default function ProfileCvGeneratorSection() {
                         </div>
                     )}
 
-                    {/* Headline */}
                     <div className="mb-4">
                         <label htmlFor="headline" className="block text-sm font-medium text-gray-700">
                             Headline / Title
@@ -154,7 +161,6 @@ export default function ProfileCvGeneratorSection() {
                         />
                     </div>
 
-                    {/* Summary */}
                     <div className="mb-4">
                         <div className="flex items-center justify-between">
                             <label htmlFor="summary" className="block text-sm font-medium text-gray-700">
@@ -181,7 +187,7 @@ export default function ProfileCvGeneratorSection() {
                     </div>
 
                     <CVPreviewWithGenerate user={user} cvData={cvData} />
-                </>
+                </div>
             )}
         </section>
     );
