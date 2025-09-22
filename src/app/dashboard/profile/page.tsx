@@ -12,6 +12,7 @@ import { Briefcase, GraduationCap } from "lucide-react";
 import { useAuthRole } from "@/helper/authRole";
 import ProfileCvGeneratorSection from "./sections/ProfileCvGeneratorSection";
 import ProfileSkillsSection from "./sections/ProfileSkillsSection";
+import ProfileCertificateSection from "./sections/ProfileCertificateSection";
 
 const ProfileUser = () => {
   useAuthRole('USER')
@@ -93,6 +94,10 @@ const ProfileUser = () => {
               <Card>
                 <ProfileSkillsSection />
               </Card>
+            </div>
+
+            <div>
+              <ProfileCertificateSection />
             </div>
           </section>
 

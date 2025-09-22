@@ -27,7 +27,7 @@ type CertificateItem = {
     };
 };
 
-export default function CertificateBadge() {
+export default function CertificateBadge({ id }: { id?: number }) {
     const [items, setItems] = useState<CertificateItem[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -36,7 +36,12 @@ export default function CertificateBadge() {
     const fetchData = async () => {
         setLoading(true);
         try {
-            const res = await apiCall.get("/assessmentCertificate/getAllCertificate/byUserId");
+            let res;
+            if (id) {
+                res = await apiCall.get(`/assessmentCertificate/getAllCertificate/byUserId/${id}`);
+            } else {
+                res = await apiCall.get(`/assessmentCertificate/getAllCertificate/byUserId`);
+            }
             if (res.status !== 200) { setError("Fetch data failed"); return };
             setItems(res.data.data);
         } catch (error: any) {
@@ -64,7 +69,7 @@ export default function CertificateBadge() {
     if (!items || items.length === 0) return <div className="text-sm text-gray-500">No certificates found.</div>;
 
     return (
-        <div className="grid gap-3">
+        <div className="flex flex-wrap gap-3">
             {items.map((it) => {
                 const skill = it.user_assessment.assessment?.skill_name || "Unknown Skill";
                 return (
