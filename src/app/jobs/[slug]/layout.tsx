@@ -1,3 +1,4 @@
+import { apiCall } from '@/helper/apiCall';
 import type { Metadata } from 'next';
 
 type Props = {
@@ -6,22 +7,22 @@ type Props = {
 };
 
 async function fetchJob(slug: string) {
-    const base = process.env.NEXT_PUBLIC_URL_BE?.replace(/\/$/, '') || '';
-    const url = `${base}/jobs/slug/${encodeURIComponent(slug)}`;
+    const url = `/postings/get-detail/${encodeURIComponent(slug)}`;
     try {
-        const res = await fetch(url, { cache: 'no-store' });
-        if (!res.ok) return null;
-        const data = await res.json();
+        const res = await apiCall.get(url);
+        console.log("res.data", res.data);
+        if (!res.data.success) return null;
         // Try common wrappers: { data: {...} } or direct object
-        const job = data?.data ?? data;
+        const job = res.data.data ?? res.data;
         return job || null;
-    } catch {
+    } catch (error) {
+        console.error("Error fetching job:", error);
         return null;
     }
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-    const slug = params.slug;
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+    const { slug } = await params;
     const job = await fetchJob(slug);
 
     const titleFromSlug = decodeURIComponent(slug).replace(/-/g, ' ');
