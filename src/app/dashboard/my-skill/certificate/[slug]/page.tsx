@@ -1,12 +1,13 @@
 "use client";
 import { useToast } from "@/components/basic-toast";
 import { apiCall } from "@/helper/apiCall";
-import formatDateID from "@/lib/formatDate";
+import formatDateID, { formatDateIDDateOnly } from "@/lib/formatDate";
 import { AssessmentCertificateDTO } from "@/validation/assessmentCertificate.validation";
 import { UserAssessmentDTO } from "@/validation/userAssessment.validation";
 import { useParams } from "next/navigation"
 import { useEffect, useState, useRef } from "react";
 import { useReactToPrint } from 'react-to-print';
+import { QRCodeCanvas } from "qrcode.react";
 
 type AssessmentCertificate = AssessmentCertificateDTO & {
     user_assessment: UserAssessmentDTO & {
@@ -79,7 +80,7 @@ export default function DetailCertificatePage() {
             {dataCertificate && (
                 <div className="max-w-3xl mx-auto">
                     {/* Certificate Preview */}
-                    <div ref={certificateRef} className="bg-white border rounded-xl shadow-sm p-8 mb-6 hidden print:block">
+                    <div ref={certificateRef} className="bg-white border rounded-xl shadow-sm p-8 mb-6 print:block">
                         <div className="text-center mb-8 border-b pb-6">
                             <h1 className="text-4xl font-bold text-gray-800 mb-2">Certificate of Completion</h1>
                             <p className="text-lg text-gray-600">This is to certify that</p>
@@ -93,15 +94,18 @@ export default function DetailCertificatePage() {
                             <p className="text-xl font-semibold text-gray-800">with a score of {dataCertificate.user_assessment.score ?? "N/A"}%</p>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-8 mb-8 text-sm">
+                        <div className="grid grid-cols-3 gap-8 mb-8 text-sm">
                             <div>
                                 <p className="text-gray-500 mb-1">Certificate Code</p>
                                 <p className="font-mono font-bold text-lg">{dataCertificate.certificate_code}</p>
                             </div>
+                            <div className="flex justify-center">
+                                <QRCodeCanvas value={`http://localhost:3000/verify-certificate?id=${dataCertificate.certificate_code}`} size={200} level="H" />
+                            </div>
                             <div className="flex flex-col items-end">
                                 <p className="text-gray-500 mb-1">Date Completed</p>
                                 <p className="font-semibold text-lg">
-                                    {dataCertificate.user_assessment.date_taken ? formatDateID(dataCertificate.user_assessment.date_taken.toString()) : "-"}
+                                    {dataCertificate.user_assessment.date_taken ? formatDateIDDateOnly(dataCertificate.user_assessment.date_taken.toString()) : "-"}
                                 </p>
                             </div>
                         </div>
