@@ -12,12 +12,12 @@ import DetailPosting from "./components/DetailJobPosting";
 import ApplicantSection from "./components/ApplicantsSection";
 
 
+
 const DetailPostings = () => {
   const params = useParams();
   const { slug } = params;
   const router = useRouter();
   const { showForm, setShowForm, questions, setQuestions, minScore, setMinScore } = usePreselectionStore();
-
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

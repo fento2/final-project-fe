@@ -40,13 +40,13 @@ export default function ApplyJobPage() {
     const [checkLoading, setCheckLoading] = useState(false)
 
     const checkIfAlreadySubmit = async () => {
+        setCheckLoading(true)
         try {
-            setCheckLoading(true)
             await apiCall.get(`/preselection/check-if-already-submit/${currentJob?.job_id}`)
         } catch (error) {
             if (isAxiosError(error)) {
                 if (error.status === 403) {
-                    router.replace(`/selection/${currentJob?.slug}`)
+                    return router.replace(`/selection/${currentJob?.slug}`)
                 }
             }
             console.log(error)
@@ -164,7 +164,7 @@ export default function ApplyJobPage() {
         }));
     };
 
-    if (loading && !checkLoading) {
+    if (loading || checkLoading) {
         return (
             <div className="min-h-screen bg-gray-50 flex items-center justify-center">
                 <div className="text-center">

@@ -17,7 +17,6 @@ import {
 import { Label } from "@/components/ui/label";
 import { apiCall } from "@/helper/apiCall";
 import { toTitleCase } from "@/helper/toTitleCase";
-import { JobType } from "@/types/database";
 import { Wallet } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
@@ -31,6 +30,18 @@ import {
     Label as RechartsLabel,
 } from "recharts";
 import LoadingCard from "./LoadingCard";
+import SelectFilter from "./SelectFilter";
+
+enum JobType {
+    FULL_TIME = "FULL_TIME",
+    PART_TIME = "PART_TIME",
+    INTERNSHIP = "INTERNSHIP",
+    FREELANCE = "FREELANCE",
+    CONTRACT = " CONTRACT",
+    TEMPORARY = "TEMPORARY",
+    REMOTE = "REMOTE",
+    HYBRID = "HYBRID"
+}
 
 interface SalaryData {
     category: string;
@@ -92,64 +103,12 @@ const SalaryTrends = () => {
 
             <CardContent className="space-y-6">
                 {/* Filter Controls */}
-                <div className="flex flex-wrap gap-6 border-neutral-100 border-b pb-4">
-                    <div className="flex flex-col gap-2 w-40">
-                        <Label htmlFor="jobType">Job Type</Label>
-                        <Select
-                            value={jobType}
-                            onValueChange={(v: JobType | "all") => setJobType(v)}
-                        >
-                            <SelectTrigger id="jobType" className="w-full">
-                                <SelectValue placeholder="Pilih tipe pekerjaan" />
-                            </SelectTrigger>
-                            <SelectContent className="z-50">
-                                <SelectItem value="all">All</SelectItem>
-                                {Object.values(JobType).map((v) => (
-                                    <SelectItem key={v} value={v}>
-                                        {toTitleCase(v)}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="flex flex-col gap-2 w-40">
-                        <Label htmlFor="city">City</Label>
-                        <Select
-                            value={filterCity}
-                            onValueChange={(v: string) => setFilterCity(v)}
-                        >
-                            <SelectTrigger id="city" className="w-full">
-                                <SelectValue placeholder="Select City" />
-                            </SelectTrigger>
-                            <SelectContent className="z-50">
-                                <SelectItem value="all">All</SelectItem>
-                                {cities.map((v) => (
-                                    <SelectItem key={v} value={v}>
-                                        {toTitleCase(v)}
-                                    </SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-                    <div className="flex flex-col gap-2 w-40">
-                        <Label htmlFor="range">Time Range</Label>
-                        <Select
-                            value={range}
-                            onValueChange={(v: "7d" | "month" | "year" | "all") =>
-                                setRange(v)
-                            }
-                        >
-                            <SelectTrigger id="range" className="w-full">
-                                <SelectValue placeholder="Pilih range waktu" />
-                            </SelectTrigger>
-                            <SelectContent className="z-50">
-                                <SelectItem value="7d">Last 7 Days</SelectItem>
-                                <SelectItem value="month">This Month</SelectItem>
-                                <SelectItem value="year">This Year</SelectItem>
-                                <SelectItem value="all">All Time</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
+                <div className="flex flex-wrap gap-2 border-neutral-100 border-b pb-4">
+                    <SelectFilter value={jobType} setValue={setJobType} placeHolder="Pilih tipe pekerjaan" valueArray={['all', ...Object.values(JobType)]} label="Job type" />
+
+                    <SelectFilter value={filterCity} setValue={setFilterCity} label="City" placeHolder="Select city" valueArray={['all', ...cities]} />
+
+                    <SelectFilter label="Time Range" value={range} setValue={setRange} placeHolder="Pilih range waktu" valueArray={['7d', 'month', 'year', 'all']} />
                 </div>
 
                 {/* Chart / Loading / Empty State */}

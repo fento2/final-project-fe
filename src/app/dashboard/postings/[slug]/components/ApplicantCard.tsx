@@ -1,6 +1,6 @@
-import { Card, CardContent } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Edit2, MoreVertical, Mail, Wallet, User, GraduationCap, Calendar, Slash } from "lucide-react";
+import { Mail, Wallet, User, GraduationCap, Calendar } from "lucide-react";
 import { toTitleCase } from "@/helper/toTitleCase";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SetStateAction } from "react";
@@ -9,6 +9,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Status } from "../applicant/components/ApplicantAction";
 import { cn } from "@/lib/utils";
+import { useJobDetailStore } from "@/lib/zustand/detailJobStore";
 
 type ApplicantCardProps = {
     applicants: ApplicantFrontend[];
@@ -18,10 +19,11 @@ type ApplicantCardProps = {
     setPage: (value: SetStateAction<number>) => void;
 };
 
-const ApplicantCard = ({ applicants, loading, showFilters, hasMore, setPage }: ApplicantCardProps) => {
-    const router = useRouter()
-    const params = useParams()
-    const { slug } = params
+const ApplicantCard = ({ applicants, loading, hasMore, setPage }: ApplicantCardProps) => {
+    const router = useRouter();
+    const params = useParams();
+    const { slug } = params;
+    const { jobDetail } = useJobDetailStore()
 
     const bgBadge = {
         [Status.SUBMITTED]: "bg-yellow-100 text-yellow-800",
@@ -96,9 +98,9 @@ const ApplicantCard = ({ applicants, loading, showFilters, hasMore, setPage }: A
                                         {new Date(app.appliedOn).toLocaleDateString()}
                                     </p>
 
-                                    <p className="text-sm">
+                                    {jobDetail?.preselection_test && <p className="text-sm">
                                         Score: <span className="font-medium">{app.score ?? "-"}</span>
-                                    </p>
+                                    </p>}
                                 </div>
                             </div>
                         </div>
