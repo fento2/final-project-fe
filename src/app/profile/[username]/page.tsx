@@ -9,9 +9,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Mail, Phone, Briefcase, GraduationCap, Award } from "lucide-react";
-import formatCurrency from "@/lib/formatCurrency";
 import { formatDateIDDateOnly } from "@/lib/formatDate";
 import { isCompanyUser, buildCompanySlug } from "@/helper/companySlugHelper";
+import { useAuth } from "@/hooks/useAuth";
+import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
 
 type Profile = {
     name?: string | null;
@@ -57,6 +58,8 @@ export default function PublicUserProfilePage() {
     const router = useRouter();
     const username = Array.isArray(params?.username) ? params.username[0] : params?.username;
     const toast = useToast();
+    const { user } = useAuth();
+    const { setShowSignUp } = useAuthUIStore();
 
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -64,8 +67,16 @@ export default function PublicUserProfilePage() {
     const [education, setEducation] = useState<Education[]>([]);
     const [experiences, setExperiences] = useState<Experience[]>([]);
     const [skills, setSkills] = useState<string[]>([]);
-    const [expectedSalary, setExpectedSalary] = useState<number | null>(null);
+    
     const [userAssessments, setUserAssessments] = useState<any[]>([]);
+
+    const handleCTAClick = () => {
+        if (!user) {
+            setShowSignUp(true);
+        } else {
+            router.push("/dashboard");
+        }
+    };
 
     // Build absolute url for images
     const toAbsolute = (url?: string | null) => {
@@ -202,9 +213,23 @@ export default function PublicUserProfilePage() {
                 console.log('Mapped assessment data:', assessmentArr);
                 setUserAssessments(assessmentArr);
 
-                // Skills and expected salary might not be available in public endpoint
-                setSkills([]);
-                setExpectedSalary(null);
+                    // Skills: try to map from various possible shapes in public endpoint
+                    try {
+                        const rawSkills = Array.isArray(data?.skills)
+                            ? data.skills
+                            : Array.isArray(data?.user_skill)
+                            ? data.user_skill
+                            : Array.isArray(data?.userSkills)
+                            ? data.userSkills
+                            : [];
+
+                        const names: string[] = rawSkills
+                            .map((s: any) => s?.name || s?.skill?.name || s?.Skill?.name || s)
+                            .filter((x: any) => typeof x === 'string' && x.trim().length > 0);
+                        setSkills(names);
+                    } catch {
+                        setSkills([]);
+                    }
 
             } catch (err: any) {
                 if (!mounted) return;
@@ -272,6 +297,15 @@ export default function PublicUserProfilePage() {
             return null;
         }
     }, [experiences]);
+
+    // Show only perfect-score assessments (100%)
+    const perfectAssessments = useMemo(() => {
+        try {
+            return (userAssessments || []).filter((a: any) => Number(a?.score) === 100);
+        } catch {
+            return [] as any[];
+        }
+    }, [userAssessments]);
 
     const location = profile?.address || "";
     const displayName = profile?.name || profile?.username || "User";
@@ -407,13 +441,6 @@ export default function PublicUserProfilePage() {
                             >
                                 {isCompanyUser(profile) ? 'View Full Profile' : 'Contact This Candidate'}
                             </Button>
-                            {/* Quick actions */}
-                            <Button variant="outline" size="icon" aria-label="Save profile">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M6.32 2.577a49.255 49.255 0 0111.36 0c.585.074 1.07.49 1.188 1.063a49.527 49.527 0 010 16.72 1.5 1.5 0 01-1.188 1.064 49.255 49.255 0 01-11.36 0 1.5 1.5 0 01-1.188-1.063 49.527 49.527 0 010-16.72 1.5 1.5 0 011.188-1.064z" /></svg>
-                            </Button>
-                            <Button variant="outline" size="icon" aria-label="Share profile">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186a2.25 2.25 0 010 2.186m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0-12.814a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5zm0 15.75a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" /></svg>
-                            </Button>
                         </div>
                     </div>
                 </div>
@@ -488,10 +515,10 @@ export default function PublicUserProfilePage() {
                             <Award className="w-5 h-5" /> Skill Assessments
                         </h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            {userAssessments.length === 0 && (
-                                <div className="col-span-full text-sm text-gray-500">No skill assessments completed yet.</div>
+                            {perfectAssessments.length === 0 && (
+                                <div className="col-span-full text-sm text-gray-500">No 100% score assessments yet.</div>
                             )}
-                            {userAssessments.map((assessment) => (
+                            {perfectAssessments.map((assessment) => (
                                 <Card key={assessment.user_assessment_id} className="shadow-sm hover:shadow-md transition-shadow">
                                     <CardContent className="p-4">
                                         <div className="text-center">
@@ -545,10 +572,6 @@ export default function PublicUserProfilePage() {
                             <div className="flex justify-between">
                                 <span className="text-gray-500">Primary Industry:</span>
                                 <span className="font-medium">Information Technology</span>
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-gray-500">Expected Salary:</span>
-                                <span className="font-medium">{expectedSalary ? formatCurrency(expectedSalary) : "-"}</span>
                             </div>
                             <div className="flex justify-between">
                                 <span className="text-gray-500">Experience:</span>
@@ -608,7 +631,13 @@ export default function PublicUserProfilePage() {
                             With our user-friendly platform and up-to-date job listings, you'll be on your way to a fulfilling career in no time.
                         </p>
                     </div>
-                    <Button variant="secondary" className="self-start md:self-auto">Join Now</Button>
+                    <Button 
+                        onClick={handleCTAClick}
+                        variant="secondary" 
+                        className="self-start md:self-auto"
+                    >
+                        {user ? "Go to Dashboard" : "Join Now"}
+                    </Button>
                 </div>
             </div>
         </div>

@@ -2,13 +2,7 @@
 import React from "react";
 import Image from "next/image";
 import { X } from "lucide-react";
-
-interface Filters {
-  categories: string[];
-  types: string[];
-  location: string[];
-  tools: string[];
-}
+import type { Filters } from "./JobsFilterSection";
 
 interface BrowseHeroSectionProps {
   filters?: Filters;
@@ -19,8 +13,7 @@ const BrowseHeroSection: React.FC<BrowseHeroSectionProps> = ({ filters, onClearF
   const hasActiveFilters = filters && (
     filters.categories.length > 0 ||
     filters.types.length > 0 ||
-    filters.location.length > 0 ||
-    filters.tools.length > 0
+    filters.location.length > 0
   );
   return (
     <div className="relative overflow-hidden">
@@ -95,23 +88,6 @@ const BrowseHeroSection: React.FC<BrowseHeroSectionProps> = ({ filters, onClearF
                     <button
                       onClick={() => onClearFilter('location', loc)}
                       className="ml-1 hover:bg-blue-200 rounded-full p-0.5"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  )}
-                </span>
-              ))}
-              
-              {filters?.tools.map((tool) => (
-                <span
-                  key={tool}
-                  className="inline-flex items-center gap-1 bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm"
-                >
-                  Tool: {tool}
-                  {onClearFilter && (
-                    <button
-                      onClick={() => onClearFilter('tools', tool)}
-                      className="ml-1 hover:bg-purple-200 rounded-full p-0.5"
                     >
                       <X className="w-3 h-3" />
                     </button>

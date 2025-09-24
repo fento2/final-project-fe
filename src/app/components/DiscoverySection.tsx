@@ -168,7 +168,7 @@ const DiscoverySection: React.FC = () => {
             </div>
 
             <div className="mt-8 text-center">
-                <a className="text-sm underline text-gray-700">View All Popular Jobs</a>
+                <a href="/jobs/browse" className="text-sm underline text-gray-700 hover:text-gray-900">View All Job</a>
             </div>
         </section>
     );

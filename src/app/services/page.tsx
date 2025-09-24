@@ -1,11 +1,31 @@
+"use client";
 import React from 'react';
 import Image from 'next/image';
 import { Briefcase, Globe, Users, Clock, Check, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import CTA from '../contact/components/CTA';
 import LocalizedPricing from './components/LocalizedPricing';
+import { useAuth } from '@/hooks/useAuth';
+import { useAuthUIStore } from '@/lib/zustand/authUIASrore';
+import { useRouter } from 'next/navigation';
 
 export default function ServicePage() {
+    const { user } = useAuth();
+    const { setShowSignUp } = useAuthUIStore();
+    const router = useRouter();
+
+    const handleGetStarted = () => {
+        if (!user) {
+            setShowSignUp(true);
+        } else {
+            router.push("/dashboard");
+        }
+    };
+
+    const handleTalkToSales = () => {
+        router.push("/contact");
+    };
+
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Hero */}
@@ -19,8 +39,18 @@ export default function ServicePage() {
                         <h1 className="text-4xl md:text-5xl font-extrabold text-indigo-900 mb-6">Services that help you hire and grow faster</h1>
                         <p className="text-gray-600 mb-8">We provide end-to-end hiring solutions: job posting, candidate discovery, applicant tracking, and employer branding tools — all in one intuitive platform.</p>
                         <div className="flex justify-center gap-4">
-                            <Button className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-md">Get Started</Button>
-                            <Button className="bg-white border hover:bg-indigo-700 border-indigo-600 text-indigo-600 hover:text-white px-6 py-3 rounded-md">Talk to Sales</Button>
+                            <Button 
+                                onClick={handleGetStarted}
+                                className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-md"
+                            >
+                                {user ? "Go to Dashboard" : "Get Started"}
+                            </Button>
+                            <Button 
+                                onClick={handleTalkToSales}
+                                className="bg-white border hover:bg-indigo-700 border-indigo-600 text-indigo-600 hover:text-white px-6 py-3 rounded-md"
+                            >
+                                Talk to Sales
+                            </Button>
                         </div>
                     </div>
                 </div>

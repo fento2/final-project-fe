@@ -1,173 +1,211 @@
 "use client";
-import React from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { LoadingCards } from "../../../components/ui/loading";
-
-// Components
-import { HeaderSection } from "./components/HeaderSection";
-import { FilterSidebar } from "./components/FilterSidebar";
-import { SearchBar } from "./components/SearchBar";
-import { CompanyCard } from "./components/CompanyCard";
-import { CompanyListItem } from "./components/CompanyListItem";
-import { Pagination } from "./components/Pagination";
-import { EmptyState } from "./components/EmptyState";
-import { CTASection } from "./components/CTASection";
-
-// Data and hooks
-import { useCompaniesPage } from "./hooks/useCompaniesPage";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { apiCall } from "@/helper/apiCall";
+import { Company } from "@/types/userCompany";
+import { useDebounce } from "@/hooks/useDebounce";
+import CompaniesHeroSection from "./components/CompaniesHeroSection";
+import CompaniesFilterSection, { CompanyFilters } from "./components/CompaniesFilterSection";
+import CompaniesGridSection from "./components/CompaniesGridSection";
+import HowItWorksSection from "@/app/components/HowItWorksSection";
+import BrowseTestimonialSection from "../browse/components/BrowseTestimonialSection";
+import BrowseCTASection from "../browse/components/BrowseCTASection";
 
 export default function CompaniesPage() {
-    const {
-        // State
-        searchTerm,
-        selectedIndustry,
-        selectedLocation,
-        page,
-        viewMode,
-        sortBy,
-        isLoading,
-        showFilters,
+    const [companies, setCompanies] = useState<Company[]>([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [loading, setLoading] = useState(false);
+    const [filters, setFilters] = useState<CompanyFilters>({
+        name: "",
+        location: "",
+    });
+
+    // Debounce filters to avoid too many API calls
+    const debouncedFilters = useDebounce(filters, 300);
+
+    const itemsPerPage = 9;
+    
+    // Calculate pagination
+    const totalItems = companies.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    const paginatedCompanies = companies.slice(startIndex, endIndex);
+
+    const searchController = useRef<AbortController | null>(null);
+    const router = useRouter();
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+    const initialLoad = useRef(true);
+
+    const fetchData = async (params?: URLSearchParams | null) => {
+        if (searchController.current) {
+            try { 
+                searchController.current.abort(); 
+            } catch { /* ignore */ }
+        }
         
-        // Computed values
-        currentCompanies,
-        totalPages,
-        uniqueIndustries,
-        uniqueLocations,
-        filteredCompanies,
+        const controller = new AbortController();
+        searchController.current = controller;
+
+        try {
+            setLoading(true);
+            const url = `/company/find?${params?.toString() || ''}`;
+            const res = await apiCall.get(url, { signal: controller.signal });
+            const items = res.data?.data?.data || [];
+            setCompanies(items);
+            setCurrentPage(1); // Reset to first page when new data loads
+        } catch (err: any) {
+            const name = err?.name;
+            if (name !== "CanceledError" && name !== "AbortError") {
+                console.error("Error fetching companies:", err);
+                setCompanies([]);
+            }
+        } finally {
+            setLoading(false);
+            if (searchController.current === controller) {
+                searchController.current = null;
+            }
+        }
+    };
+
+    // Create URL parameters from filters
+    const createUrlParams = useCallback((filterValues: CompanyFilters) => {
+        const params = new URLSearchParams();
+        if (filterValues.name.trim()) params.set('name', filterValues.name.trim());
+        if (filterValues.location.trim()) params.set('location', filterValues.location.trim());
+        return params;
+    }, []);
+
+    // Update URL without triggering navigation
+    const updateURL = useCallback((filterValues: CompanyFilters) => {
+        const params = createUrlParams(filterValues);
+        const newUrl = params.toString() ? `${pathname}?${params.toString()}` : pathname;
+        const currentUrl = `${pathname}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
         
-        // Backend data
-        backendError,
+        if (newUrl !== currentUrl) {
+            router.replace(newUrl, { scroll: false });
+        }
+    }, [pathname, searchParams, router, createUrlParams]);
+
+    // Set initial filters from URL parameters
+    useEffect(() => {
+        const name = searchParams?.get("name") ?? "";
+        const location = searchParams?.get("location") ?? "";
         
-        // Actions
-        setSearchTerm,
-        setSelectedIndustry,
-        setSelectedLocation,
-        setPage,
-        setViewMode,
-        setSortBy,
-        setShowFilters,
-        handleSearch,
-        clearFilters,
-        handleViewJobs,
-        handleViewProfile,
-    } = useCompaniesPage();
+        const urlFilters = { name, location };
+        setFilters(urlFilters);
+
+        // Only fetch data on initial load or when URL params change externally
+        if (initialLoad.current) {
+            const params = createUrlParams(urlFilters);
+            fetchData(params.toString() ? params : null);
+            initialLoad.current = false;
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchParams]);
+
+    // Handle debounced filter changes (auto-search)
+    useEffect(() => {
+        if (!initialLoad.current) {
+            const params = createUrlParams(debouncedFilters);
+            updateURL(debouncedFilters);
+            fetchData(params.toString() ? params : null);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [debouncedFilters]);
+
+    // Reset pagination when filters change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [filters]);
+
+    const handleSearch = async () => {
+        const params = createUrlParams(filters);
+        updateURL(filters);
+        await fetchData(params.toString() ? params : null);
+    };
+
+    const handleFilterChange = (newFilters: CompanyFilters) => {
+        setFilters(newFilters);
+    };
+
+    const handleClearFilter = (filterType: 'name' | 'location') => {
+        const newFilters = {
+            ...filters,
+            [filterType]: ""
+        };
+        setFilters(newFilters);
+        setCurrentPage(1); // Reset to first page when filters are cleared
+    };
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+        // Scroll to top when page changes
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            if (searchController.current) {
+                try {
+                    searchController.current.abort();
+                } catch { /* ignore */ }
+            }
+        };
+    }, []);
 
     return (
-        <div className="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
-            {/* Header Section */}
-            <HeaderSection
-                title="Discover Top Companies Hiring"
-                subtitle="Explore amazing companies and find your perfect workplace. From startups to enterprises, discover opportunities that match your career goals."
-                breadcrumb={["Home", "Jobs", "Companies"]}
-            />
+        <div className="min-h-screen bg-gray-50">
+            {/* Hero */}
+            <CompaniesHeroSection filters={filters} onClearFilter={handleClearFilter} />
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10">
-                <div className="grid grid-cols-1 lg:grid-cols-5 gap-4 sm:gap-6 lg:gap-8">
+            {/* Content */}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
                     {/* Filters Sidebar */}
-                    <aside className={`lg:col-span-1 ${showFilters ? 'block' : 'hidden lg:block'}`}>
-                        <FilterSidebar
-                            selectedIndustry={selectedIndustry}
-                            selectedLocation={selectedLocation}
-                            uniqueIndustries={uniqueIndustries}
-                            uniqueLocations={uniqueLocations}
-                            onIndustryChange={setSelectedIndustry}
-                            onLocationChange={setSelectedLocation}
-                            onClearFilters={clearFilters}
-                            companiesData={filteredCompanies}
-                        />
-                    </aside>
-
-                    {/* Main Content */}
-                    <main className="col-span-1 lg:col-span-4">
-                        {/* Search Bar & Controls */}
-                        <SearchBar
-                            searchTerm={searchTerm}
-                            selectedIndustry={selectedIndustry}
-                            selectedLocation={selectedLocation}
-                            uniqueIndustries={uniqueIndustries}
-                            uniqueLocations={uniqueLocations}
-                            sortBy={sortBy}
-                            viewMode={viewMode}
-                            filteredCount={filteredCompanies.length}
-                            showFilters={showFilters}
-                            onSearchChange={setSearchTerm}
-                            onIndustryChange={setSelectedIndustry}
-                            onLocationChange={setSelectedLocation}
-                            onSortChange={setSortBy}
-                            onViewModeChange={setViewMode}
-                            onToggleFilters={() => setShowFilters(!showFilters)}
+                    <div className="lg:col-span-1">
+                        <CompaniesFilterSection 
+                            filters={filters}
+                            onChange={handleFilterChange}
                             onSearch={handleSearch}
+                            loading={loading}
+                            resultCount={companies.length}
                         />
+                    </div>
 
-                        {/* Loading State */}
-                        {isLoading && <LoadingCards />}
+                    {/* Companies Grid */}
+                    <div className="lg:col-span-3">
+                        <CompaniesGridSection 
+                            companies={paginatedCompanies}
+                            loading={loading}
+                            totalCompanies={companies.length}
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={handlePageChange}
+                            itemsPerPage={itemsPerPage}
+                        />
+                    </div>
+                </div>
+            </div>
 
-                        {/* Error State */}
-                        {!isLoading && backendError && (
-                            <div className="text-center py-12">
-                                <p className="text-gray-500">Error loading companies: {backendError}</p>
-                            </div>
-                        )}
+            {/* Extra Sections */}
+            <div className="bg-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                    <HowItWorksSection />
+                </div>
+            </div>
 
-                        {/* Empty State */}
-                        {!isLoading && !backendError && currentCompanies.length === 0 && (
-                            <EmptyState onClearFilters={clearFilters} />
-                        )}
+            <div className="bg-gray-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                    <BrowseTestimonialSection />
+                </div>
+            </div>
 
-                        {/* Companies Grid/List */}
-                        {!isLoading && !backendError && currentCompanies.length > 0 && (
-                            <AnimatePresence mode="wait">
-                                <motion.div
-                                    key={viewMode}
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    transition={{ duration: 0.3 }}
-                                >
-                                    {viewMode === 'grid' ? (
-                                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                                            {currentCompanies.map((company) => (
-                                                <CompanyCard
-                                                    key={company.id}
-                                                    company={company}
-                                                    onViewJobs={handleViewJobs}
-                                                    onViewProfile={handleViewProfile}
-                                                />
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="space-y-4">
-                                            {currentCompanies.map((company) => (
-                                                <CompanyListItem
-                                                    key={company.id}
-                                                    company={company}
-                                                    onViewJobs={handleViewJobs}
-                                                    onViewProfile={handleViewProfile}
-                                                />
-                                            ))}
-                                        </div>
-                                    )}
-                                </motion.div>
-                            </AnimatePresence>
-                        )}
-
-                        {/* No Results */}
-                        {!isLoading && filteredCompanies.length === 0 && (
-                            <EmptyState onClearFilters={clearFilters} />
-                        )}
-
-                        {/* Pagination */}
-                        {!isLoading && (
-                            <Pagination
-                                currentPage={page}
-                                totalPages={totalPages}
-                                onPageChange={setPage}
-                            />
-                        )}
-
-                        {/* CTA Section */}
-                        <CTASection />
-                    </main>
+            <div className="bg-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                    <BrowseCTASection />
                 </div>
             </div>
         </div>

@@ -1,7 +1,10 @@
 import { Badge } from "@/components/ui/badge";
 import { toTitleCase } from "@/helper/toTitleCase";
 import { formatDateIDDateOnly } from "@/lib/formatDate";
-import { User } from "@/types/database";
+// Minimal User type used in this component
+type UserLite = {
+    createdAt?: string;
+};
 import { Job } from "@/types/job";
 import { UserCompanyItem } from "@/types/userCompany";
 import { Building2, CalendarDays, Mail, MapPin, Phone, Users } from "lucide-react";
@@ -17,7 +20,7 @@ type Company = {
 
     user_company: UserCompanyItem[];
     job: Job[];
-    Users: User;
+    Users: UserLite;
 };
 
 type Props = {

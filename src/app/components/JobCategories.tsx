@@ -88,7 +88,7 @@ const JobCategories = () => {
     <div className="w-full my-16">
       {/* Header */}
       <div className="text-center space-y-4 max-w-3xl mx-auto px-4">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">
+        <h1 className="text-3xl md:text-5xl font-extrabold text-gray-900 leading-tight">
           Explore our <br /> Job Categories
         </h1>
         <p className="text-lg text-gray-500">
@@ -99,37 +99,69 @@ const JobCategories = () => {
         </p>
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mt-12 px-4">
+      {/* Mobile Carousel */}
+      <div className="md:hidden mt-8 -mx-4 px-4">
         {loading ? (
-          // Loading skeleton
+          <div className="flex gap-4 overflow-x-auto no-scrollbar">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="min-w-[75%] h-44 rounded-xl bg-gray-200 animate-pulse" />
+            ))}
+          </div>
+        ) : categories.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-gray-500">No job categories available at the moment.</p>
+          </div>
+        ) : (
+          <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory no-scrollbar pb-2">
+            {categories.map((cat, i) => (
+              <div
+                key={i}
+                className="min-w-[75%] snap-center"
+                onClick={() => handleCategoryClick(cat.label)}
+              >
+                <div className="relative w-full h-44 rounded-xl overflow-hidden shadow-lg cursor-pointer group transition-all duration-300 hover:shadow-xl">
+                  <img
+                    src={cat.Logo}
+                    alt={`${cat.label} category jobs`}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 flex flex-col justify-center items-center text-center text-white p-3 transition-all duration-300">
+                    <p className="font-bold text-base">{cat.label}</p>
+                    <span className="text-xs">
+                      {cat.openJobs} open job{cat.openJobs !== 1 ? 's' : ''}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Desktop Grid */}
+      <div className="hidden md:grid grid-cols-3 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mt-12 px-4">
+        {loading ? (
           Array.from({ length: 4 }).map((_, i) => (
-            <div
-              key={i}
-              className="w-full h-56 rounded-xl bg-gray-200 animate-pulse"
-            />
+            <div key={i} className="w-full h-56 rounded-xl bg-gray-200 animate-pulse" />
           ))
         ) : categories.length === 0 ? (
-          // No data message
           <div className="col-span-full text-center py-12">
             <p className="text-gray-500">No job categories available at the moment.</p>
           </div>
         ) : (
-          // Actual categories
           visibleCategories.map((cat, i) => (
             <div
               key={i}
               className="relative w-full h-56 rounded-xl overflow-hidden shadow-lg cursor-pointer group transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
               onClick={() => handleCategoryClick(cat.label)}
             >
-              {/* Background Image */}
               <img
                 src={cat.Logo}
                 alt={`${cat.label} category jobs`}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                 loading="lazy"
               />
-              {/* Overlay */}
               <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 flex flex-col justify-center items-center text-center text-white p-4 transition-all duration-300">
                 <p className="font-bold text-lg group-hover:text-xl transition-all duration-300">{cat.label}</p>
                 <span className="text-sm group-hover:text-base transition-all duration-300">
@@ -148,7 +180,7 @@ const JobCategories = () => {
 
       {/* Button */}
       {!loading && categories.length > 4 && (
-        <div className="text-center mt-10">
+        <div className="text-center mt-10 hidden md:block">
           <button
             onClick={() => setShowAll(!showAll)}
             className="px-6 py-2 rounded-lg bg-indigo-500 font-medium hover:bg-indigo-700 text-white transition-colors duration-300"

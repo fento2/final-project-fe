@@ -1,4 +1,3 @@
-import { User } from "@/types/database";
 import { Job } from "@/types/job";
 import { UserCompanyItem } from "@/types/userCompany";
 import { Bookmark, BookmarkCheck, Building2, DollarSign, MapPin } from "lucide-react";
@@ -17,7 +16,7 @@ type Company = {
 
     user_company: UserCompanyItem[];
     job: Job[];
-    Users: User;
+    Users: { createdAt?: string; isVerfied?: boolean };
 };
 
 type Props = {

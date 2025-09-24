@@ -6,7 +6,6 @@ import { useFilterStats } from "@/hooks/useFilterStats";
 export type Filters = {
     date: string;
     types: string[];
-    tools: string[];
     location: string[];
     categories: string[];
     salaryMin: number;
@@ -33,7 +32,6 @@ const JobsFilterSection: React.FC<JobsFilterSectionProps> = ({ filters, onChange
                         ) : (
                             Object.entries(stats.categories)
                                 .sort(([,a], [,b]) => b - a) // Sort by count descending
-                                .slice(0, 5) // Show top 5
                                 .map(([category, count]) => (
                                     <label key={category} className="flex items-center justify-between text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
                                         <div className="flex items-center gap-2">
@@ -121,46 +119,6 @@ const JobsFilterSection: React.FC<JobsFilterSectionProps> = ({ filters, onChange
                     </div>
                 </div>
 
-                {/* Languages/Tools Filter */}
-                <div>
-                    <h3 className="text-sm font-semibold mb-3 text-gray-900">Languages</h3>
-                    <div className="space-y-2">
-                        {statsLoading ? (
-                            <div className="text-sm text-gray-500">Loading...</div>
-                        ) : (
-                            Object.entries(stats.languages)
-                                .sort(([,a], [,b]) => b - a) // Sort by count descending
-                                .slice(0, 5) // Show top 5
-                                .map(([language, count]) => (
-                                    <label key={language} className="flex items-center justify-between text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
-                                        <div className="flex items-center gap-2">
-                                            <input
-                                                type="checkbox"
-                                                checked={filters.tools.includes(language)}
-                                                onChange={() =>
-                                                    onChange({
-                                                        ...filters,
-                                                        tools: filters.tools.includes(language)
-                                                            ? filters.tools.filter((x: string) => x !== language)
-                                                            : [...filters.tools, language],
-                                                    })
-                                                }
-                                                className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                            />
-                                            <span className="text-gray-700">{language}</span>
-                                        </div>
-                                        <span className="text-gray-400 text-xs">({count})</span>
-                                    </label>
-                                ))
-                        )}
-                    </div>
-                    {Object.keys(stats.languages).length > 5 && (
-                        <button className="text-indigo-600 text-sm mt-2 hover:text-indigo-700 font-medium">
-                            +{Object.keys(stats.languages).length - 5} more
-                        </button>
-                    )}
-                </div>
-
                 {/* Location Filter */}
                 <div>
                     <h3 className="text-sm font-semibold mb-3 text-gray-900">Location</h3>
@@ -197,46 +155,6 @@ const JobsFilterSection: React.FC<JobsFilterSectionProps> = ({ filters, onChange
                     {Object.keys(stats.locations).length > 6 && (
                         <button className="text-indigo-600 text-sm mt-2 hover:text-indigo-700 font-medium">
                             +{Object.keys(stats.locations).length - 6} more
-                        </button>
-                    )}
-                </div>
-
-                {/* Tools Filter */}
-                <div>
-                    <h3 className="text-sm font-semibold mb-3 text-gray-900">Tools</h3>
-                    <div className="space-y-2">
-                        {statsLoading ? (
-                            <div className="text-sm text-gray-500">Loading...</div>
-                        ) : (
-                            Object.entries(stats.tools)
-                                .sort(([,a], [,b]) => b - a) // Sort by count descending
-                                .slice(0, 6) // Show top 6
-                                .map(([tool, count]) => (
-                                    <label key={tool} className="flex items-center justify-between text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
-                                        <div className="flex items-center gap-2">
-                                            <input
-                                                type="checkbox"
-                                                checked={filters.tools.includes(tool)}
-                                                onChange={() =>
-                                                    onChange({
-                                                        ...filters,
-                                                        tools: filters.tools.includes(tool)
-                                                            ? filters.tools.filter((x: string) => x !== tool)
-                                                            : [...filters.tools, tool],
-                                                    })
-                                                }
-                                                className="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                                            />
-                                            <span className="text-gray-700">{tool}</span>
-                                        </div>
-                                        <span className="text-gray-400 text-xs">({count})</span>
-                                    </label>
-                                ))
-                        )}
-                    </div>
-                    {Object.keys(stats.tools).length > 6 && (
-                        <button className="text-indigo-600 text-sm mt-2 hover:text-indigo-700 font-medium">
-                            +{Object.keys(stats.tools).length - 6} more
                         </button>
                     )}
                 </div>
@@ -311,9 +229,7 @@ const JobsFilterSection: React.FC<JobsFilterSectionProps> = ({ filters, onChange
                                     { min: 0, max: 10000000, label: "0-10 Jt" },
                                     { min: 10000000, max: 25000000, label: "10-25 Jt" },
                                     { min: 25000000, max: 50000000, label: "25-50 Jt" },
-                                    { min: 50000000, max: 100000000, label: "50-100 Jt" },
-                                    { min: 100000000, max: 200000000, label: "100-200 Jt" },
-                                    { min: 0, max: 200000000, label: "Semua" }
+                                    { min: 0, max: 50000000, label: "Semua" }
                                 ].map((range, index) => (
                                     <button
                                         key={index}

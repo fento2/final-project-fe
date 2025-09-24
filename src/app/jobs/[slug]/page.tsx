@@ -1,12 +1,13 @@
 // app/jobs/[slug]/page.tsx
 "use client";
 
-import { Briefcase, MapPin, Calendar, Bookmark, BookmarkCheck, Share2, GraduationCap, Layers, Banknote, User, Hourglass, CircleCheck } from "lucide-react";
+import { Briefcase, MapPin, Calendar, Bookmark, BookmarkCheck, Share2, GraduationCap, Layers, Banknote, User, Hourglass, CircleCheck, Copy, MessageCircle } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { useRef } from "react";
 import { useEffect, useMemo, useState } from "react";
-import { useJobBySlug, useJobs } from "@/hooks/useJobs";
+import { useJobBySlug, useFeaturedJobs } from "@/hooks/useJobs";
 import { useJobSave } from "@/hooks/useJobSave";
 import { useAuthStore } from "@/lib/zustand/authStore";
 import formatCurrency from "@/lib/formatCurrency";
@@ -15,6 +16,7 @@ import { generateJobSlug } from "@/helper/slugHelper";
 import { getCompanyDetailUrl } from "@/helper/companySlugHelper";
 import BrowseCTASection from "@/app/jobs/browse/components/BrowseCTASection";
 import ReadOnlyQuill from "@/app/dashboard/components/ReadOnlyReactQuil";
+import { useToast } from "@/components/basic-toast";
 
 
 function toAbsoluteUrl(url?: string): string {
@@ -55,6 +57,7 @@ function SafeHtml({ html, className }: { html: string; className?: string }) {
 const SimilarJobCard = ({ job }: { job: any }) => {
     const { role, isLogin } = useAuthStore();
     const { isSaved, isLoading, toggleSave } = useJobSave(job.job_id);
+    const toast = useToast();
 
     // Only show save and apply functionality for USER role
     const canSaveJobs = isLogin && role === 'USER';
@@ -73,6 +76,30 @@ const SimilarJobCard = ({ job }: { job: any }) => {
         const companyData = { name: job.Company?.name || job.company?.name || 'Unknown' };
         const companyUrl = getCompanyDetailUrl(companyData);
         window.open(companyUrl, '_blank');
+    };
+
+    const handleShareRelated = async () => {
+        try {
+            const origin = typeof window !== 'undefined' ? window.location.origin : '';
+            const url = `${origin}/jobs/${jobSlug}`;
+            const title = `${job.title} at ${job.Company?.name || job.company?.name || 'Company'}`;
+            const text = `Check out this job: ${title}`;
+
+            if (navigator.share) {
+                await navigator.share({ title, text, url });
+            } else if (navigator.clipboard) {
+                await navigator.clipboard.writeText(url);
+                toast.success?.("Link copied", "Job link copied to your clipboard.");
+            } else {
+                // Fallback: open share URL in a new tab
+                window.open(url, '_blank');
+            }
+        } catch (err: any) {
+            // Ignore AbortError (user canceled share)
+            if (err?.name !== 'AbortError') {
+                toast.error?.("Share failed", err?.message || "Unable to share this job.");
+            }
+        }
     };
 
     return (
@@ -132,7 +159,7 @@ const SimilarJobCard = ({ job }: { job: any }) => {
                                 <Bookmark className="w-4 h-4" />
                             )}
                         </button>
-                        <button className="p-2 text-gray-400 hover:text-blue-600 transition-colors">
+                        <button onClick={handleShareRelated} className="p-2 text-gray-400 hover:text-blue-600 transition-colors" title="Share this job">
                             <Share2 className="w-4 h-4" />
                         </button>
                     </div>
@@ -146,31 +173,15 @@ export default function JobDetailPage() {
     const params = useParams();
     const slug = params.slug as string;
     const { role, isLogin } = useAuthStore();
+    const toast = useToast();
+    const [showShareMenu, setShowShareMenu] = useState(false);
+    const shareBtnRef = useRef<HTMLButtonElement>(null);
 
-    // Fetch single job by slug from backend
-    const { job: currentJob, loading, error } = useJobBySlug(slug);
+    // Fetch single job by slug from backend (now uses same approach as jobs/browse)
+    const { job: displayJob, loading, error } = useJobBySlug(slug);
 
-    // Fallback: Get all jobs to find the one with matching slug
-    const { jobs: allJobs, loading: allJobsLoading } = useJobs({ limit: 1000 });
-
-    // Find job from all jobs list if direct fetch failed
-    const fallbackJob = useMemo(() => {
-        if (currentJob || !allJobs || allJobs.length === 0) return null;
-
-        // Try to find by slug first
-        let found = allJobs.find((job: any) => job.slug === slug);
-
-        // If not found by slug, try by ID
-        if (!found) {
-            found = allJobs.find((job: any) => job.id === slug || job.job_id === slug);
-        }
-
-        return found || null;
-    }, [currentJob, allJobs, slug]);
-
-    // Use current job or fallback
-    const displayJob = currentJob || fallbackJob;
-    const isLoading = loading && allJobsLoading;
+    // Related jobs using same approach as featured jobs
+    const { jobs: relatedJobs, loading: relatedLoading } = useFeaturedJobs(8);
 
     // Only show save and apply functionality for USER role
     const canSaveJobs = isLogin && role === 'USER';
@@ -179,21 +190,9 @@ export default function JobDetailPage() {
     // Job save functionality
     const { isSaved, isLoading: isSaveLoading, toggleSave } = useJobSave(displayJob?.job_id || (displayJob as any)?.id || '');
 
-    // Related jobs by matching skills
-    const related = useJobs();
-    useEffect(() => {
-        if (displayJob?.skills && Array.isArray(displayJob.skills) && displayJob.skills.length > 0) {
-            // Get skill names for filtering
-            const skillNames = displayJob.skills.map(s => s.name);
-            // For now, we'll filter by category as skills-based filtering would need backend support
-            related.refetch({ category: displayJob.category, limit: 8 });
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [displayJob?.skills, displayJob?.category]);
-
     const jobTitle = useMemo(() => displayJob?.title || decodeURIComponent(slug).replace(/-/g, " "), [displayJob?.title, slug]);
 
-    if (isLoading) {
+    if (loading) {
         return (
             <div className="max-w-6xl mx-auto px-6 py-16">
                 <div className="h-8 w-64 bg-gray-200 rounded animate-pulse mb-4" />
@@ -235,6 +234,56 @@ export default function JobDetailPage() {
     const postedAt = displayJob?.createdAt ? formatDateIDDateOnly(displayJob.createdAt) : "";
     const lastActivity = displayJob?.updatedAt ? formatDateIDDateOnly(displayJob.updatedAt) : postedAt;
     const closesAt = displayJob?.expiredAt ? formatDateIDDateOnly(displayJob.expiredAt) : "-";
+
+    // Web Share
+    const handleShare = async () => {
+        try {
+            const origin = typeof window !== 'undefined' ? window.location.origin : '';
+            const url = `${origin}/jobs/${slug}`;
+            const title = `${jobTitle} at ${companyName}`;
+            const text = `Check out this job: ${title}`;
+            if (navigator.share) {
+                await navigator.share({ title, text, url });
+            } else if (navigator.clipboard) {
+                await navigator.clipboard.writeText(url);
+                toast.success?.("Link copied", "Job link copied to your clipboard.");
+            } else {
+                window.open(url, '_blank');
+            }
+        } catch (err: any) {
+            if (err?.name !== 'AbortError') {
+                toast.error?.("Share failed", err?.message || "Unable to share this job.");
+            }
+        }
+        setShowShareMenu(false);
+    };
+
+    // Copy link only
+    const handleCopyLink = async () => {
+        try {
+            const origin = typeof window !== 'undefined' ? window.location.origin : '';
+            const url = `${origin}/jobs/${slug}`;
+            if (navigator.clipboard) {
+                await navigator.clipboard.writeText(url);
+                toast.success?.("Link copied", "Job link copied to your clipboard.");
+            } else {
+                window.open(url, '_blank');
+            }
+        } catch (err: any) {
+            toast.error?.("Copy failed", err?.message || "Unable to copy link.");
+        }
+        setShowShareMenu(false);
+    };
+
+    // WhatsApp share
+    const handleShareWhatsApp = () => {
+        const origin = typeof window !== 'undefined' ? window.location.origin : '';
+        const url = `${origin}/jobs/${slug}`;
+        const title = jobTitle;
+        const text = encodeURIComponent(`Cek lowongan ${title} di ${url}`);
+        window.open(`https://wa.me/?text=${text}`, '_blank');
+        setShowShareMenu(false);
+    };
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -338,9 +387,41 @@ export default function JobDetailPage() {
                                     {isSaved ? 'Saved' : 'Save Job'}
                                 </button>
                             )}
-                            <button className="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-6 py-3 rounded-lg transition-colors flex items-center gap-2">
-                                <Share2 className="w-5 h-5" />
-                            </button>
+                            <div className="relative inline-block">
+                                <button
+                                    ref={shareBtnRef}
+                                    className="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-6 py-3 rounded-lg transition-colors flex items-center gap-2"
+                                    onClick={() => setShowShareMenu((v) => !v)}
+                                    title="Share this job"
+                                >
+                                    <Share2 className="w-5 h-5" />
+                                </button>
+                                {showShareMenu && (
+                                    <div className="absolute right-0 mt-2 w-48 bg-gray-800 border border-gray-200 rounded-lg shadow-lg z-50">
+                                        <button
+                                            className="flex items-center gap-2 w-full px-4 py-2 text-sm hover:bg-gray-700"
+                                            onClick={handleCopyLink}
+                                        >
+                                            <Copy className="w-4 h-4 text-gray-500" />
+                                            Salin Link
+                                        </button>
+                                        <button
+                                            className="flex items-center gap-2 w-full px-4 py-2 text-sm hover:bg-gray-700"
+                                            onClick={handleShareWhatsApp}
+                                        >
+                                            <MessageCircle className="w-4 h-4 text-green-500" />
+                                            Share on WhatsApp
+                                        </button>
+                                        <button
+                                            className="flex items-center gap-2 w-full px-4 py-2 text-sm hover:bg-gray-700"
+                                            onClick={handleShare}
+                                        >
+                                            <Share2 className="w-4 h-4 text-blue-500" />
+                                            Share (Web Share)
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -359,7 +440,7 @@ export default function JobDetailPage() {
                                 //     html={displayJob.description}
                                 //     className="text-gray-700 text-base leading-relaxed job-description"
                                 // />
-                                <ReadOnlyQuill value={displayJob.description} />
+                                <ReadOnlyQuill value={displayJob.description} className="text-base leading-relaxed text-gray-700" />
                             ) : (
                                 <p className="text-gray-500 italic">No description available for this position.</p>
                             )}
@@ -367,13 +448,13 @@ export default function JobDetailPage() {
 
                         {/* Job Requirements */}
                         <div className="bg-white rounded-xl shadow-sm p-8 mb-8">
-                            <h3 className="text-2xl font-bold text-gray-900 mb-4">Job Requirements</h3>
-                            {Array.isArray(displayJob?.skills) && displayJob.skills.length > 0 ? (
+                            <h3 className="text-2xl font-bold text-gray-900 mb-4">Skill Requirements</h3>
+                            {(displayJob as any)?.skills && Array.isArray((displayJob as any).skills) && (displayJob as any).skills.length > 0 ? (
                                 <ul className="space-y-3">
-                                    {displayJob.skills.map((skill) => (
-                                        <li key={skill.id} className="flex items-start gap-3 text-gray-700">
+                                    {(displayJob as any).skills.map((skill: any) => (
+                                        <li key={skill.id || skill.name} className="flex items-start gap-3 text-gray-700">
                                             <div className="w-2 h-2 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
-                                            <span>Proficiency in {skill.name}</span>
+                                            <span>Proficiency in {skill.name || skill}</span>
                                         </li>
                                     ))}
                                     <li className="flex items-start gap-3 text-gray-700">
@@ -488,10 +569,10 @@ export default function JobDetailPage() {
                             <div className="mt-6">
                                 <div className="font-semibold text-gray-900 text-sm mb-3">Skills Specialization:</div>
                                 <div className="flex flex-wrap gap-2">
-                                    {Array.isArray(displayJob?.skills) && displayJob.skills.length > 0 ? (
-                                        displayJob.skills.map((skill) => (
-                                            <span key={skill.id} className="px-3 py-1 bg-blue-50 text-blue-700 text-xs rounded-md font-medium">
-                                                {skill.name}
+                                    {(displayJob as any)?.skills && Array.isArray((displayJob as any).skills) && (displayJob as any).skills.length > 0 ? (
+                                        (displayJob as any).skills.map((skill: any) => (
+                                            <span key={skill.id || skill.name} className="px-3 py-1 bg-blue-50 text-blue-700 text-xs rounded-md font-medium">
+                                                {skill.name || skill}
                                             </span>
                                         ))
                                     ) : (
@@ -506,14 +587,26 @@ export default function JobDetailPage() {
                 {/* Related Jobs Section */}
                 <section className="mt-16">
                     <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">Related Jobs</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {related.jobs
-                            .filter((job: any) => job.job_id !== displayJob?.job_id)
-                            .slice(0, 6)
-                            .map((job: any) => (
-                                <SimilarJobCard key={job.job_id} job={job} />
+                    {relatedLoading ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {Array.from({ length: 6 }).map((_, i) => (
+                                <div key={i} className="bg-white rounded-lg p-6 shadow-md animate-pulse">
+                                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                                    <div className="h-3 bg-gray-200 rounded w-1/2 mb-4"></div>
+                                    <div className="h-4 bg-gray-200 rounded mb-2"></div>
+                                </div>
                             ))}
-                    </div>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {relatedJobs
+                                .filter((job: any) => job.job_id !== displayJob?.job_id)
+                                .slice(0, 6)
+                                .map((job: any) => (
+                                    <SimilarJobCard key={job.job_id} job={job} />
+                                ))}
+                        </div>
+                    )}
                 </section>
 
                 {/* CTA Section */}
