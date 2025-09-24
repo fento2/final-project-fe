@@ -23,6 +23,11 @@ import {
     CartesianGrid,
     Tooltip,
     Label as RechartsLabel,
+    Bar,
+    BarChart,
+    PieChart,
+    Pie,
+    Cell,
 } from "recharts";
 
 interface JobTypeCount {
@@ -54,6 +59,34 @@ const ApplicantInterest = () => {
     useEffect(() => {
         getMostJobType();
     }, [rangeFilter]);
+
+
+    const RADIAN = Math.PI / 180;
+    const COLUR = ["oklch(70.7% 0.165 254.624)", "oklch(69.6% 0.17 162.48)", "oklch(87.9% 0.169 91.605)", "oklch(64.6% 0.222 41.116)", "oklch(51.4% 0.222 16.935)", "oklch(43.9% 0 0)"]
+
+
+    const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
+        // Kalau persen = 0 → jangan render apa2
+        if (!percent || percent === 0) return null;
+
+        const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+        const x = cx + radius * Math.cos(-(midAngle ?? 0) * RADIAN);
+        const y = cy + radius * Math.sin(-(midAngle ?? 0) * RADIAN);
+
+        return (
+            <text
+                x={x}
+                y={y}
+                fill="white"
+                textAnchor={x > cx ? "start" : "end"}
+                dominantBaseline="central"
+                className="text-lg"
+            >
+                {`${(percent * 100).toFixed(0)}%`}
+            </text>
+        );
+    };
+
 
     return (
         <Card className="w-full">
@@ -97,35 +130,31 @@ const ApplicantInterest = () => {
                 ) : jobTypeData.length === 0 ? (
                     <p className="text-sm text-muted-foreground">Belum ada data untuk filter ini.</p>
                 ) : (
-                    <ResponsiveContainer width="100%" height={600} className="bg-neutral-50 rounded-lg">
-                        <LineChart
-                            data={jobTypeData}
-                            layout="vertical" // chart vertikal
-                            margin={{ top: 20, right: 30, bottom: 20, left: 60 }}
-                        >
+                    <ResponsiveContainer width="100%" height={350} className={'bg-neutral-50 rounded-lg'}>
+                        <BarChart data={jobTypeData} margin={{ top: 20, right: 20, bottom: 40, left: 0 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="oklch(70.8% 0 0)" />
-
-                            <XAxis type="number">
-
+                            <XAxis dataKey="jobType" tickFormatter={(v) => toTitleCase(v)} >
+                                <RechartsLabel
+                                    value="Job Type"
+                                    offset={-20}
+                                    position="insideBottom"
+                                    style={{ fill: "oklch(64.5% 0.246 16.439)", fontSize: 18, fontWeight: "bold" }}
+                                />
                             </XAxis>
-
-                            <YAxis type="category" dataKey="jobType" tickFormatter={(v) => toTitleCase(v)} />
-
-                            <Tooltip
-                                formatter={(value: number) => `${value} Applicants`}
-                                labelFormatter={(v) => toTitleCase(v)}
-                            />
-                            <Line
-                                type="monotone"
+                            <YAxis
+                                // domain={[0, 500]}          // batas min & max
+                                tickCount={6}              // jumlah garis bantu
+                            // ticks={[0, 100, 200, 300, 400, 500]} // bisa custom manual juga
+                            >
+                            </YAxis>
+                            <Tooltip labelFormatter={(v) => toTitleCase(v)} />
+                            <Bar
                                 dataKey="count"
-                                stroke="oklch(70.4% 0.191 22.216)"
-                                strokeWidth={3}
-                                dot={{ r: 5 }}
-                                activeDot={{ r: 7 }}
+                                fill="oklch(64.5% 0.246 16.439)"
+                                barSize={40}
                             />
-                        </LineChart>
+                        </BarChart>
                     </ResponsiveContainer>
-
                 )}
             </CardContent>
         </Card>

@@ -6,8 +6,9 @@ import { apiCall } from "@/helper/apiCall"
 import { toTitleCase } from "@/helper/toTitleCase"
 import { Users } from "lucide-react"
 import { useEffect, useState } from "react"
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Label as RechartsLabel, } from "recharts"
+import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis, Label as RechartsLabel, PieChart, Pie, Legend, Cell, ResponsiveContainer, } from "recharts"
 import LoadingCard from "./LoadingCard"
+import LoadingPieChart from "./LoadingPieChart"
 
 
 interface AgeData {
@@ -28,14 +29,13 @@ const UserDemographics = () => {
     const [locationData, setLocationData] = useState<LocationData[]>([]);
     const [totalUsers, setTotalUsers] = useState<number>(0);
 
-    const [loadingAge, setLoadingAge] = useState<boolean>(false);
-    const [loadingLocation, setLoadingLocation] = useState<boolean>(false);
+    const [loading, setLoading] = useState<boolean>(false);
 
 
     const fetchUserDemographics = async () => {
         try {
-            setLoadingAge(true);
-            setLoadingLocation(true);
+            setLoading(true);
+
 
             const params = new URLSearchParams();
             if (genderFilter !== "all") params.set("gender", genderFilter);
@@ -46,14 +46,40 @@ const UserDemographics = () => {
                 setAgeData(data.data.ageData);
                 setLocationData(data.data.locationData);
                 setTotalUsers(data.data.total);
+                console.log(data)
             }
         } catch (error) {
             console.log(error);
         } finally {
-            setLoadingAge(false);
-            setLoadingLocation(false);
+            setLoading(false);
         }
     };
+
+    const RADIAN = Math.PI / 180;
+    const COLUR = ["oklch(70.7% 0.165 254.624)", "oklch(69.6% 0.17 162.48)", "oklch(87.9% 0.169 91.605)", "oklch(64.6% 0.222 41.116)", "oklch(51.4% 0.222 16.935)", "oklch(43.9% 0 0)"]
+
+    const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: any) => {
+        // Kalau persen = 0 → jangan render apa2
+        if (!percent || percent === 0) return null;
+
+        const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+        const x = cx + radius * Math.cos(-(midAngle ?? 0) * RADIAN);
+        const y = cy + radius * Math.sin(-(midAngle ?? 0) * RADIAN);
+
+        return (
+            <text
+                x={x}
+                y={y}
+                fill="white"
+                textAnchor={x > cx ? "start" : "end"}
+                dominantBaseline="central"
+                className="text-lg"
+            >
+                {`${(percent * 100).toFixed(0)}%`}
+            </text>
+        );
+    };
+
 
     useEffect(() => {
         fetchUserDemographics();
@@ -117,69 +143,103 @@ const UserDemographics = () => {
                     </div>
 
                     {/* Charts */}
-                    <div className="grid grid-cols-1 gap-6">
-                        {/* Chart Age */}
-                        {loadingAge ? (
-                            <LoadingCard />
-                        ) : (
-                            <ResponsiveContainer width="100%" height={300} className={'bg-neutral-50 rounded-lg'}>
-                                <BarChart data={ageData} margin={{ top: 20, right: 20, bottom: 40, left: 10 }}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="oklch(70.8% 0 0)" />
-                                    <XAxis dataKey="range" >
-                                        <RechartsLabel
-                                            value="Age Range"
-                                            offset={-20}
-                                            position="insideBottom"
-                                            style={{ fill: "oklch(68.5% 0.169 237.323)", fontSize: 18, fontWeight: "bold" }}
-                                        />
-                                    </XAxis>
-                                    <YAxis >
-                                        <RechartsLabel
-                                            value="Applicant"
-                                            angle={-90}
-                                            position="insideLeft"
-                                            style={{ fill: "oklch(70.8% 0 0)", fontSize: 18, fontWeight: "bold" }}
-                                        />
-                                    </YAxis>
-                                    <Tooltip labelFormatter={(v) => `${v} Age`} />
-                                    <Bar dataKey="count" fill="oklch(68.5% 0.169 237.323)" barSize={40} />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        )}
+                    <div className="grid lg:grid-cols-4 grid-cols-1 gap-2">
+                        <div className="lg:col-span-1 bg-neutral-50 rounded-lg p-4">
 
+                            <h2 className="text-lg font-bold text-center mb-2">Applicant Age Distribution</h2>
 
-                        {/* Chart Location */}
-                        {loadingLocation ? (
-                            <LoadingCard />
-                        ) : (
-                            <ResponsiveContainer width="100%" height={300} className={'bg-neutral-50 rounded-lg'}>
-                                <BarChart data={locationData} margin={{ top: 20, right: 20, bottom: 40, left: 10 }}>
-                                    <CartesianGrid strokeDasharray="3 3" stroke="oklch(70.8% 0 0)" />
-                                    <XAxis dataKey="city" tickFormatter={(v) => toTitleCase(v)} >
-                                        <RechartsLabel
-                                            value="City"
-                                            offset={-20}
-                                            position="insideBottom"
-                                            style={{ fill: "oklch(69.6% 0.17 162.48)", fontSize: 18, fontWeight: "bold" }}
+                            {/* Chart Age */}
+                            {loading ? (
+                                <LoadingPieChart />
+                            ) : (
+                                <div className="grid lg:grid-cols-4 md:grid-cols-7 grid-cols-3 items-center">
+                                    <ul className="flex flex-col gap-2 col-span-1">
+                                        {ageData.map((entry, index) => (
+                                            <li key={index} className="flex items-center gap-2 text-xs">
+                                                <span
+                                                    className="w-3 h-3 inline-block rounded"
+                                                    style={{ backgroundColor: COLUR[index % COLUR.length] }}
+                                                />
+                                                {entry.range} Age
+                                            </li>
+                                        ))}
+                                    </ul>
+                                    <div className="lg:col-span-3 md:col-span-6 col-span-2">
+                                        <ResponsiveContainer
+                                            width="100%"
+                                            height={300}
+
+                                        >
+                                            <PieChart>
+                                                <Pie
+                                                    data={ageData as any}
+                                                    dataKey="count"
+                                                    nameKey="range"
+                                                    cx="50%"
+                                                    cy="50%"
+                                                    label={renderCustomizedLabel}
+                                                    labelLine={false}
+                                                >
+                                                    {ageData.map((entry, index) => (
+                                                        <Cell
+                                                            key={`cell-${index}`}
+                                                            fill={COLUR[index % COLUR.length]}
+                                                        />
+                                                    ))}
+                                                </Pie>
+
+                                                <Tooltip
+                                                    formatter={(value: number, name: string, entry: any) => [
+                                                        `${value} Applicant`,
+                                                        `${entry.payload.range} Age`,
+                                                    ]}
+                                                />
+                                            </PieChart>
+
+                                        </ResponsiveContainer>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="lg:col-span-3 h-[350px] lg:h-full">
+                            {/* Chart Location */}
+                            {loading ? (
+                                <LoadingCard />
+                            ) : (
+                                <ResponsiveContainer width="100%" height="100%" className={'bg-neutral-50 rounded-lg'}>
+                                    <BarChart data={locationData} margin={{ top: 20, right: 20, bottom: 40, left: 10 }}>
+                                        <CartesianGrid strokeDasharray="3 3" stroke="oklch(70.8% 0 0)" />
+                                        <XAxis dataKey="city" tickFormatter={(v) => toTitleCase(v)} >
+                                            <RechartsLabel
+                                                value="City"
+                                                offset={-20}
+                                                position="insideBottom"
+                                                style={{ fill: "oklch(69.6% 0.17 162.48)", fontSize: 18, fontWeight: "bold" }}
+                                            />
+                                        </XAxis>
+                                        <YAxis
+                                            // domain={[0, 500]}          // batas min & max
+                                            tickCount={6}              // jumlah garis bantu
+                                        // ticks={[0, 100, 200, 300, 400, 500]} // bisa custom manual juga
+                                        >
+                                            <RechartsLabel
+                                                value="Applicant"
+                                                angle={-90}
+                                                position="insideLeft"
+                                                style={{ fill: "oklch(70.8% 0 0)", fontSize: 18, fontWeight: "bold" }}
+                                            />
+                                        </YAxis>
+                                        <Tooltip labelFormatter={(v) => toTitleCase(v)} />
+                                        <Bar
+                                            dataKey="count"
+                                            fill="oklch(69.6% 0.17 162.48)"
+                                            barSize={40}
                                         />
-                                    </XAxis>
-                                    <YAxis >
-                                        <RechartsLabel
-                                            value="Applicant"
-                                            angle={-90}
-                                            position="insideLeft"
-                                            style={{ fill: "oklch(70.8% 0 0)", fontSize: 18, fontWeight: "bold" }}
-                                        />
-                                    </YAxis>
-                                    <Tooltip labelFormatter={(v) => toTitleCase(v)} />
-                                    <Bar
-                                        dataKey="count"
-                                        fill="oklch(69.6% 0.17 162.48)"
-                                        barSize={40}
-                                    />
-                                </BarChart>
-                            </ResponsiveContainer>
-                        )}
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            )}
+                        </div>
                     </div>
 
                     <p className="mt-2 font-semibold">Total Users: {totalUsers}</p>

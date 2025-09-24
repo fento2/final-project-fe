@@ -86,8 +86,8 @@ const RightSection = ({ cvUrl, education, experience, certificates }: RightSecti
                         <li key={idx}>
                             <p className="font-medium">{exp.position} at {exp.name}</p>
                             <p>
-                                ({new Date(exp.startDate).toLocaleDateString()} -{" "}
-                                {exp.endDate ? new Date(exp.endDate).toLocaleDateString() : "Now"})
+                                ({new Date(exp.startDate).getFullYear()} -{" "}
+                                {exp.endDate ? new Date(exp.endDate).getFullYear() : "Now"})
                             </p>
                             <p className="text-muted-foreground">{exp.description}</p>
                         </li>
