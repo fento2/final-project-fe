@@ -19,18 +19,18 @@ const Schema = z.object({
 
 type FormValues = z.infer<typeof Schema>;
 
-export default function AddUserCompanyModal({ 
-    isOpen, 
-    onClose, 
-    onSaved, 
-    item, 
+export default function AddUserCompanyModal({
+    isOpen,
+    onClose,
+    onSaved,
+    // item,
     title = "Tambah Riwayat Kerja",
-    description 
-}: { 
-    isOpen: boolean; 
-    onClose: () => void; 
-    onSaved?: () => void; 
-    item: Company;
+    description
+}: {
+    isOpen: boolean;
+    onClose: () => void;
+    onSaved?: () => void;
+    // item: Company;
     title?: string;
     description?: string;
 }) {
