@@ -24,3 +24,15 @@ export const SubscriptionUpdateSchema = z.object({
 });
 
 export type SubscriptionUpdateDTO = z.infer<typeof SubscriptionUpdateSchema>;
+
+export const SubscriptionServiceSchema = z.object({
+    subscription_id: z.number(),
+    name: z.string().min(1),
+    price: z.number().int(),
+    createAt: z.string().optional(),
+    updatedAt: z.string().optional(),
+});
+
+export type SubscriptionServiceDTO = z.infer<typeof SubscriptionServiceSchema>;
+
+export const SubscriptionsSchema = z.array(SubscriptionServiceSchema);
