@@ -29,7 +29,7 @@ export interface Interview {
 export interface DetailApplicant {
   name: string;
   email: string;
-  score: number | null;
+  score: number;
   profile_picture: string | null;
   appliedOn: string;
   phone?: string;

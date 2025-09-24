@@ -44,9 +44,9 @@ const ProfileCard = ({
                     )}
                 </Avatar>
                 <CardTitle className="text-2xl font-bold tracking-wide">{name}</CardTitle>
-                <Badge variant="secondary" className="text-lg px-4 py-1">
-                    Score: {score ?? "-"}
-                </Badge>
+                {score === undefined ? null : <Badge variant="secondary" className="text-lg px-4 py-1">
+                    Score: {score}
+                </Badge>}
             </CardHeader>
 
             <CardContent className="space-y-3 text-muted-foreground">

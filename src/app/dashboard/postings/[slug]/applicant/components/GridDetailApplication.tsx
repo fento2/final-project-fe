@@ -153,7 +153,7 @@ const GridDetailApplication = () => {
                         <ProfileCard
                             profile_picture={applicant.profile_picture || undefined}
                             name={applicant.name}
-                            score={applicant.score || undefined}
+                            score={isNaN(applicant.score) ? undefined : applicant.score}
                             email={applicant.email}
                             phone={applicant.phone}
                             address={applicant.address}
