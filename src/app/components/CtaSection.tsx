@@ -3,9 +3,15 @@ import React from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
+import { useAuthStore } from "@/lib/zustand/authStore";
+import { useAuth } from "@/hooks/useAuth";
 
 const CtaSection: React.FC = () => {
   const { setShowSignUp } = useAuthUIStore();
+  const { isLogin } = useAuthStore();
+  const { user } = useAuth();
+  const isLoggedIn = isLogin || !!user;
+
   return (
     <section className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -40,14 +46,16 @@ const CtaSection: React.FC = () => {
               </p>
 
               {/* CTA Button */}
-              <Button
-                onClick={() => {
-                  setShowSignUp(true);
-                }}
-                className="inline-flex items-center justify-center px-10 py-4 bg-indigo-500 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
-              >
-                Join Now
-              </Button>
+              {!isLoggedIn && (
+                <Button
+                  onClick={() => {
+                    setShowSignUp(true);
+                  }}
+                  className="inline-flex items-center justify-center px-10 py-4 bg-indigo-500 text-white font-semibold rounded-lg hover:bg-indigo-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1"
+                >
+                  Join Now
+                </Button>
+              )}
             </div>
           </div>
         </div>
