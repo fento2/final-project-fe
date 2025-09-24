@@ -23,14 +23,14 @@ export default function AddUserCompanyModal({
     isOpen,
     onClose,
     onSaved,
-    // item,
+    item,
     title = "Tambah Riwayat Kerja",
     description
 }: {
     isOpen: boolean;
     onClose: () => void;
     onSaved?: () => void;
-    // item: Company;
+    item?: Company;
     title?: string;
     description?: string;
 }) {
@@ -43,7 +43,7 @@ export default function AddUserCompanyModal({
         },
     });
 
-    const [companies, setCompanies] = useState<Array<{ company_id: number; name: string }>>([]);
+    const [companies, setCompanies] = useState<Array<{ company_id: number; name: string }> | Company>();
 
     useEffect(() => {
         if (isOpen) {
@@ -57,18 +57,25 @@ export default function AddUserCompanyModal({
 
     useEffect(() => {
         if (!isOpen) return;
-        let mounted = true;
-        (async () => {
-            try {
-                const res = await apiCall.get("/company");
-                const raw = Array.isArray(res.data) ? res.data : res.data?.data ?? [];
-                const list = Array.isArray(raw) ? raw : raw.data ?? [];
-                if (mounted) setCompanies(list);
-            } catch (err) {
-                console.error("fetch companies:", err);
-            }
-        })();
-        return () => { mounted = false; };
+        if (item) {
+            setCompanies(item);
+            reset({
+                company_id: item.company_id
+            })
+        } else {
+            let mounted = true;
+            (async () => {
+                try {
+                    const res = await apiCall.get("/company");
+                    const raw = Array.isArray(res.data) ? res.data : res.data?.data ?? [];
+                    const list = Array.isArray(raw) ? raw : raw.data ?? [];
+                    if (mounted) setCompanies(list);
+                } catch (err) {
+                    console.error("fetch companies:", err);
+                }
+            })();
+            return () => { mounted = false; };
+        }
     }, [isOpen]);
 
     const onSubmit = async (data: FormValues) => {
@@ -123,8 +130,12 @@ export default function AddUserCompanyModal({
                                             <SelectValue placeholder="-- New company --" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="new">-- New company --</SelectItem>
-                                            {companies.map((c) => (
+                                            {
+                                                !item && <SelectItem value="new">-- New company --</SelectItem>
+                                            }
+                                            {item ? (
+                                                <SelectItem key={item.company_id} value={String(item.company_id)}>{item.name}</SelectItem>
+                                            ) : Array.isArray(companies) && companies.map((c) => (
                                                 <SelectItem key={c.company_id} value={String(c.company_id)}>
                                                     {c.name}
                                                 </SelectItem>
