@@ -9,6 +9,7 @@ import { Calendar, Briefcase, Dot, EllipsisVertical } from "lucide-react";
 import { useEffect, useState } from "react";
 import z from "zod";
 import ExperienceEditModal from "./ExperienceEditModal";
+import { UserCompanyItem } from "@/types/userCompany";
 
 interface ExperienceCardListProps {
     experiences: ExperienceValue[];
@@ -46,13 +47,13 @@ const ExperienceCardItem = ({ experience_id, name, position, user_id, startDate,
             </CardHeader>
 
             <CardContent className="text-sm text-muted-foreground space-y-2 flex flex-col gap-1">
-                <p className="flex items-center gap-1 font-medium">
+                <div className="flex items-center gap-1 font-medium">
                     <Calendar className="w-4 h-4" />
                     {formatDateIDDateOnly(startDate || "")}
                     <Dot className="w-2 h-2" />
                     {/* {endMonth && endYear ? `${endMonth} ${endYear}` : "Present"} */}
                     {!endDate ? <Badge>Present</Badge> : formatDateIDDateOnly(endDate || "")}
-                </p>
+                </div>
                 {description && <p className="text-foreground">{description}</p>}
             </CardContent>
         </Card>
@@ -75,6 +76,42 @@ const ExperienceCardList = ({ experiences, onEdit, onDelete }: ExperienceCardLis
     );
 };
 
+interface UserCompanyCardListProps {
+    userCompany: UserCompanyItem[];
+    onEdit?: (id: number) => void;
+    onDelete?: (id: number) => void;
+}
+
+const UserCompanyCardList = ({ userCompany, onEdit, onDelete }: UserCompanyCardListProps) => {
+    return (
+        <div className="space-y-4 mt-4">
+            {userCompany.map((val) => (
+                <Card className="w-full shadow-xs hover:shadow-xl transition-shadow duration-300 border border-gray-200 relative" key={val.company_id}>
+                    <CardHeader className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
+                        <div className="flex flex-col gap-1">
+                            <CardTitle className="text-lg sm:text-xl flex items-center gap-2">
+                                <Briefcase className="w-5 h-5 text-indigo-500" />
+                                {val.company.name}
+                            </CardTitle>
+                        </div>
+                    </CardHeader>
+
+                    <CardContent className="text-sm text-muted-foreground space-y-2 flex flex-col gap-1">
+                        <div className="flex items-center gap-1 font-medium">
+                            <Calendar className="w-4 h-4" />
+                            {formatDateIDDateOnly(val.start_date || "")}
+                            <Dot className="w-2 h-2" />
+                            {/* {endMonth && endYear ? `${endMonth} ${endYear}` : "Present"} */}
+                            {!val.end_date ? <Badge>Present</Badge> : formatDateIDDateOnly(val.end_date || "")}
+                        </div>
+                        {/* {description && <p className="text-foreground">{description}</p>} */}
+                    </CardContent>
+                </Card>
+            ))}
+        </div>
+    );
+}
+
 const ExperienceSchema = z.object({
     experience_id: z.number().optional(),
     name: z.string().min(1),
@@ -92,11 +129,14 @@ const ExperienceCard = () => {
     const [data, setData] = useState<ExperienceValue[]>([]);
     const [selected, setSelected] = useState<ExperienceValue | null>(null);
     const [editOpen, setEditOpen] = useState(false);
+    const [dataUserCompany, setDataUserCompany] = useState<UserCompanyItem[]>([]);
 
     const fetchData = async () => {
         try {
             const { data } = await apiCall.get("/experiences");
             setData(data.data)
+            const result = await apiCall.get("/user-companies")
+            setDataUserCompany(result.data.data)
         } catch (error) {
             console.log(error);
         }
@@ -127,6 +167,9 @@ const ExperienceCard = () => {
                 onEdit={handleEdit}
                 onDelete={handleDelete}
             />
+            
+            <UserCompanyCardList userCompany={dataUserCompany} />
+
             <ExperienceEditModal
                 isOpen={editOpen}
                 onClose={() => setEditOpen(false)}
