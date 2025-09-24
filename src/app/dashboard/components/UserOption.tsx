@@ -33,11 +33,6 @@ const menus = [
     ],
   },
   {
-    title: "Interview",
-    icon: MessagesSquare,
-    href: "/dashboard/interview",
-  },
-  {
     title: "Skill",
     icon: Star,
     sub: [
