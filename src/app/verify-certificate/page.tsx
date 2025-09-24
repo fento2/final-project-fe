@@ -1,6 +1,7 @@
 "use client";
 import { apiCall } from "@/helper/apiCall";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 type VerifyResponse = {
     assessment_certificate_id: number;
@@ -29,6 +30,8 @@ export default function VerifyCertificatePage() {
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<VerifyResponse | null>(null);
     const [error, setError] = useState<string | null>(null);
+
+    const searchParams = useSearchParams();
 
     async function handleVerify(e?: React.FormEvent) {
         e?.preventDefault();
@@ -61,6 +64,20 @@ export default function VerifyCertificatePage() {
         setResult(null);
         setError(null);
     }
+
+    useEffect(() => {
+        const id = searchParams?.get("id");
+        if (id) {
+            setCertificateId(id);
+        }
+    }, [searchParams]);
+
+    useEffect(() => {
+        const id = searchParams?.get("id");
+        if (id && certificateId === id) {
+            handleVerify();
+        }
+    }, [certificateId, searchParams]);
 
     return (
         <div className="container md:pl-20 mx-auto min-h-screen px-4 py-6">
