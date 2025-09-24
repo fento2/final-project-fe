@@ -11,6 +11,9 @@ import { QRCodeCanvas } from "qrcode.react";
 
 type AssessmentCertificate = AssessmentCertificateDTO & {
     user_assessment: UserAssessmentDTO & {
+        assessment: {
+            skill_name: string,
+        }
         user: {
             name: string,
             email: string,
@@ -90,7 +93,7 @@ export default function DetailCertificatePage() {
                             <h2 className="text-3xl font-bold mb-4 text-blue-600">
                                 {dataCertificate.user_assessment.user?.name ?? dataCertificate.user_assessment.user?.username ?? "Unknown User"}
                             </h2>
-                            <p className="text-lg text-gray-700 mb-2">has successfully completed the assessment</p>
+                            <p className="text-lg text-gray-700 mb-2">has successfully completed the {dataCertificate.user_assessment.assessment.skill_name} assessment</p>
                             <p className="text-xl font-semibold text-gray-800">with a score of {dataCertificate.user_assessment.score ?? "N/A"}%</p>
                         </div>
 

@@ -16,6 +16,7 @@ import SubscriptionModal from "./_components/SubscriptionModal";
 import { Subscription } from "@/types/subscription";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuthStore } from "@/lib/zustand/authStore";
 
 export default function SubscriptionPage() {
     const [activeSub, setActiveSub] = useState<UserSubscriptionActiveDTO>();
@@ -24,6 +25,7 @@ export default function SubscriptionPage() {
     const [subscription, setSubscription] = useState<Subscription[]>([]);
     const [showSubscription, setShowSubscription] = useState(false);
     const [selectedSubscription, setSelectedSubscription] = useState<Subscription>();
+    const { profile_picture } = useAuthStore();
 
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [uploading, setUploading] = useState(false);
@@ -89,7 +91,7 @@ export default function SubscriptionPage() {
                     <CardHeader>
                         <div className="flex items-center space-x-4">
                             <Avatar className="h-12 w-12">
-                                <AvatarImage src="" alt={activeSub.user?.username} />
+                                <AvatarImage src={profile_picture} alt={activeSub.user?.username} />
                                 <AvatarFallback>{activeSub.user.name}</AvatarFallback>
                             </Avatar>
                             <div>

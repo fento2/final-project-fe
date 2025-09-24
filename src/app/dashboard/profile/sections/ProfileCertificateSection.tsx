@@ -87,7 +87,7 @@ export default function ProfileCertificateSection() {
             <CardHeader>
                 <CardTitle>Certificates</CardTitle>
                 <CardDescription>Your issued assessment certificates</CardDescription>
-                <CertificateBadge id={36} />
+                <CertificateBadge />
             </CardHeader>
 
             <CardContent className="space-y-3">
