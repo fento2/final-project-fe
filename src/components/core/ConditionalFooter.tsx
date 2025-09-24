@@ -6,9 +6,7 @@ import Footer from "./Footer";
 export default function ConditionalFooter() {
   const pathname = usePathname() || "/";
 
-  const hideOn = ["/dashboard", '/verify', '/selection'];
-
-  const shouldHide = hideOn.some((p) => pathname.startsWith(p));
+  const shouldHide = pathname.includes("/dashboard/") || pathname.startsWith('/verify') || pathname.startsWith('/selection');
 
   if (shouldHide) return null;
   return <Footer />;

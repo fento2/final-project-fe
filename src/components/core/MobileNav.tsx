@@ -219,7 +219,7 @@ const MobileNav = ({ setOpen, setActive, active }: IMobileNav) => {
               <ul className="pl-4 flex flex-col gap-2 mt-1">
                 <li>
                   <Link
-                    href="/dashboard/profile"
+                    href={useAuthStore.getState().role === "DEVELOPER" ? "/dashboard/list-skill-assessment" : useAuthStore.getState().role === "COMPANY" ? "/dashboard/company" : "/dashboard/profile"}
                     className="block px-2 py-1 rounded hover:bg-gray-100"
                     onClick={() => setOpen(false)}
                   >
@@ -228,7 +228,7 @@ const MobileNav = ({ setOpen, setActive, active }: IMobileNav) => {
                 </li>
                 <li>
                   <Link
-                    href="/dashboard"
+                    href={useAuthStore.getState().role === "DEVELOPER" ? "/dashboard/list-skill-assessment" : useAuthStore.getState().role === "COMPANY" ? "/dashboard/company" : "/dashboard/profile"}
                     className="block px-2 py-1 rounded hover:bg-gray-100"
                     onClick={() => setOpen(false)}
                   >
