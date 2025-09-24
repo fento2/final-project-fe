@@ -14,6 +14,8 @@ export default function ServicePage() {
     const { user } = useAuth();
     const { setShowSignUp } = useAuthUIStore();
     const router = useRouter();
+    const { isLogin } = useAuthStore();
+    const isLoggedIn = isLogin || !!user;
 
     const handleGetStarted = () => {
         if (!user) {
@@ -45,7 +47,7 @@ export default function ServicePage() {
                                 onClick={handleGetStarted}
                                 className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-md"
                             >
-                                {user ? "Go to Dashboard" : "Get Started"}
+                                {isLoggedIn ? "Go to Dashboard" : "Get Started"}
                             </Button>
                             <Button 
                                 onClick={handleTalkToSales}

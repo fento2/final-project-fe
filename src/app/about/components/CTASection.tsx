@@ -3,13 +3,17 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { useAuthStore } from "@/lib/zustand/authStore";
 import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
 import { useState } from "react";
 
 export default function CTASection() {
     const { user } = useAuth();
+    const { isLogin } = useAuthStore();
     const { setShowSignUp } = useAuthUIStore();
     const [showCompanyModal, setShowCompanyModal] = useState(false);
+
+    const isLoggedIn = isLogin || !!user;
 
     const handleGetStarted = () => {
         if (!user) {
@@ -40,7 +44,7 @@ export default function CTASection() {
                     </p>
                     
                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                        {user ? (
+                        {isLoggedIn ? (
                             <Link 
                                 href="/jobs" 
                                 className="inline-flex items-center bg-white text-indigo-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-50 transition-colors duration-200"

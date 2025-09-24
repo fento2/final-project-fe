@@ -134,7 +134,7 @@ const BlogNewsSection = () => {
                                 className="flex transition-transform duration-300 ease-in-out"
                                 style={{ transform: `translateX(-${currentIndex * 280}px)` }}
                             >
-                                {blogPosts.map((post: any) => (
+                                {blogPosts.slice(0, 3).map((post: any) => (
                                     <div key={post.id} className="flex-shrink-0 w-64 mr-4">
                                         <Link href={`/blog/${post.slug}`}>
                                             <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 border-0 shadow-lg h-full cursor-pointer">
@@ -200,7 +200,7 @@ const BlogNewsSection = () => {
                     </div>
                     {/* Dots Indicator */}
                     <div className="flex justify-center mt-6 space-x-2">
-                        {blogPosts.map((_, index) => (
+                        {blogPosts.slice(0, 3).map((_, index) => (
                             <button
                                 key={index}
                                 onClick={() => setCurrentIndex(index)}
@@ -212,7 +212,7 @@ const BlogNewsSection = () => {
                 </div>
                 {/* Desktop Grid */}
                 <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-                    {blogPosts.map((post: any) => (
+                    {blogPosts.slice(0, 3).map((post: any) => (
                         <Link key={post.id} href={`/blog/${post.slug}`}>
                             <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 border-0 shadow-lg cursor-pointer h-full">
                                 <div className="relative h-56 md:h-64 bg-gray-100 overflow-hidden">
