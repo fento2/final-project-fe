@@ -19,6 +19,8 @@ import { PaginationDashboard } from "./componetns/PaginationDashboard";
 import { toSEO, toTitleCase } from "@/helper/toTitleCase";
 import debounce from "lodash.debounce";
 import ButtonLoading from "./componetns/ButtonLoading";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 const PostingsPage = () => {
   useAuthRole("COMPANY");
@@ -37,6 +39,9 @@ const PostingsPage = () => {
   const [totalPage, setTotalPage] = useState(1);
   const [loading, setLoading] = useState(false);
 
+  const [showPreselection, setShowPreselection] = useState<boolean>(searchParams.get('only-preselection') === 'true')
+  const [showNotExpired, setShowNotExpired] = useState<boolean>(searchParams.get('only-not-expired') === 'true')
+
   const perPage = 6;
 
   // update url ketika state berubah
@@ -45,23 +50,25 @@ const PostingsPage = () => {
     if (search) params.set("search", toSEO(search));
     if (sort) params.set("sort", sort);
     if (category) params.set("category", toSEO(category));
+    if (showPreselection) params.set('only-preselection', 'true')
+    if (showNotExpired) params.set('only-not-expired', 'true')
 
     params.set("page", currentPage.toString());
     params.set("limit", perPage.toString()); // limit
 
     router.replace(`/dashboard/postings?${params.toString()}`);
-  }, [search, sort, category, currentPage, perPage, router]);
+  }, [search, sort, category, currentPage, perPage, router, showNotExpired, showPreselection]);
 
   // Fetch jobs
   const deboucedFetchJobs = useMemo(
-    () => debounce((searchVal: string, sortVal: string, categoryVal: string, page: number) => {
-      fetchJobs(searchVal, sortVal, categoryVal, page);
+    () => debounce((searchVal: string, sortVal: string, categoryVal: string, page: number, showNotExpired: boolean, showPreselection: boolean) => {
+      fetchJobs(searchVal, sortVal, categoryVal, page, showNotExpired, showPreselection);
     }, 1000),
     []
   );
 
   // update fetchJobs untuk menerima semua filter
-  const fetchJobs = async (search: string, sort: string, category: string, page: number) => {
+  const fetchJobs = async (search: string, sort: string, category: string, page: number, showNotExpired: boolean, showPreselection: boolean) => {
     try {
       setLoading(true)
       const params = new URLSearchParams();
@@ -70,6 +77,8 @@ const PostingsPage = () => {
       params.set("category", category);
       params.set("page", page.toString());
       params.set("limit", perPage.toString());
+      if (showPreselection) params.set('onlyPreselection', 'true')
+      if (showNotExpired) params.set('notExpired', 'true')
 
       const { data } = await apiCall.get(`/postings/get?${params.toString()}`);
 
@@ -86,10 +95,10 @@ const PostingsPage = () => {
 
   // panggil debounce tiap kali salah satu filter berubah
   useEffect(() => {
-    deboucedFetchJobs(search, sort, category, currentPage);
+    deboucedFetchJobs(search, sort, category, currentPage, showNotExpired, showPreselection);
 
     return () => deboucedFetchJobs.cancel();
-  }, [search, sort, category, currentPage]);
+  }, [search, sort, category, currentPage, showNotExpired, showPreselection]);
   ;
 
   useEffect(() => {
@@ -111,8 +120,9 @@ const PostingsPage = () => {
       </div>
 
       {/* Search & Filters */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-4 justify-between">
-        <div className="relative sm:w-1/2">
+      <div className="flex flex-col gap-4">
+        {/* Search bar di atas */}
+        <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5" />
           <Input
             placeholder="Search job..."
@@ -121,39 +131,83 @@ const PostingsPage = () => {
               setSearch(e.target.value);
               setCurrentPage(1);
             }}
-            className="py-6 !text-lg pl-10"
+            className="pl-10"
           />
         </div>
 
-        <div className="flex gap-2">
-          <Select
-            value={category}
-            onValueChange={(v) => {
-              setCategory(v);
-              setCurrentPage(1);
-            }}
-          >
-            <SelectTrigger className="w-[180px] py-6 text-lg">
-              <SelectValue placeholder="Filter category" />
-            </SelectTrigger>
-            <SelectContent>
-              {categories.map((cat) => (
-                <SelectItem key={cat} value={cat} className="py-4 text-lg">{toTitleCase(cat)}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        {/* Filters di bawah */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          {/* Checkbox filters */}
+          <div className="flex gap-4 lg:flex-row flex-col">
+            {/* Show Preselection */}
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="show-preselection"
+                checked={showPreselection}
+                className="w-5 h-5"
+                onCheckedChange={(checked) => setShowPreselection(!!checked)}
+              />
+              <Label
+                htmlFor="show-preselection"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Only Show Preselection required
+              </Label>
+            </div>
 
-          <Select value={sort} onValueChange={(v) => setSort(v)}>
-            <SelectTrigger className="w-[150px] py-6 text-lg">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="desc" className="py-4 text-lg">Desc</SelectItem>
-              <SelectItem value="asc" className="py-4 text-lg">Asc</SelectItem>
-            </SelectContent>
-          </Select>
+            {/* Show Not Expired */}
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="show-not-expired"
+                checked={showNotExpired}
+                className="w-5 h-5"
+                onCheckedChange={(checked) => setShowNotExpired(!!checked)}
+              />
+              <Label
+                htmlFor="show-not-expired"
+                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
+                Only Show Not Expired
+              </Label>
+            </div>
+          </div>
+
+          {/* Select filters */}
+          <div className="flex items-center gap-2 lg:flex-row flex-col">
+            {/* Category Select */}
+            <Select
+              value={category}
+              onValueChange={(v) => {
+                setCategory(v);
+                setCurrentPage(1);
+              }}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Filter category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((cat) => (
+                  <SelectItem key={cat} value={cat}>
+                    {toTitleCase(cat)}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {/* Sort Select */}
+            <Select value={sort} onValueChange={(v) => setSort(v)}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="desc">Desc</SelectItem>
+                <SelectItem value="asc">Asc</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </div>
+
 
       {/* Jobs Grid */}
       {!loading ? (

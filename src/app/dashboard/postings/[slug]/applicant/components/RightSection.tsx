@@ -1,5 +1,7 @@
+'use client'
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface Education {
     degree: string;
@@ -31,6 +33,7 @@ export interface RightSectionProps {
 
 
 const RightSection = ({ cvUrl, education, experience, certificates }: RightSectionProps) => {
+    const router = useRouter()
     return (
         <>
             {/* CV Preview */}
@@ -90,9 +93,17 @@ const RightSection = ({ cvUrl, education, experience, certificates }: RightSecti
                 <p className="font-semibold">Certificates</p>
                 <ul className="list-disc pl-5 space-y-1">
                     {certificates.map((cert, idx) => (
-                        <li key={idx}>{cert.code}</li>
+                        <li key={idx}>
+                            <button
+                                onClick={() => router.push(`/verify-certificate?id=${cert.code}`)}
+                                className="px-2 py-1 font-mono text-sm rounded-md bg-gray-100 text-indigo-600 hover:text-indigo-800 hover:bg-gray-200 transition underline cursor-pointer"
+                            >
+                                {cert.code}
+                            </button>
+                        </li>
                     ))}
                 </ul>
+
             </div>
         </>
     );
