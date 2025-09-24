@@ -2,27 +2,11 @@
 import { useEffect, useState } from "react";
 import { apiCall } from "@/helper/apiCall";
 import Image from "next/image";
-import type { BackendUser, CVData, Experience } from "@/types/cvGenerator";
+import type { BackendUser, CVData } from "@/types/cvGenerator";
 import CVPreviewWithGenerate from "../components/CVPreviewWithGenerate";
-
-function getLatestExperience(exps?: Experience[]): Experience | undefined {
-    if (!exps || exps.length === 0) return undefined;
-    return [...exps].sort((a, b) => {
-        const aEnd = a.endDate ? new Date(a.endDate).getTime() : Date.now();
-        const bEnd = b.endDate ? new Date(b.endDate).getTime() : Date.now();
-        return bEnd - aEnd;
-    })[0];
-}
-
-function yearsOfExperience(exps?: Experience[]): number {
-    if (!exps || exps.length === 0) return 0;
-    const starts = exps.map(e => new Date(e.startDate).getTime());
-    const ends = exps.map(e => (e.endDate ? new Date(e.endDate).getTime() : Date.now()));
-    const minStart = Math.min(...starts);
-    const maxEnd = Math.max(...ends);
-    const years = (maxEnd - minStart) / (1000 * 60 * 60 * 24 * 365.25);
-    return Math.max(0, Math.round(years));
-}
+import { Card, CardContent } from "@/components/ui/card";
+import { useSubscription } from "@/hooks/useSubscription";
+import { deriveHeadline, deriveSummary, getLatestExperience } from "@/lib/cvHelper";
 
 export default function ProfileCvGeneratorSection() {
     const [cvData, setCvData] = useState<CVData>({
@@ -34,75 +18,39 @@ export default function ProfileCvGeneratorSection() {
     const [user, setUser] = useState<BackendUser | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
+    const subActive = useSubscription();
+
+    const fetchData = async () => {
+        let mounted = true;
+        setLoading(true);
+        setError(null);
+        try {
+            const res = await apiCall.get("/account/cv/generator");
+            const raw = res.data?.data ?? res.data;
+            const extracted: BackendUser | null = Array.isArray(raw) ? (raw[0] ?? null) : (raw ?? null);
+
+            if (mounted) {
+                setUser(extracted);
+                if (extracted && subActive === true) {
+                    setCvData(prev => ({
+                        ...prev,
+                        headline: prev.headline || deriveHeadline(extracted),
+                        summary: prev.summary || deriveSummary(extracted),
+                    }));
+                }
+            }
+        } catch (e: any) {
+            if (mounted) setError(e?.response?.data?.message || e?.message || "Failed to load profile");
+        } finally {
+            if (mounted) setLoading(false);
+        }
+    }
 
     useEffect(() => {
-        let mounted = true;
-        async function load() {
-            setLoading(true);
-            setError(null);
-            try {
-                const res = await apiCall.get("/account/cv/generator");
-                const raw = res.data?.data ?? res.data;
-                const extracted: BackendUser | null = Array.isArray(raw) ? (raw[0] ?? null) : (raw ?? null);
+        fetchData()
+    }, [subActive])
 
-                if (mounted) {
-                    setUser(extracted);
-                    if (extracted) {
-                        setCvData(prev => ({
-                            ...prev,
-                            headline: prev.headline || deriveHeadline(extracted),
-                            summary: prev.summary || deriveSummary(extracted),
-                        }));
-                    }
-                }
-            } catch (e: any) {
-                if (mounted) setError(e?.response?.data?.message || e?.message || "Failed to load profile");
-            } finally {
-                if (mounted) setLoading(false);
-            }
-        }
-        load();
-        return () => { mounted = false; };
-    }, []);
-
-    function deriveHeadline(u: BackendUser): string {
-        const latest = getLatestExperience(u.experience);
-        if (latest?.position) return latest.position;
-        const firstSkill = u.userSkills?.[0].skill?.name;
-        if (firstSkill) return `${firstSkill} Professional`;
-        return "Professional";
-    }
-
-    function deriveSummary(u: BackendUser): string {
-        const name = u.profiles?.name || u.name || u.username || "Professional";
-        const latest = getLatestExperience(u.experience);
-        const yrs = yearsOfExperience(u.experience);
-        const company = latest?.name;
-        const position = latest?.position;
-
-        const parts: string[] = [];
-        const headerParts: string[] = [];
-        if (position) headerParts.push(position);
-        if (yrs) headerParts.push(`${yrs}+ years`);
-        if (company) headerParts.push(`at ${company}`);
-        parts.push(`${name}${headerParts.length ? ` — ${headerParts.join(" • ")}` : ""}.`);
-
-        if (u.user_assessment && u.user_assessment.length) {
-            const passed = u.user_assessment.filter(a => typeof a.score === "number" && a.score >= 60);
-            if (passed.length) parts.push(`Certified in ${passed.length} assessment${passed.length > 1 ? "s" : ""}.`);
-        }
-
-        if (u.userSkills && u.userSkills.length) {
-            const skills = u.userSkills
-                .slice(0, 5)
-                .map(s => s.skill?.name ?? (s as any).skill_name ?? "")
-                .filter(Boolean)
-                .join(", ");
-            if (skills) parts.push(`Key skills: ${skills}.`);
-        }
-
-        return parts.join(" ");
-    }
+    if (subActive === false) return <Card className="mt-6"><CardContent className="text-sm text-gray-700">You don't have an active subscription yet. To use the CV Generator feature, please subscribe first.</CardContent></Card>
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -120,13 +68,12 @@ export default function ProfileCvGeneratorSection() {
 
     return (
         <section className="p-6 bg-white rounded-xl shadow-md">
-            <h2 className="text-xl font-bold mb-4">CV Generator</h2>
-
             {loading && <p className="text-sm text-gray-500">Loading profile...</p>}
             {error && <p className="text-sm text-red-600">Error: {error}</p>}
 
             {!loading && !error && (
                 <div>
+                    <h2 className="text-xl font-bold mb-4">CV Generator</h2>
                     {user && (
                         <div className="mb-6 p-4 border rounded-lg bg-gray-50">
                             <div className="flex items-center gap-4">

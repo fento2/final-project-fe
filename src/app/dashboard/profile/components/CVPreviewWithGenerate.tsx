@@ -6,6 +6,7 @@ import { usePrint } from "@/hooks/usePrint";
 import { apiCall } from "@/helper/apiCall";
 import { UserSubscriptionActiveDTO } from "@/types/userSubscription";
 import { Button } from "@/components/ui/button";
+import { QRCodeCanvas } from "qrcode.react";
 
 type Props = {
     user: BackendUser | null;
@@ -133,10 +134,15 @@ export default function CVPreviewWithGenerate({ user, cvData, btnLabel = "Genera
                                     const c = ua.assessment_certificates!;
                                     return (
                                         <article key={ua.user_assessment_id} className="flex items-center justify-between gap-4 p-4 border rounded-lg bg-gray-50">
-                                            <div>
-                                                <div className="text-sm font-medium text-gray-800">Certificate</div>
-                                                <div className="text-xs text-gray-600 mt-1">Code: <span className="font-mono">{c.certificate_code}</span></div>
-                                                <div className="text-xs text-gray-500">Date: {new Date(c.createAt).toLocaleDateString()} • Score: {ua.score}</div>
+                                            <div className="flex justify-between w-full">
+                                                <div>
+                                                    <div className="text-sm font-medium text-gray-800">Certificate</div>
+                                                    <div className="text-xs text-gray-600 mt-1">Code: <span className="font-mono">{c.certificate_code}</span></div>
+                                                    <div className="text-xs text-gray-500">Date: {new Date(c.createAt).toLocaleDateString()} • Score: {ua.score}</div>
+                                                </div>
+                                                <div className="flex justify-end">
+                                                    <QRCodeCanvas value={`http://localhost:3000/verify-certificate?id=${c.certificate_code}`} size={128} level="H" />
+                                                </div>
                                             </div>
                                         </article>
                                     );

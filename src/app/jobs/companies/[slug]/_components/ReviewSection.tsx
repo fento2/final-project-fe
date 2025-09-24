@@ -137,15 +137,18 @@ export default function ReviewSection({ companyName }: ReviewSectionProps) {
                         >
                             <div className="flex items-start justify-between gap-3">
                                 <div className="flex items-center gap-3">
-                                    {user?.avatarUrl ? (
+                                    {/* {user?.avatarUrl ? (
                                         <Image width={40} height={40} src={user.avatarUrl} alt={user.name} className="h-10 w-10 rounded-full object-cover" />
                                     ) : (
                                         <div className="h-10 w-10 rounded-full bg-indigo-100 text-indigo-700 grid place-items-center text-sm font-semibold">
                                             {initials(user?.name ?? "U")}
                                         </div>
-                                    )}
+                                    )} */}
+                                    <div className="h-10 w-10 rounded-full bg-indigo-100 text-indigo-700 grid place-items-center text-sm font-semibold">
+                                        {initials(user?.name ?? "U")}
+                                    </div>
                                     <div>
-                                        <div className="font-medium leading-5">{user?.name ?? `User #${r.user_company_id}`}</div>
+                                        <div className="font-medium leading-5">*****</div>
                                         <div className="text-xs text-gray-500">{formatDate(r.createAt)}</div>
                                     </div>
                                 </div>
