@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface Education {
     degree: string;
@@ -40,22 +41,11 @@ const RightSection = ({ cvUrl, education, experience, certificates }: RightSecti
                     type="application/pdf"
                     className="w-full h-[900px] border rounded-md mb-2"
                 >
-                    <p className="text-center text-muted-foreground">
-                        Unable to display CV.{" "}
-                        <a
-                            href={cvUrl ?? "/dummy-cv.pdf"}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 underline hover:text-blue-800"
-                        >
-                            Download here
-                        </a>
-                    </p>
                 </object>
                 <Button className="bg-indigo-600 hover:bg-indigo-900">
-                    <a href={cvUrl ?? "/dummy-cv.pdf"} target="_blank" rel="noopener noreferrer">
-                        Download CV
-                    </a>
+                    <Link href={cvUrl ?? "/dummy-cv.pdf"} target="_blank" rel="noopener noreferrer">
+                        View full page
+                    </Link>
                 </Button>
             </div>
 

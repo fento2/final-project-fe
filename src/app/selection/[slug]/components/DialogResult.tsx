@@ -16,14 +16,11 @@ const DialogResult: React.FC<DialogResultProps> = ({ score, open, setOpen: onClo
     const param = useParams()
 
     const handleButtonClick = () => {
-        onClose(false);
-
-        router.replace(`/jobs/${param.slug}/apply`); // ganti "/lamaran" sesuai route lamaranmu
-
+        router.replace(`/jobs/${param.slug}/apply`);
     };
 
     return (
-        <Dialog open={open} onOpenChange={onClose}>
+        <Dialog open={open} onOpenChange={() => { }}>
             <DialogContent className="max-w-md rounded-2xl bg-white shadow-2xl p-8 transform transition-transform duration-300 ease-out scale-95 animate-fade-in">
                 <DialogHeader className="text-center">
                     <DialogTitle className="text-3xl font-extrabold text-gray-900">
