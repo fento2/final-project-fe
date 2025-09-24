@@ -56,7 +56,7 @@ const DetailPostingWithApplicant = () => {
                     <h2 className="text-base sm:text-lg md:text-2xl font-semibold tracking-wide mb-4 md:mb-6 border-b border-gray-200 pb-1">
                         About This Job
                     </h2>
-                    <ReadOnlyQuill value={job.description} />
+                    <ReadOnlyQuill value={job.description} className="text-base leading-relaxed text-gray-700" />
                 </section>
 
                 {/* Info Grid */}

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import Image from "next/image";
 
 const AboutUsSection: React.FC = () => {
@@ -110,9 +111,9 @@ const AboutUsSection: React.FC = () => {
                         </div>
 
                         <div className="pt-4">
-                            <button className="text-gray-900 font-semibold text-lg hover:text-indigo-600 transition-colors duration-200 border-b-2 border-gray-900 hover:border-indigo-600 pb-1">
+                            <Link href="/about" className="inline-block text-gray-900 font-semibold text-lg hover:text-indigo-600 transition-colors duration-200 border-b-2 border-gray-900 hover:border-indigo-600 pb-1">
                                 Learn More About Us
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </div>

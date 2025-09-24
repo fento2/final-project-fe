@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Twitter, Instagram, Facebook, Linkedin, Globe } from "lucide-react";
 
 export default function Footer() {
@@ -61,48 +62,84 @@ export default function Footer() {
 						<div>
 							<h4 className="text-xl font-bold text-gray-900">Jobs</h4>
 							<ul className="mt-4 text-gray-500 space-y-2">
-								<li>IT Development</li>
-								<li>Finance</li>
-								<li>Healthcare</li>
-								<li>Sales & Marketing</li>
-								<li>Education</li>
+								<li>
+									<Link href="/jobs/browse" className="hover:text-indigo-600">Browse Jobs</Link>
+								</li>
+								<li>
+									<Link href="/jobs/companies" className="hover:text-indigo-600">Top Companies</Link>
+								</li>
+								<li>
+									<Link href="/jobs" className="hover:text-indigo-600">Featured Jobs</Link>
+								</li>
+								<li>
+									<Link href={{ pathname: "/jobs/browse", query: { type: "Remote" } }} className="hover:text-indigo-600">Remote Jobs</Link>
+								</li>
+								<li>
+									<Link href={{ pathname: "/jobs/browse", query: { categories: "Information Technology" } }} className="hover:text-indigo-600">Tech Jobs</Link>
+								</li>
 							</ul>
 						</div>
 
 						<div>
 							<h4 className="text-xl font-bold text-gray-900">About</h4>
 							<ul className="mt-4 text-gray-500 space-y-2">
-								<li>About Us</li>
-								<li>History</li>
-								<li>Our Team</li>
-								<li>Testimonials</li>
+								<li>
+									<Link href="/about" className="hover:text-indigo-600">About Us</Link>
+								</li>
+								<li>
+									<Link href="/services" className="hover:text-indigo-600">Services</Link>
+								</li>
+								<li>
+									<Link href="/blog" className="hover:text-indigo-600">Blog</Link>
+								</li>
+								<li>
+									<Link href="/contact" className="hover:text-indigo-600">Contact</Link>
+								</li>
 							</ul>
 						</div>
 
 						<div>
 							<h4 className="text-xl font-bold text-gray-900">Services</h4>
 							<ul className="mt-4 text-gray-500 space-y-2">
-								<li>For Employee</li>
-								<li>For Employer</li>
-								<li>Support</li>
+								<li>
+									<Link href="/services" className="hover:text-indigo-600">For Job Seekers</Link>
+								</li>
+								<li>
+									<Link href="/services" className="hover:text-indigo-600">For Employers</Link>
+								</li>
+								<li>
+									<Link href="/contact" className="hover:text-indigo-600">Support</Link>
+								</li>
 							</ul>
 						</div>
 
 						<div>
 							<h4 className="text-xl font-bold text-gray-900">Blog</h4>
 							<ul className="mt-4 text-gray-500 space-y-2">
-								<li>News</li>
-								<li>Tips</li>
-								<li>Events</li>
+								<li>
+									<Link href="/blog" className="hover:text-indigo-600">All Posts</Link>
+								</li>
+								<li>
+									<Link href="/blog" className="hover:text-indigo-600">Hiring Tips</Link>
+								</li>
+								<li>
+									<Link href="/blog" className="hover:text-indigo-600">Industry News</Link>
+								</li>
 							</ul>
 						</div>
 
 						<div>
 							<h4 className="text-xl font-bold text-gray-900">Contact</h4>
 							<ul className="mt-4 text-gray-500 space-y-2">
-								<li>Phone</li>
-								<li>Email</li>
-								<li>Social Media</li>
+								<li>
+									<Link href="/contact" className="hover:text-indigo-600">Contact Page</Link>
+								</li>
+								<li>
+									<Link href="/contact" className="hover:text-indigo-600">Email Us</Link>
+								</li>
+								<li>
+									<a href="#" className="hover:text-indigo-600">Social Media</a>
+								</li>
 							</ul>
 						</div>
 					</div>

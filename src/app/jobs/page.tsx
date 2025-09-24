@@ -209,7 +209,7 @@ export default function JobsListPage() {
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-2xl font-semibold">Featured Companies</h2>
                         {/* <a href="/jobs/companies" className="text-sm text-indigo-600 hover:underline">See all companies →</a> */}
-                        <a href="/jobs/company" className="text-sm text-indigo-600 hover:underline">See all companies →</a>
+                        <a href="/jobs/companies" className="text-sm text-indigo-600 hover:underline">See all companies →</a>
                     </div>
 
                     {loading ? (
@@ -289,14 +289,8 @@ export default function JobsListPage() {
 
                                     {/* Action Button */}
                                     <div className="mt-auto pt-4 border-t border-gray-100">
-                                        <div className="flex items-center justify-between">
+                                        <div className="flex items-center justify-start">
                                             <span className="text-sm text-gray-500">View Company</span>
-                                            <div className="text-sm text-indigo-600 group-hover:text-indigo-700 transition-colors font-medium flex items-center gap-1">
-                                                <span>View Jobs</span>
-                                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                                                </svg>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>

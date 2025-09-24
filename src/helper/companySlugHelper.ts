@@ -1,27 +1,47 @@
 /**
  * Helper function to generate company slug from company name
- * This matches the pattern used in existing company components
+ * Uses URL encoding for company names like "Agritech%20Solutions"
  */
 export const generateCompanySlug = (companyName: string): string => {
     if (!companyName) return '';
     
-    return companyName
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "");
+    // Use URL encoding instead of kebab-case for company names
+    return encodeURIComponent(companyName.trim());
+};
+
+/**
+ * Helper function to decode company slug back to name
+ */
+export const decodeCompanySlug = (slug: string): string => {
+    if (!slug) return '';
+    try {
+        return decodeURIComponent(slug);
+    } catch (e) {
+        // Fallback for invalid encoded strings
+        return slug.replace(/-/g, ' ');
+    }
 };
 
 /**
  * Helper function to get company slug from various company data formats
+ * Uses URL encoding format like "Agritech%20Solutions"
  */
 export const getCompanySlug = (company: any): string => {
-    // Priority: existing slug > generated from name > company_id > id
-    if (company?.slug) return company.slug;
+    // Priority: use name with URL encoding > existing slug > company_id > id
     if (company?.name) return generateCompanySlug(company.name);
+    if (company?.slug) return company.slug;
     if (company?.company_id) return company.company_id.toString();
     if (company?.id) return company.id.toString();
     return '';
 };
+
+/**
+ * Example usage:
+ * - Company name: "Agritech Solutions" 
+ * - Generated slug: "Agritech%20Solutions"
+ * - URL: /jobs/companies/Agritech%20Solutions
+ * - Decoded back: "Agritech Solutions"
+ */
 
 /**
  * Helper function to navigate to company detail page

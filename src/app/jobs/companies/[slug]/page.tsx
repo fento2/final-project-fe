@@ -2,15 +2,16 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { CheckCircle2, Share2, Bookmark, } from "lucide-react";
+import { CheckCircle2, Share2, Copy, MessageCircle } from "lucide-react";
+import { useToast } from "@/components/basic-toast";
 import { apiCall } from "../../../../helper/apiCall";
+import { decodeCompanySlug } from "../../../../helper/companySlugHelper";
 import ReviewSection from "./_components/ReviewSection";
 import AddUserCompanyModal from "@/app/dashboard/review-company/_components/AddUserCompanyModal";
 import ReviewCompanyModal from "@/app/dashboard/review-company/_components/ReviewCompanyModal";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import ReadOnlyQuill from "@/app/dashboard/components/ReadOnlyReactQuil";
 import { UserCompanyItem } from "@/types/userCompany";
-import { User } from "@/types/database";
 import { Job } from "@/types/job";
 import JobListCompany from "./_components/JobListCompany";
 import AboutCompany from "./_components/AboutCompany";
@@ -31,7 +32,7 @@ type Company = {
 
     user_company: UserCompanyItem[];
     job: Job[];
-    Users: User;
+    Users: { createdAt?: string; isVerfied?: boolean };
 };
 
 export default function CompanyDetailPage() {
@@ -43,9 +44,63 @@ export default function CompanyDetailPage() {
     const [loadingUserCompany, setLoadingUserCompany] = useState<boolean>(false);
     const { slug } = useParams();
     const { user } = useAuth();
+    const toast = useToast();
+    const [showShareMenu, setShowShareMenu] = useState(false);
+    const shareBtnRef = useRef<HTMLButtonElement>(null);
+    // Share handler for company page
+    const handleShareCompany = async () => {
+        try {
+            const origin = typeof window !== 'undefined' ? window.location.origin : '';
+            const url = `${origin}/jobs/companies/${slug}`;
+            const title = company?.name || 'Company';
+            const text = `Check out this company: ${title}`;
+
+            if (navigator.share) {
+                await navigator.share({ title, text, url });
+            } else if (navigator.clipboard) {
+                await navigator.clipboard.writeText(url);
+                toast.success?.("Link copied", "Company page link copied to your clipboard.");
+            } else {
+                window.open(url, '_blank');
+            }
+        } catch (err: any) {
+            if (err?.name !== 'AbortError') {
+                toast.error?.("Share failed", err?.message || "Unable to share this company page.");
+            }
+        }
+    };
+
+    // Copy link only
+    const handleCopyLink = async () => {
+        try {
+            const origin = typeof window !== 'undefined' ? window.location.origin : '';
+            const url = `${origin}/jobs/companies/${slug}`;
+            if (navigator.clipboard) {
+                await navigator.clipboard.writeText(url);
+                toast.success?.("Link copied", "Company page link copied to your clipboard.");
+            } else {
+                window.open(url, '_blank');
+            }
+        } catch (err: any) {
+            toast.error?.("Copy failed", err?.message || "Unable to copy link.");
+        }
+        setShowShareMenu(false);
+    };
+
+    // WhatsApp share
+    const handleShareWhatsApp = () => {
+        const origin = typeof window !== 'undefined' ? window.location.origin : '';
+        const url = `${origin}/jobs/companies/${slug}`;
+        const title = company?.name || 'Company';
+        const text = encodeURIComponent(`Cek perusahaan ${title} di ${url}`);
+        window.open(`https://wa.me/?text=${text}`, '_blank');
+        setShowShareMenu(false);
+    };
 
     const fetchData = async () => {
-        const result = await apiCall.get(`/company/name/${slug}`);
+        // Decode the URL encoded company name
+        const companyName = decodeCompanySlug(slug as string);
+        const result = await apiCall.get(`/company/name/${encodeURIComponent(companyName)}`);
         setCompany(result.data.data);
     }
 
@@ -173,15 +228,53 @@ export default function CompanyDetailPage() {
                             </div>
 
                             <div className="flex items-center gap-3 self-start md:self-auto">
-                                <button className="bg-indigo-600 text-white px-4 py-2 rounded-xl font-semibold hover:bg-indigo-700 transition">
-                                    Contact This Company
-                                </button>
-                                <button className="p-2.5 rounded-xl border hover:bg-gray-50">
-                                    <Share2 className="w-5 h-5" />
-                                </button>
-                                <button className="p-2.5 rounded-xl border hover:bg-gray-50">
-                                    <Bookmark className="w-5 h-5" />
-                                </button>
+                                {company.email ? (
+                                    <a
+                                        href={`mailto:${company.email}?subject=${encodeURIComponent('Inquiry about opportunities at ' + company.name)}&body=${encodeURIComponent('Hello ' + company.name + ',\n\nI would like to get in touch regarding opportunities.\n\nBest regards,\n')}`}
+                                        className="bg-indigo-600 text-white px-4 py-2 rounded-xl font-semibold hover:bg-indigo-700 transition"
+                                    >
+                                        Contact This Company
+                                    </a>
+                                ) : (
+                                    <button className="bg-gray-300 text-gray-600 px-4 py-2 rounded-xl font-semibold cursor-not-allowed" disabled>
+                                        Contact This Company
+                                    </button>
+                                )}
+                                <div className="relative inline-block">
+                                    <button
+                                        ref={shareBtnRef}
+                                        className="p-2.5 rounded-xl border hover:bg-gray-50"
+                                        onClick={() => setShowShareMenu((v) => !v)}
+                                        title="Share this company page"
+                                    >
+                                        <Share2 className="w-5 h-5" />
+                                    </button>
+                                    {showShareMenu && (
+                                        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+                                            <button
+                                                className="flex items-center gap-2 w-full px-4 py-2 text-sm hover:bg-gray-100"
+                                                onClick={handleCopyLink}
+                                            >
+                                                <Copy className="w-4 h-4 text-gray-500" />
+                                                Salin Link
+                                            </button>
+                                            <button
+                                                className="flex items-center gap-2 w-full px-4 py-2 text-sm hover:bg-gray-100"
+                                                onClick={handleShareWhatsApp}
+                                            >
+                                                <MessageCircle className="w-4 h-4 text-green-500" />
+                                                Share on WhatsApp
+                                            </button>
+                                            <button
+                                                className="flex items-center gap-2 w-full px-4 py-2 text-sm hover:bg-gray-100"
+                                                onClick={handleShareCompany}
+                                            >
+                                                <Share2 className="w-4 h-4 text-blue-500" />
+                                                Share (Web Share)
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -193,7 +286,7 @@ export default function CompanyDetailPage() {
                 {/* Left content */}
                 <div className="lg:col-span-2">
                     <section className="mb-8">
-                        <ReadOnlyQuill value={company.description} />
+                        <ReadOnlyQuill value={company.description} className="text-base leading-relaxed text-gray-700" />
                     </section>
 
                     <JobListCompany company={company} />

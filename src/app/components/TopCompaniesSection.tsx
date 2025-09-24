@@ -2,75 +2,63 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { TopCompanyCard } from "./CardTopCompanyHome";
-import { useTopCompanies } from "@/hooks/useCompanies";
+import { apiCall } from "@/helper/apiCall";
+import type { Company as SimpleCompany } from "@/types/userCompany";
 
-// Utility function to extract stats from the nested company data
-const extractCompanyStats = (company: any) => {
-    const stats = {
-        employeeCount: company.teamStats?.total_employees || 
-                      company.teamStats?.employee_count ||
-                      company.employee_count || 
-                      company.total_employees || 
-                      Math.floor(Math.random() * 1000) + 100,
-        
-        jobsCount: company.jobStats?.active_jobs || 
-                  company.jobStats?.total_jobs ||
-                  company.jobStats?.open_positions ||
-                  company.jobs_count || 
-                  company.open_jobs || 
-                  Math.floor(Math.random() * 15) + 3,
-        
-        rating: company.engagementStats?.average_rating ||
-               company.engagementStats?.rating ||
-               company.applicationStats?.success_rate ||
-               company.rating || 
-               4.0,
-        
-        reviewCount: company.engagementStats?.total_reviews ||
-                    company.engagementStats?.review_count ||
-                    company.applicationStats?.total_applications ||
-                    company.review_count || 
-                    Math.floor(Math.random() * 100) + 10
-    };
-    
-    console.log(`📊 Extracted stats for ${company.name}:`, stats);
-    return stats;
-};
 
 export default function TopCompaniesSection() {
     const router = useRouter();
-    // Fetch top 3 companies with full statistics
-    // Uses endpoint: GET /company/top/with-stats?limit=3
-    const { companies: topCompanies, loading, error } = useTopCompanies(3);
+    // Align fetching with jobs/company page: use /company/find and take top 3
+    const [topCompanies, setTopCompanies] = useState<SimpleCompany[]>([]);
+    const [loading, setLoading] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        let aborted = false;
+        const controller = new AbortController();
+        (async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const res = await apiCall.get(`/company/find`, { signal: controller.signal });
+                const items: SimpleCompany[] = res.data?.data?.data || [];
+                if (!aborted) setTopCompanies(Array.isArray(items) ? items.slice(0, 3) : []);
+            } catch (err: any) {
+                if (err?.name === "CanceledError" || err?.name === "AbortError") return;
+                console.error("Failed to load top companies:", err);
+                if (!aborted) setError(err?.response?.data?.message || err?.message || "Failed to load companies");
+            } finally {
+                if (!aborted) setLoading(false);
+            }
+        })();
+        return () => {
+            aborted = true;
+            try { controller.abort(); } catch { }
+        };
+    }, []);
 
     // Debug: Log the entire API response to understand backend structure
-    console.log('🏢 TopCompanies API Response from /company/top/with-stats:', {
+    console.log('🏢 TopCompanies API Response from /company/find (aligned with jobs/company):', {
         companiesCount: topCompanies?.length,
         loading,
         error,
-        endpointUsed: '/company/top/with-stats?limit=3',
-        sampleCompany: topCompanies?.[0] ? {
-            allFields: Object.keys(topCompanies[0]),
-            hasStats: {
-                jobStats: !!topCompanies[0].jobStats,
-                teamStats: !!topCompanies[0].teamStats,
-                engagementStats: !!topCompanies[0].engagementStats,
-                applicationStats: !!topCompanies[0].applicationStats,
-                salaryStats: !!topCompanies[0].salaryStats
-            }
-        } : null
+        endpointUsed: '/company/find',
+        sampleCompany: topCompanies?.[0] ? { allFields: Object.keys(topCompanies[0]) } : null
     });
 
-    const handleCompanyClick = (company: any) => {
-        const slug = company.slug || company.name?.toLowerCase().replace(/\s+/g, '-') || company.id || company.company_id;
-        router.push(`/jobs/companies/${slug}`);
+    const handleCompanyClick = (company: SimpleCompany) => {
+        // Navigate to jobs/company page filtered by company name (same page logic)
+        const params = new URLSearchParams();
+        if (company.name) params.set("name", company.name);
+    router.push(`/jobs/companies?${params.toString()}`);
     };
 
     if (loading) {
         return (
             <section className="py-16 bg-white">
-                <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
                     {/* Loading skeleton untuk kolom kiri */}
                     <div className="space-y-8">
                         <div>
@@ -89,7 +77,7 @@ export default function TopCompaniesSection() {
                             ))}
                         </div>
                     </div>
-                    
+
                     {/* Loading skeleton untuk kolom kanan */}
                     <div className="h-80 bg-gray-200 rounded-3xl animate-pulse"></div>
                 </div>
@@ -100,7 +88,7 @@ export default function TopCompaniesSection() {
     if (error) {
         return (
             <section className="py-16 bg-white">
-                <div className="max-w-6xl mx-auto text-center">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 text-center">
                     <p className="text-red-600">Failed to load companies: {error}</p>
                 </div>
             </section>
@@ -114,55 +102,46 @@ export default function TopCompaniesSection() {
 
     return (
         <section className="py-16 bg-white">
-            <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
                 {/* Bagian kiri - Company List */}
                 <div className="space-y-8">
                     <div>
-                        <h2 className="text-4xl font-bold text-gray-900 mb-4">Top Companies</h2>
-                        <p className="text-gray-600">
+                        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">Top Companies</h2>
+                        <p className="text-gray-600 text-sm sm:text-base">
                             Explore and find the dream job opportunities with our best companies.
                         </p>
                     </div>
 
                     <div className="space-y-6">
-                        {topCompanies.map((company: any, index: number) => {
-                            // Debug: Log full company data structure from /company/top/with-stats
-                            console.log(`🏢 Company ${index + 1} - ${company.name} (from with-stats endpoint):`, {
+                        {topCompanies.map((company: SimpleCompany, index: number) => {
+                            console.log(`🏢 Company ${index + 1} - ${company.name} (from /company/find):`, {
                                 company_id: company.company_id,
                                 name: company.name,
-                                availableStats: {
-                                    jobStats: company.jobStats,
-                                    applicationStats: company.applicationStats,
-                                    engagementStats: company.engagementStats,
-                                    salaryStats: company.salaryStats,
-                                    teamStats: company.teamStats
-                                },
                                 allFields: Object.keys(company)
                             });
-                            
-                            // Extract stats using utility function
-                            const { employeeCount, jobsCount, rating, reviewCount } = extractCompanyStats(company);
-                            
+
+                            // Get website from company data
+                            const website = (company as any).website || null;
+                            const verified = Boolean((company as any).Users?.isVerfied || (company as any).verified);
+
                             return (
                                 <div
-                                    key={company.id || company.company_id || index}
-                                    className="flex items-center gap-6 cursor-pointer group"
+                                    key={company.company_id || index}
+                                    className="flex items-center gap-4 sm:gap-6 cursor-pointer group"
                                     onClick={() => handleCompanyClick(company)}
                                 >
                                     {/* Nomor */}
-                                    <div className="text-5xl font-bold text-indigo-600 min-w-[80px]">
+                                    <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-indigo-600 min-w-[48px] sm:min-w-[64px] lg:min-w-[80px] text-center sm:text-left">
                                         {String(index + 1).padStart(2, "0")}.
                                     </div>
 
                                     {/* Card Company */}
                                     <div className="flex-1">
                                         <TopCompanyCard
-                                            logo={company.logo || company.profile_picture || company.image || "https://images.unsplash.com/photo-1662057168154-89300791ad6e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGxvZ28lMjBjb21wYW55fGVufDB8fDB8fHww"}
+                                            logo={company.profile_picture || "https://images.unsplash.com/photo-1662057168154-89300791ad6e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTZ8fGxvZ28lMjBjb21wYW55fGVufDB8fDB8fHww"}
                                             name={company.name}
-                                            rating={rating}
-                                            employees={employeeCount}
-                                            jobsOpen={jobsCount}
-                                            reviewCount={reviewCount}
+                                            website={website}
+                                            verified={verified}
                                         />
                                     </div>
                                 </div>
@@ -185,26 +164,26 @@ export default function TopCompaniesSection() {
                         {/* Decorative elements */}
                         <div className="absolute top-0 right-0 w-32 h-32 bg-orange-200 rounded-full opacity-30 transform translate-x-16 -translate-y-16"></div>
                         <div className="absolute bottom-0 right-0 w-24 h-24 bg-orange-300 rounded-full opacity-40 transform translate-x-8 translate-y-8"></div>
-                        
+
                         <div className="relative z-10 space-y-6">
                             <h3 className="text-3xl lg:text-4xl font-bold text-gray-900 leading-tight">
                                 Ready to take the next step in your dream career with us?
                             </h3>
-                            
+
                             <p className="text-gray-600">
                                 Join Horizon Jobs today and start exploring exciting job opportunities with top companies.
                             </p>
-                            
+
                             <div className="flex gap-4 pt-4">
-                                <button className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors">
+                                <Link href="/contact" className="inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-indigo-700 transition-colors">
                                     Contact Us
-                                </button>
-                                <button className="border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors">
+                                </Link>
+                                <Link href="/services" className="inline-block bg-white border border-gray-300 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-50 transition-colors">
                                     Learn More
-                                </button>
+                                </Link>
                             </div>
                         </div>
-                        
+
                         {/* Device mockup */}
                         <div className="absolute bottom-0 right-0 w-48 h-32 lg:w-64 lg:h-40">
                             <div className="absolute bottom-4 right-4 w-32 h-20 lg:w-40 lg:h-24 bg-gray-900 rounded-lg transform rotate-12">

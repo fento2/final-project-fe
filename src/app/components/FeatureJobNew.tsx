@@ -67,17 +67,17 @@ const FeatureJob = () => {
     return (
         <section className="max-w-7xl mx-auto px-4 py-16 text-black">
             {/* Header */}
-            <div className="mb-12">
-                <h2 className="text-center text-3xl font-bold text-black mb-2">
+            <div className="text-center mb-12">
+                <h2 className="text-4xl font-bold text-gray-900 mb-4">
                     Featured Jobs
                 </h2>
-                <p className="text-center text-black max-w-2xl mx-auto">
-                    Discover exciting career opportunities from top companies in various industries
+                <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+                    Our current top picks for your dream career based on our current popular listing.
                 </p>
             </div>
 
-            {/* Jobs Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+            {/* Jobs Grid - vertical stack for horizontal cards */}
+            <div className="space-y-6 mb-10">
                 {currentPageJobs.map((job: any, i: number) => (
                     <FeatureJobCard 
                         key={job.job_id || job.id || i} 

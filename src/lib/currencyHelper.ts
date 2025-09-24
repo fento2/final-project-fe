@@ -15,7 +15,8 @@ export const formatCompactIDR = (amount: number): string => {
     } else if (amount >= 1000000000) {
         return `Rp ${(amount / 1000000000).toFixed(1)}M`;
     } else if (amount >= 1000000) {
-        return `Rp ${(amount / 1000000).toFixed(1)}Jt`;
+        const jutaValue = amount / 1000000;
+        return `Rp ${jutaValue % 1 === 0 ? jutaValue.toFixed(0) : jutaValue.toFixed(1)}Jt`;
     } else if (amount >= 1000) {
         return `Rp ${(amount / 1000).toFixed(0)}K`;
     }

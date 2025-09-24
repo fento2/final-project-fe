@@ -41,6 +41,14 @@ const JobCard: React.FC<JobCardProps> = ({ job, index, coords }) => {
     // Only show apply functionality for USER role
     const canApplyJobs = isLogin && role === 'USER';
 
+    // Compute a safe job slug for navigation
+    const jobSlug = job.slug || generateJobSlug({
+        title: job.title,
+        company: job.company,
+        jobType: job.type,
+        category: 'general',
+    });
+
     const formatDistance = (lat1: number, lng1: number, lat2: number, lng2: number) => {
         const R = 6371; // Radius of the Earth in kilometers
         const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -58,27 +66,25 @@ const JobCard: React.FC<JobCardProps> = ({ job, index, coords }) => {
         ? formatDistance(coords.lat, coords.lng, job.lat, job.lng)
         : null;
 
-    const handleJobClick = () => {
+    const handleApplyClick = (e?: React.MouseEvent) => {
+        e?.stopPropagation();
         if (!canApplyJobs) {
             console.warn('Job applications are only available for job seekers (USER role)');
             return;
         }
-        
-        // Navigate to application form
-        const jobSlug = job.slug || generateJobSlug({
-            title: job.title,
-            company: job.company,
-            jobType: job.type,
-            category: 'general'
-        });
         router.push(`/jobs/${jobSlug}/apply`);
     };
 
-    const handleCompanyClick = () => {
+    const handleCompanyClick = (e?: React.MouseEvent) => {
+        e?.stopPropagation();
         // Navigate to company detail page
         const companyData = { name: job.company };
         const companyUrl = getCompanyDetailUrl(companyData);
         router.push(companyUrl);
+    };
+
+    const handleCardClick = () => {
+        router.push(`/jobs/${jobSlug}`);
     };
 
     // Format salary to IDR using backend data
@@ -119,7 +125,18 @@ const JobCard: React.FC<JobCardProps> = ({ job, index, coords }) => {
             whileHover={{ y: -5 }}
             className="h-full"
         >
-            <div className="group bg-white/90 backdrop-blur-sm rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-6 h-full flex flex-col border-0">
+            <div
+                onClick={handleCardClick}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        handleCardClick();
+                    }
+                }}
+                className="group cursor-pointer bg-white/90 backdrop-blur-sm rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 p-6 h-full flex flex-col border-0 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            >
                 {/* Header */}
                 <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
@@ -149,7 +166,10 @@ const JobCard: React.FC<JobCardProps> = ({ job, index, coords }) => {
                 </div>
 
                 {/* Job Title */}
-                <h3 className="text-lg font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-indigo-600 transition-colors">
+                <h3
+                    className="text-lg font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-indigo-600 transition-colors"
+                    onClick={(e) => { e.stopPropagation(); handleCardClick(); }}
+                >
                     {job.title}
                 </h3>
 
@@ -184,14 +204,14 @@ const JobCard: React.FC<JobCardProps> = ({ job, index, coords }) => {
                     
                     {canApplyJobs ? (
                         <button 
-                            onClick={handleJobClick}
+                            onClick={(e) => handleApplyClick(e)}
                             className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors duration-200 group-hover:scale-105"
                         >
                             Apply Now
                         </button>
                     ) : (
                         <button 
-                            onClick={handleCompanyClick}
+                            onClick={(e) => handleCompanyClick(e)}
                             className="inline-flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors duration-200 group-hover:scale-105"
                         >
                             View Company

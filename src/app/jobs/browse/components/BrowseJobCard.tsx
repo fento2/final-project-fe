@@ -4,7 +4,6 @@ import Image from "next/image";
 import { MapPin, Banknote, Bookmark, BookmarkCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import DOMPurify from "dompurify";
 import { useJobSave } from "@/hooks/useJobSave";
 import { useAuthStore } from "@/lib/zustand/authStore";
 import { getCompanyDetailUrl } from "@/helper/companySlugHelper";
@@ -41,12 +40,48 @@ const BrowseJobCard: React.FC<BrowseJobCardProps> = ({ job }) => {
     const canSaveJobs = isLogin && role === 'USER';
     const canApplyJobs = isLogin && role === 'USER';
 
-    const handleCardClick = () => {
-        if (job.slug) {
-            router.push(`/jobs/${job.slug}`);
-        } else {
-            router.push(`/jobs/${job.id}`);
+    // Helper function to shorten category names
+    const getShortenedCategory = (category?: string) => {
+        if (!category) return '';
+        
+        // Common abbreviations for long categories
+        const categoryMap: { [key: string]: string } = {
+            'Information Technology': 'IT',
+            'Software Development': 'Software Dev',
+            'Digital Marketing': 'Digital Mktg',
+            'Human Resources': 'HR',
+            'Customer Service': 'Customer Svc',
+            'Business Development': 'Biz Dev',
+            'Project Management': 'Project Mgmt',
+            'Quality Assurance': 'QA',
+            'Machine Learning': 'ML',
+            'Data Science': 'Data Sci',
+            'Artificial Intelligence': 'AI',
+            'User Experience': 'UX',
+            'User Interface': 'UI'
+        };
+
+        // Check if there's a short form available
+        if (categoryMap[category]) {
+            return categoryMap[category];
         }
+
+        // If category is longer than 15 characters, truncate it
+        if (category.length > 15) {
+            return category.substring(0, 15) + '...';
+        }
+
+        return category;
+    };
+
+    const handleCardClick = () => {
+        const jobSlug = job.slug || generateJobSlug({
+            title: job.title,
+            company: job.company,
+            jobType: job.type,
+            category: job.category,
+        });
+        router.push(`/jobs/${jobSlug}`);
     };
 
     const handleApplyClick = (e: React.MouseEvent) => {
@@ -89,8 +124,19 @@ const BrowseJobCard: React.FC<BrowseJobCardProps> = ({ job }) => {
     };
 
     return (
-        <div className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden group">
-            <div className="p-6">
+        <div
+            className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden group flex flex-col h-full"
+            onClick={handleCardClick}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleCardClick();
+                }
+            }}
+        >
+            <div className="p-6 flex flex-col flex-1">
                 {/* Company Info Header */}
                 <div className="flex items-center gap-3 mb-4">
                     <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center overflow-hidden flex-shrink-0">
@@ -114,119 +160,97 @@ const BrowseJobCard: React.FC<BrowseJobCardProps> = ({ job }) => {
                     </div>
                 </div>
 
-                {/* Job Type Badge */}
+                {/* Job Type and Category Badges */}
                 <div className="mb-4">
-                    <span className="bg-indigo-100 text-indigo-700 text-xs font-medium px-3 py-1 rounded-full">
-                        {job.type}
-                    </span>
-                    {job.category && (
-                        <span className="bg-gray-100 text-gray-700 text-xs font-medium px-3 py-1 rounded-full ml-2">
-                            {job.category}
+                    <div className="flex flex-wrap gap-2 items-center">
+                        <span className="bg-indigo-100 text-indigo-700 text-xs font-medium px-3 py-1 rounded-full whitespace-nowrap">
+                            {job.type}
                         </span>
-                    )}
+                        {job.category && (
+                            <span 
+                                className="bg-gray-100 text-gray-700 text-xs font-medium px-3 py-1 rounded-full whitespace-nowrap" 
+                                title={job.category}
+                            >
+                                {getShortenedCategory(job.category)}
+                            </span>
+                        )}
+                    </div>
                 </div>
 
                 {/* Job Title */}
-                <h3 className="text-lg font-semibold text-gray-900 mb-3 group-hover:text-indigo-600 transition-colors">
+                <h3 className="text-lg font-semibold text-gray-900 mb-3 group-hover:text-indigo-600 transition-colors line-clamp-2">
                     {job.title}
                 </h3>
 
-                {/* Description (array or HTML) or Tags */}
-                {Array.isArray(job.description) && job.description.length > 0 ? (
-                    <ul className="list-disc list-inside text-sm text-muted-foreground space-y-2 mb-3">
-                        {job.description.slice(0, 3).map((req: string, idx: number) => (
-                            <li className="truncate" key={idx}>{req}</li>
-                        ))}
-                    </ul>
-                ) : typeof job.description === 'string' && job.description.trim() ? (
-                    <div
-                        className="prose prose-sm max-w-none text-gray-600 mb-4 line-clamp-3 [&_*]:text-inherit [&_*]:!my-0"
-                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(job.description) }}
-                    />
-                ) : job.tags && job.tags.length > 0 ? (
-                    <div className="mb-4">
-                        <div className="flex flex-wrap gap-1">
-                            {job.tags.slice(0, 3).map((tag, index) => (
-                                <span
-                                    key={index}
-                                    className="text-xs px-2 py-1 rounded bg-blue-50 text-blue-700"
-                                >
-                                    {tag}
-                                </span>
-                            ))}
-                            {job.tags.length > 3 && (
-                                <span className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-600">
-                                    +{job.tags.length - 3} more
-                                </span>
-                            )}
-                        </div>
-                    </div>
-                ) : (
-                    <div className="mb-4">
-                        <p className="text-sm text-gray-500">No additional details available</p>
-                    </div>
-                )}
+                {/* Description - Fixed height */}
+                <div className="mb-4 h-16 overflow-hidden">
+                    <p className="text-sm text-gray-600 line-clamp-3">
+                        {job.description || "No description available"}
+                    </p>
+                </div>
 
                 {/* Location and Salary */}
-                <div className="space-y-2 mb-6">
+                <div className="space-y-2 mb-6 flex-1">
                     <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <MapPin className="w-4 h-4" />
-                        <span>{job.location}</span>
+                        <MapPin className="w-4 h-4 flex-shrink-0" />
+                        <span className="truncate">{job.location}</span>
                     </div>
 
                     {(job.salaryDisplay || job.salaryMin) && (
                         <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Banknote className="w-4 h-4" />
-                            <span>
+                            <Banknote className="w-4 h-4 flex-shrink-0" />
+                            <span className="truncate">
                                 {job.salaryDisplay ||
-                                    `$${job.salaryMin?.toLocaleString()}${job.salaryMax ? ` - $${job.salaryMax.toLocaleString()}` : ''} per year`
+                                    `IDR ${job.salaryMin?.toLocaleString('id-ID')}${job.salaryMax ? ` - IDR ${job.salaryMax.toLocaleString('id-ID')}` : ''} per month`
                                 }
                             </span>
-
                         </div>
                     )}
                 </div>
 
-                {/* Action Buttons */}
-                <div className="flex items-center gap-3">
-                    {canApplyJobs ? (
-                        <Button
-                            onClick={handleApplyClick}
-                            className={`${canSaveJobs ? 'flex-1' : 'w-full'} bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg h-10`}
-                        >
-                            Apply This Job
-                        </Button>
-                    ) : (
-                        <Button
-                            onClick={handleCompanyClick}
-                            className={`${canSaveJobs ? 'flex-1' : 'w-full'} bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg h-10`}
-                        >
-                            View Company
-                        </Button>
-                    )}
-                    {canSaveJobs && (
-                        <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                toggleSave();
-                            }}
-                            disabled={isLoading}
-                            className={`rounded-lg w-10 h-10 flex-shrink-0 transition-colors ${
-                                isSaved 
-                                    ? 'border-indigo-300 bg-indigo-50 text-indigo-600 hover:bg-indigo-100' 
-                                    : 'border-gray-300 hover:bg-gray-50'
-                            }`}
-                            title={isSaved ? 'Remove from saved jobs' : 'Save this job'}
-                        >
-                            {isSaved ? (
-                                <BookmarkCheck className="w-4 h-4" />
-                            ) : (
-                                <Bookmark className="w-4 h-4" />
-                            )}
-                        </Button>
-                    )}
+                {/* Action Buttons - Fixed at bottom */}
+                <div className="mt-auto pt-4 border-t border-gray-100">
+                    <div className="flex items-center gap-3">
+                        {canApplyJobs ? (
+                            <Button
+                                onClick={handleApplyClick}
+                                className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg h-10 text-sm transition-colors"
+                            >
+                                Apply This Job
+                            </Button>
+                        ) : (
+                            <Button
+                                onClick={handleCompanyClick}
+                                className="flex-1 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg h-10 text-sm transition-colors"
+                            >
+                                View Company
+                            </Button>
+                        )}
+                        
+                        {canSaveJobs && (
+                            <Button
+                                variant="outline"
+                                size="icon"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleSave();
+                                }}
+                                disabled={isLoading}
+                                className={`rounded-lg w-10 h-10 flex-shrink-0 border-2 transition-all duration-200 ${
+                                    isSaved 
+                                        ? 'border-indigo-500 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:border-indigo-600' 
+                                        : 'border-gray-300 text-gray-500 hover:bg-gray-50 hover:border-gray-400'
+                                } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                title={isSaved ? 'Remove from saved jobs' : 'Save this job'}
+                            >
+                                {isSaved ? (
+                                    <BookmarkCheck className="w-4 h-4" />
+                                ) : (
+                                    <Bookmark className="w-4 h-4" />
+                                )}
+                            </Button>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

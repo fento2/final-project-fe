@@ -1,13 +1,12 @@
 "use client";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { apiCall } from "@/helper/apiCall";
-import { useJobs } from "@/hooks/useJobs";
+import { Job as BackendJob } from "@/types/database";
 import BrowseJobCard from "./BrowseJobCard";
 import { Filters } from "./JobsFilterSection";
-import { toTitleCase } from "@/helper/toTitleCase";
 
 // Mock data generator for demonstration when backend is unavailable
-const generateMockJobs = (): Job[] => {
+const generateMockJobs = (): BackendJob[] => {
     const companies = [
         { name: "TechCorp Indonesia", logo: "/images/logo.png" },
         { name: "DataScience Solutions", logo: "/images/logo.png" },
@@ -54,35 +53,18 @@ const generateMockJobs = (): Job[] => {
         const location = locations[index % locations.length];
         const jobType = jobTypes[index % jobTypes.length];
         const category = categories[index % categories.length];
-        const salaryMin = 8000000 + (index % 15) * 2000000; // 8-38 juta
-        const salaryMax = salaryMin + 5000000 + (index % 8) * 2000000; // +5-21 juta
+        const salaryMin = 8000000 + (index % 20) * 5000000; // 8-108 juta (varied range)
+        const salaryMax = salaryMin + 10000000 + (index % 15) * 5000000; // +10-80 juta additional
         
         // Generate proper slug from title and company
         const baseSlug = `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${company.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
         const slug = `${baseSlug}-${index + 1}`;
 
         return {
-            id: `job-${index + 1}`,
-            job_id: `job-${index + 1}`, // Add job_id for backend compatibility
+            job_id: index + 1,
             title: title,
-            company: company.name,
-            Companies: { // Add Companies object for compatibility
-                name: company.name,
-                profile_picture: company.logo
-            },
-            type: jobType,
-            job_type: jobType, // Add job_type for backend compatibility
-            location: location,
-            city: location, // Add city for compatibility
-            salaryMin: salaryMin,
-            salaryMax: salaryMax,
-            salary: salaryMin, // Add salary field
-            currency: "IDR",
-            periodSalary: "month",
-            salaryDisplay: `IDR ${salaryMin.toLocaleString()} - ${salaryMax.toLocaleString()}`,
-            category: category,
-            Category: category, // Add Category for compatibility
-            requirements: `Join ${company.name} as a ${title}. We're looking for talented individuals to work on exciting projects in ${category.toLowerCase()}. 
+            slug: slug,
+            description: `Join ${company.name} as a ${title}. We're looking for talented individuals to work on exciting projects in ${category.toLowerCase()}. 
 
 Key Responsibilities:
 • Develop and maintain high-quality software solutions
@@ -95,15 +77,18 @@ Requirements:
 • 2+ years of relevant experience
 • Strong problem-solving skills
 • Excellent communication abilities`,
-            description: `Join ${company.name} as a ${title}. We're looking for talented individuals to work on exciting projects in ${category.toLowerCase()}. Competitive salary and great work environment.`,
-            skills: ["JavaScript", "React", "Node.js", "TypeScript", "Python", "Java", "MySQL", "MongoDB", "AWS", "Docker"].slice(0, 4 + (index % 4)),
-            tags: ["JavaScript", "React", "Node.js", "TypeScript", "Python", "Java", "MySQL", "MongoDB", "AWS", "Docker"].slice(0, 4 + (index % 4)),
-            slug: slug,
-            companyLogo: company.logo,
+            category: category,
+            location: location,
+            salary: salaryMin,
+            periodSalary: "month",
+            currency: "IDR",
+            job_type: jobType,
             createdAt: new Date(Date.now() - (index * 2 * 24 * 60 * 60 * 1000)).toISOString(),
-            created_at: new Date(Date.now() - (index * 2 * 24 * 60 * 60 * 1000)).toISOString(),
             expiredAt: new Date(Date.now() + (30 - index % 30) * 24 * 60 * 60 * 1000).toISOString(),
-            expired_at: new Date(Date.now() + (30 - index % 30) * 24 * 60 * 60 * 1000).toISOString(),
+            Companies: {
+                name: company.name,
+                profile_picture: company.logo
+            }
         };
     });
 };
@@ -192,162 +177,165 @@ const Pagination: React.FC<{
 };
 
 const JobsGridSection: React.FC<JobsGridSectionProps> = ({ filters }) => {
-    // Fetch all jobs with a high limit to get all available jobs
-    const { jobs, loading, error } = useJobs({ 
-        limit: 1000, // Set high limit to get all jobs
-        page: 1 
-    });
     const [page, setPage] = useState(1);
+    const [rawJobs, setRawJobs] = useState<BackendJob[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const perPage = 9;
 
-    // Helper functions
-    const formatSalary = (salary?: number, currency?: string, period?: string) => {
-        if (!salary) return '';
-        const formattedSalary = salary.toLocaleString();
-        const curr = currency;
-        const per = toTitleCase(period || "");
-        return `${curr} ${formattedSalary} / ${per}`;
+    // Custom fetch function similar to useFeaturedJobs
+    const fetchFilteredJobs = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            
+            // Build query parameters like in useFeaturedJobs
+            const params = new URLSearchParams();
+            params.append('limit', '100'); // Get more for better client-side filtering
+            params.append('sort', 'created_at');
+            params.append('order', 'desc');
+
+            // Map filters to API parameters (similar to feature jobs approach)
+            if (filters.categories && filters.categories.length > 0) {
+                params.append('category', filters.categories[0]);
+            }
+            if (filters.location && filters.location.length > 0) {
+                params.append('location', filters.location[0]);
+            }
+            if (filters.types && filters.types.length > 0) {
+                params.append('jobType', filters.types[0]);
+            }
+            if (filters.salaryMin > 0) {
+                params.append('salaryMin', filters.salaryMin.toString());
+            }
+            if (filters.salaryMax < 200000000) {
+                params.append('salaryMax', filters.salaryMax.toString());
+            }
+
+            // Use same endpoint as featured jobs: /postings
+            const { data } = await apiCall.get(`/postings?${params.toString()}`);
+            
+            // Handle backend response structure same as useFeaturedJobs
+            const jobsData = data?.data?.data || data?.data || data || [];
+            const jobs = Array.isArray(jobsData) ? jobsData : [];
+            
+            setRawJobs(jobs);
+        } catch (err: any) {
+            // Handle errors same way as useFeaturedJobs
+            if (err.response?.status === 404 || err.response?.status === 402 || err.code === 'ECONNREFUSED' || err.code === 'ERR_NETWORK') {
+                setRawJobs([]);
+                setError(null);
+            } else {
+                console.error('Browse jobs fetch error:', err);
+                setError('Failed to fetch jobs');
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const getCategoryDisplay = (category?: string) => {
-        if (!category) return '';
-        return category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
-    };
+    // Fetch when component mounts or filters change (like useEffect in useFeaturedJobs)
+    useEffect(() => {
+        fetchFilteredJobs();
+    }, [filters]);
 
-    const normalize = (s: unknown) =>
-        (s ?? "")
-            .toString()
-            .trim()
-            .toLowerCase()
-            .replace(/\s+/g, "")
-            .replace(/-/g, "");
-
-    const normalizeType = (t: unknown): Job["type"] => {
-        const n = normalize(t);
-        if (n.includes("fulltime")) return "Full Time";
-        if (n.includes("parttime")) return "Part-time";
-        if (n.includes("intern")) return "Internship";
-        if (n.includes("contract")) return "Contract";
-        if (n.includes("freelance")) return "Freelance";
-        if (n.includes("temporary")) return "Temporary";
-        if (n.includes("remote")) return "Remote";
-        if (n.includes("hybrid")) return "Hybrid";
-        return "Full Time";
-    };
-
-    // Transform backend data to match our Job interface
-    const transformedJobs: Job[] = useMemo(() => {
-        let jobsList = Array.isArray(jobs) ? jobs : [];
+    // Transform backend data to match our Job interface and apply client-side filtering
+    const filteredJobs: Job[] = useMemo(() => {
+        let jobsList: BackendJob[] = Array.isArray(rawJobs) ? rawJobs : [];
         
-        // If backend returns no data or very few jobs, use mock data
-        if (jobsList.length < 5) {
-            console.log('🎭 Using mock data - backend returned insufficient jobs:', jobsList.length);
-            return generateMockJobs();
+        // If backend returns no data, use mock data for demonstration
+        if (jobsList.length === 0) {
+            jobsList = generateMockJobs();
         }
 
-        const baseURL = apiCall?.defaults?.baseURL || "";
-        return jobsList
-            .map((job: any, idx: number) => {
-                if (!job) return null;
-                const idRaw = job.id ?? job.job_id ?? job._id ?? job.slug ?? `job-${idx}`;
-                const id = typeof idRaw === 'string' ? idRaw : String(idRaw);
-                const companyName =
-                    job.Company?.name ??
-                    job.company?.name ??
-                    job.company_name ??
-                    job.name ??
-                    'Unknown Company';
-                let logo =
-                    job.Company?.profile_picture ??
-                    job.company?.profile_picture ??
-                    job.company?.logo ??
-                    job.profile_picture ??
-                    job.companyLogo ??
-                    null;
-                if (logo && typeof logo === 'string' && !/^https?:\/\//i.test(logo) && baseURL) {
-                    logo = `${baseURL}${logo.startsWith('/') ? '' : '/'}${logo}`;
-                }
-                const type = normalizeType(job.job_type ?? job.type);
-                const location = job.location ?? job.city ?? 'Remote';
-                const salaryNum = typeof job.salary === 'number' ? job.salary : Number(job.salary) || 0;
-                const salaryDisplay = salaryNum ? formatSalary(salaryNum, job.currency, job.periodSalary) : undefined;
+        // Transform to consistent format
+        const transformedJobs: Job[] = jobsList.map((job: BackendJob) => ({
+            id: job.job_id?.toString() || String(job.job_id) || 'unknown',
+            title: job.title || 'Untitled Job',
+            company: job.Companies?.name || job.Company?.name || 'Unknown Company',
+            type: (job.job_type as Job["type"]) || "Full Time",
+            location: job.location || 'Remote',
+            salaryMin: job.salary,
+            salaryMax: job.salary,
+            salaryDisplay: job.salary ? `IDR ${job.salary.toLocaleString('id-ID')} per ${job.periodSalary || 'month'}` : undefined,
+            category: job.category,
+            description: job.description?.replace(/<[^>]*>/g, '').substring(0, 120) + '...' || "",
+            tags: [], // Will be populated if skills data is available
+            slug: job.slug,
+            companyLogo: job.Companies?.profile_picture || job.Company?.profile_picture || "/images/logo.png",
+            createdAt: job.createdAt,
+            expiredAt: job.expiredAt,
+        }));
 
-                const tags = Array.isArray(job.skills)
-                    ? job.skills
-                        .map((skill: any) => (typeof skill === 'string' ? skill : skill?.name))
-                        .filter(Boolean)
-                    : [];
-
-                return {
-                    id,
-                    title: job.title || 'Untitled Position',
-                    company: job.Companies?.name,
-                    type,
-                    location,
-                    salaryMin: salaryNum || 0,
-                    salaryMax: salaryNum ? Math.round(salaryNum * 1.2) : 0,
-                    salaryDisplay,
-                    category: getCategoryDisplay(job.category || job.Category || job.category_name),
-                    description: job.requirements || '',
-                    tags,
-                    slug: job.slug,
-                    companyLogo: job.Companies?.profile_picture,
-                    createdAt: job.createdAt || job.created_at,
-                    expiredAt: job.expiredAt || job.expired_at,
-                } as Job;
-            })
-            .filter(Boolean) as Job[];
-    }, [jobs]);
-
-    // Filter jobs based on selected filters
-    const filteredJobs = useMemo(() => {
-        return transformedJobs.filter((job) => {
-            // Filter by job types
-            if (filters.types.length) {
-                const matchesType = filters.types.some((t) => normalizeType(t) === normalizeType(job.type));
-                if (!matchesType) return false;
+        // Apply additional client-side filtering for multi-select filters
+        return transformedJobs.filter(job => {
+            // Filter by categories (client-side for multi-select)
+            if (filters.categories.length > 0) {
+                const jobCategory = job.category || '';
+                const matches = filters.categories.some(cat => 
+                    jobCategory.toLowerCase().includes(cat.toLowerCase())
+                );
+                if (!matches) return false;
             }
 
-            // Filter by tools/skills
-            if (filters.tools.length && !filters.tools.some(tool =>
-                job.tags?.some(tag => tag.toLowerCase().includes(tool.toLowerCase()))
-            )) {
-                return false;
+            // Filter by locations (client-side for multi-select)
+            if (filters.location.length > 0) {
+                const jobLocation = job.location || '';
+                const matches = filters.location.some(loc => 
+                    jobLocation.toLowerCase().includes(loc.toLowerCase())
+                );
+                if (!matches) return false;
             }
 
-            // Filter by categories
-            if (filters.categories.length && job.category) {
-                const jobCat = job.category.toLowerCase();
-                const match = filters.categories.some((c) => c.toLowerCase() === jobCat);
-                if (!match) return false;
-            } else if (filters.categories.length && !job.category) {
-                return false;
+            // Filter by job types (client-side for multi-select)
+            if (filters.types.length > 0) {
+                const jobType = job.type || '';
+                const matches = filters.types.some(type => 
+                    jobType.toLowerCase() === type.toLowerCase()
+                );
+                if (!matches) return false;
             }
 
-            // Filter by location
-            if (filters.location.length && !filters.location.some(loc =>
-                job.location.toLowerCase().includes(loc.toLowerCase())
-            )) {
-                return false;
+            // Filter by salary range
+            if (filters.salaryMin > 0 || filters.salaryMax < 200000000) {
+                const jobSalaryMin = job.salaryMin || 0;
+                const jobSalaryMax = job.salaryMax || jobSalaryMin;
+                
+                // Job should overlap with filter range
+                if (filters.salaryMax > 0 && jobSalaryMin > filters.salaryMax) return false;
+                if (filters.salaryMin > 0 && jobSalaryMax < filters.salaryMin) return false;
             }
 
-            // Filter by salary minimum threshold
-            if (filters.salaryMin && job.salaryMin && job.salaryMin < filters.salaryMin) {
-                return false;
-            }
-
-            // Filter by date (simplified - in real app you'd parse the date properly)
+            // Filter by date posted
             if (filters.date && filters.date !== "Anytime") {
-                // For demo purposes, we'll show all jobs for any date filter
-                // In a real app, you'd filter based on job.createdAt
+                const now = new Date();
+                let threshold = 0; // milliseconds
+                if (filters.date === 'Last 24 hours') threshold = 24 * 60 * 60 * 1000;
+                else if (filters.date === 'Last 3 days') threshold = 3 * 24 * 60 * 60 * 1000;
+                else if (filters.date === 'Last 7 days') threshold = 7 * 24 * 60 * 60 * 1000;
+
+                if (threshold > 0) {
+                    const created = job.createdAt ? new Date(job.createdAt) : null;
+                    if (!created) return false;
+                    const age = now.getTime() - created.getTime();
+                    if (age > threshold) return false;
+                }
             }
 
             return true;
         });
-    }, [transformedJobs, filters]);
+    }, [rawJobs, filters]);
 
     const totalPages = Math.max(1, Math.ceil(filteredJobs.length / perPage));
-    const paginatedJobs = filteredJobs.slice((page - 1) * perPage, page * perPage);
+    
+    // Auto-enable pagination if more than 9 jobs, otherwise show all
+    const shouldPaginate = filteredJobs.length > perPage;
+    const paginatedJobs = shouldPaginate ? filteredJobs.slice((page - 1) * perPage, page * perPage) : filteredJobs;
+
+    // Ensure page stays in range when filters change
+    useEffect(() => {
+        if (page > totalPages) setPage(1);
+    }, [filters, totalPages, page]);
 
     if (loading) {
         return (
@@ -383,7 +371,7 @@ const JobsGridSection: React.FC<JobsGridSectionProps> = ({ filters }) => {
                     <p className="text-gray-500">{error}</p>
                 </div>
                 <button
-                    onClick={() => window.location.reload()}
+                    onClick={() => fetchFilteredJobs()}
                     className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
                 >
                     Try Again
@@ -403,7 +391,7 @@ const JobsGridSection: React.FC<JobsGridSectionProps> = ({ filters }) => {
                     <p className="text-gray-500">Try adjusting your filters to see more results</p>
                 </div>
                 <button
-                    onClick={() => window.location.reload()}
+                    onClick={() => fetchFilteredJobs()}
                     className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
                 >
                     Reset Filters
@@ -417,22 +405,29 @@ const JobsGridSection: React.FC<JobsGridSectionProps> = ({ filters }) => {
             {/* Results Summary */}
             <div className="flex items-center justify-between mb-6">
                 <div className="text-sm text-gray-600">
-                    Showing {((page - 1) * perPage) + 1}-{Math.min(page * perPage, filteredJobs.length)} of {filteredJobs.length} jobs
+                    {shouldPaginate 
+                        ? `Showing ${((page - 1) * perPage) + 1}-${Math.min(page * perPage, filteredJobs.length)} of ${filteredJobs.length} jobs`
+                        : `Showing all ${filteredJobs.length} jobs`
+                    }
                 </div>
-                <div className="text-sm text-gray-600">
-                    Page {page} of {totalPages}
-                </div>
+                {shouldPaginate && (
+                    <div className="text-sm text-gray-600">
+                        Page {page} of {totalPages}
+                    </div>
+                )}
             </div>
 
             {/* Jobs Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {paginatedJobs.map((job) => (
-                    <BrowseJobCard key={job.id} job={job} />
+                    <div key={job.id} className="h-full">
+                        <BrowseJobCard job={job} />
+                    </div>
                 ))}
             </div>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
+            {/* Pagination - Auto shows when more than 9 jobs */}
+            {shouldPaginate && totalPages > 1 && (
                 <Pagination
                     page={page}
                     totalPages={totalPages}

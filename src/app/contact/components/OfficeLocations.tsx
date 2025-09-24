@@ -72,7 +72,38 @@ export default function OfficeLocations({ selected, setSelected }: { selected: n
                 <div id="office-map" className="w-full h-80 rounded-2xl" />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+            {/* Mobile Carousel */}
+            <div className="md:hidden -mx-4 px-4">
+                <div className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-2 no-scrollbar">
+                    {[0,1,2].map((i) => (
+                        <div key={i} className="min-w-[85%] snap-center group">
+                            <div
+                                role="button"
+                                tabIndex={0}
+                                onClick={() => setSelected(i)}
+                                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelected(i); }}
+                                className={`bg-white rounded-2xl shadow-lg transition-all duration-300 cursor-pointer p-6 ${selected === i ? 'shadow-2xl' : 'hover:shadow-2xl'}`}
+                            >
+                                <div className="flex justify-center">
+                                    <div className={`w-12 h-12 rounded-full flex items-center justify-center ${selected === i ? 'bg-indigo-600 border-indigo-600' : 'bg-white border-2 border-indigo-300'}`}>
+                                        <MapPin className={`w-6 h-6 ${selected === i ? 'text-white' : 'text-indigo-600'}`} />
+                                    </div>
+                                </div>
+
+                                <div className="mt-6 rounded-xl overflow-hidden">
+                                    <img src={i === 0 ? 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80' : i === 1 ? 'https://images.unsplash.com/photo-1541888946425-d81bb19240f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80' : 'https://images.unsplash.com/photo-1497366216548-37526070297c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'} alt={`Office ${i+1}`} className="w-full h-48 object-cover rounded-lg" />
+                                </div>
+
+                                <h3 className="text-2xl font-extrabold text-indigo-900 mt-6 mb-2 text-center">{`Office ${i+1}`}</h3>
+                                <p className="text-sm text-gray-500 text-center">123 Anywhere St., Any City, ST 12345</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Desktop Grid */}
+            <div className="hidden md:grid grid-cols-3 gap-8 items-start">
                 {[0,1,2].map((i) => (
                     <div key={i} className="group">
                         <div

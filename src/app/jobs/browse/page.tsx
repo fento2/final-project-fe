@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import BrowseHeroSection from "./components/BrowseHeroSection";
 import JobsFilterSection, { Filters } from "./components/JobsFilterSection";
 import JobsGridSection from "./components/JobsGridSection";
@@ -10,31 +10,50 @@ import BrowseCTASection from "./components/BrowseCTASection";
 
 export default function Page() {
 	const searchParams = useSearchParams();
+	const router = useRouter();
+	const pathname = usePathname();
 	const [filters, setFilters] = useState<Filters>({
 		date: "Anytime",
 		types: [],
-		tools: [],
 		location: [],
 		categories: [],
 		salaryMin: 0, // Rp 0
-		salaryMax: 50000000, // 50 juta IDR
+		salaryMax: 200000000, // 200 juta IDR
 	});
 
 	// Set initial filters from URL parameters
 	useEffect(() => {
-		const categoriesParam = searchParams.get("categories");
-		const queryParam = searchParams.get("query");
-		const locationParam = searchParams.get("location");
-		const typeParam = searchParams.get("type");
+		const categoriesParam = searchParams.getAll("categories");
+		const locationParam = searchParams.getAll("location");
+		const typesParam = searchParams.getAll("type");
+		const dateParam = searchParams.get("date");
+		const salaryMinParam = searchParams.get("salaryMin");
+		const salaryMaxParam = searchParams.get("salaryMax");
 
-		if (categoriesParam || queryParam || locationParam || typeParam) {
-			setFilters(prev => ({
-				...prev,
-				categories: categoriesParam ? [categoriesParam] : prev.categories,
-				// You can add more URL parameter handling here if needed
-			}));
-		}
-	}, [searchParams]);
+		setFilters(prev => ({
+			...prev,
+			categories: categoriesParam.length ? categoriesParam : prev.categories,
+			location: locationParam.length ? locationParam : prev.location,
+			types: typesParam.length ? typesParam : prev.types,
+			date: dateParam || prev.date,
+			salaryMin: salaryMinParam ? parseInt(salaryMinParam) : prev.salaryMin,
+			salaryMax: salaryMaxParam ? parseInt(salaryMaxParam) : prev.salaryMax,
+		}));
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	// Sync filters to URL
+	useEffect(() => {
+		const params = new URLSearchParams();
+		filters.categories.forEach(c => params.append('categories', c));
+		filters.location.forEach(l => params.append('location', l));
+		filters.types.forEach(t => params.append('type', t));
+		if (filters.date && filters.date !== 'Anytime') params.set('date', filters.date);
+		if (typeof filters.salaryMin === 'number') params.set('salaryMin', String(filters.salaryMin));
+		if (typeof filters.salaryMax === 'number') params.set('salaryMax', String(filters.salaryMax));
+
+		router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+	}, [filters, pathname, router]);
 
 	// Function to clear individual filters
 	const handleClearFilter = (filterType: string, value: string) => {
@@ -53,11 +72,6 @@ export default function Page() {
 				return {
 					...prev,
 					location: prev.location.filter(item => item !== value)
-				};
-			} else if (filterType === 'tools') {
-				return {
-					...prev,
-					tools: prev.tools.filter(item => item !== value)
 				};
 			}
 			return prev;

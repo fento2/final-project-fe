@@ -11,6 +11,9 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Mail, Phone, Briefcase, GraduationCap } from "lucide-react";
 import formatCurrency from "@/lib/formatCurrency";
 import { formatDateIDDateOnly } from "@/lib/formatDate";
+import { useAuth } from "@/hooks/useAuth";
+import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
+import { useRouter } from "next/navigation";
 
 type Profile = {
     name?: string;
@@ -46,6 +49,9 @@ type Experience = {
 export default function UserProfileShowcase() {
     useAuthRole("USER");
     const toast = useToast();
+    const { user } = useAuth();
+    const { setShowSignUp } = useAuthUIStore();
+    const router = useRouter();
 
     const [loading, setLoading] = useState(true);
     const [profile, setProfile] = useState<Profile | null>(null);
@@ -53,6 +59,14 @@ export default function UserProfileShowcase() {
     const [experiences, setExperiences] = useState<Experience[]>([]);
     const [skills, setSkills] = useState<string[]>([]);
     const [expectedSalary, setExpectedSalary] = useState<number | null>(null);
+
+    const handleCTAClick = () => {
+        if (!user) {
+            setShowSignUp(true);
+        } else {
+            router.push("/dashboard");
+        }
+    };
 
     useEffect(() => {
         let mounted = true;
@@ -171,13 +185,6 @@ export default function UserProfileShowcase() {
                                     <a href={mailto}>Contact This Candidate</a>
                                 </Button>
                             )}
-                            {/* Quick actions */}
-                            <Button variant="outline" size="icon" aria-label="Save profile">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M6.32 2.577a49.255 49.255 0 0111.36 0c.585.074 1.07.49 1.188 1.063a49.527 49.527 0 010 16.72 1.5 1.5 0 01-1.188 1.064 49.255 49.255 0 01-11.36 0 1.5 1.5 0 01-1.188-1.063 49.527 49.527 0 010-16.72 1.5 1.5 0 011.188-1.064z" /></svg>
-                            </Button>
-                            <Button variant="outline" size="icon" aria-label="Share profile">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186a2.25 2.25 0 010 2.186m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0-12.814a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5zm0 15.75a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" /></svg>
-                            </Button>
                         </div>
                     </div>
                 </div>
@@ -341,7 +348,13 @@ export default function UserProfileShowcase() {
                             With our user-friendly platform and up-to-date job listings, you'll be on your way to a fulfilling career in no time.
                         </p>
                     </div>
-                    <Button variant="secondary" className="self-start md:self-auto">Join Now</Button>
+                    <Button 
+                        onClick={handleCTAClick}
+                        variant="secondary" 
+                        className="self-start md:self-auto"
+                    >
+                        {user ? "Go to Dashboard" : "Join Now"}
+                    </Button>
                 </div>
             </div>
 

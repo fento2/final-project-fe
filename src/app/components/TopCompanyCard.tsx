@@ -1,5 +1,5 @@
 "use client";
-import { BriefcaseBusiness, Star, UsersRound, MapPin, Award, TrendingUp, Building } from "lucide-react";
+import { Globe, Star, UsersRound, MapPin, Award, TrendingUp, Building } from "lucide-react";
 import Image from "next/image";
 import { Button } from "../../components/ui/button";
 import { motion } from "framer-motion";
@@ -10,7 +10,7 @@ type TopCompanyCardProps = {
     name: string;
     rating: number;
     employees: number;
-    jobsOpen: number;
+    website?: string;
     location: string;
     industry: string;
     description: string;
@@ -27,7 +27,7 @@ export function TopCompanyCard({
     name,
     rating,
     employees,
-    jobsOpen,
+    website,
     location,
     industry,
     description,
@@ -97,8 +97,19 @@ export function TopCompanyCard({
                         <span>{location}</span>
                     </div>
                     <div className="flex items-center gap-2 text-gray-500 text-sm">
-                        <BriefcaseBusiness className="w-4 h-4" />
-                        <span className="font-semibold text-indigo-600">{jobsOpen} jobs open</span>
+                        <Globe className="w-4 h-4" />
+                        {website ? (
+                            <a 
+                                href={website} 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="font-semibold text-indigo-600 hover:text-indigo-700 transition-colors truncate"
+                            >
+                                {website.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+                            </a>
+                        ) : (
+                            <span className="font-semibold text-gray-400">No website</span>
+                        )}
                     </div>
                 </div>
 

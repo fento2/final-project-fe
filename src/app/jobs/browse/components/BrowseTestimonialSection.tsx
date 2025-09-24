@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
 
@@ -28,6 +28,38 @@ const testimonials = [
 ];
 
 const BrowseTestimonialSection: React.FC = () => {
+  // Pagination state
+  const [page, setPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(1);
+
+  // Responsive itemsPerPage: 1 on mobile, 3 on md+
+  useEffect(() => {
+    const updateItemsPerPage = () => {
+      if (typeof window === "undefined") return;
+      const isMdUp = window.matchMedia("(min-width: 768px)").matches;
+      setItemsPerPage(isMdUp ? 3 : 1);
+    };
+    updateItemsPerPage();
+    window.addEventListener("resize", updateItemsPerPage);
+    return () => window.removeEventListener("resize", updateItemsPerPage);
+  }, []);
+
+  // Calculate pagination
+  const totalPages = useMemo(() => {
+    return Math.max(1, Math.ceil(testimonials.length / itemsPerPage));
+  }, [itemsPerPage]);
+
+  // Ensure current page stays within bounds when itemsPerPage changes
+  useEffect(() => {
+    setPage((prev) => Math.min(prev, totalPages));
+  }, [totalPages]);
+
+  const startIndex = (page - 1) * itemsPerPage;
+  const currentItems = testimonials.slice(startIndex, startIndex + itemsPerPage);
+
+  const goPrev = () => setPage((p) => Math.max(1, p - 1));
+  const goNext = () => setPage((p) => Math.min(totalPages, p + 1));
+
   return (
     <section className="bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
@@ -37,7 +69,7 @@ const BrowseTestimonialSection: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {testimonials.map((t, idx) => (
+          {currentItems.map((t, idx) => (
             <div
               key={idx}
               className="rounded-xl border border-gray-200 p-6 shadow-sm bg-white"
@@ -67,35 +99,52 @@ const BrowseTestimonialSection: React.FC = () => {
           ))}
         </div>
 
-        {/* Pager mimic */}
-        <div className="mt-8 flex items-center justify-center gap-4 text-sm">
-          <button
-            aria-label="Previous"
-            className="w-8 h-8 grid place-items-center rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <div className="flex items-center gap-3">
-            {["01", "02", "03", "04", "05"].map((n, i) => (
-              <span
-                key={n}
-                className={
-                  i === 1
-                    ? "px-3 py-1 rounded-md bg-indigo-600 text-white font-medium"
-                    : "text-gray-500"
-                }
-              >
-                {n}
-              </span>
-            ))}
+        {/* Pager */}
+        {totalPages > 1 && (
+          <div className="mt-8 flex items-center justify-center gap-4 text-sm">
+            <button
+              aria-label="Previous"
+              onClick={goPrev}
+              disabled={page === 1}
+              className={`w-8 h-8 grid place-items-center rounded-md border text-gray-600 hover:bg-gray-50 ${
+                page === 1 ? "border-gray-200 text-gray-300 cursor-not-allowed" : "border-gray-300"
+              }`}
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <div className="flex items-center gap-3">
+              {Array.from({ length: totalPages }).map((_, i) => {
+                const num = i + 1;
+                const label = num.toString().padStart(2, "0");
+                const active = page === num;
+                return (
+                  <button
+                    key={num}
+                    aria-current={active ? "page" : undefined}
+                    onClick={() => setPage(num)}
+                    className={
+                      active
+                        ? "px-3 py-1 rounded-md bg-indigo-600 text-white font-medium"
+                        : "px-3 py-1 rounded-md text-gray-600 hover:bg-gray-50 border border-transparent"
+                    }
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+            <button
+              aria-label="Next"
+              onClick={goNext}
+              disabled={page === totalPages}
+              className={`w-8 h-8 grid place-items-center rounded-md border text-gray-600 hover:bg-gray-50 ${
+                page === totalPages ? "border-gray-200 text-gray-300 cursor-not-allowed" : "border-gray-300"
+              }`}
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
           </div>
-          <button
-            aria-label="Next"
-            className="w-8 h-8 grid place-items-center rounded-md border border-gray-300 text-gray-600 hover:bg-gray-50"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
+        )}
       </div>
     </section>
   );
