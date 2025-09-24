@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/lib/zustand/authStore";
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
@@ -64,7 +65,8 @@ export default function UserProfileShowcase() {
         if (!user) {
             setShowSignUp(true);
         } else {
-            router.push("/dashboard");
+            const { role } = useAuthStore.getState();
+            router.push(role === "DEVELOPER" ? "/dashboard/list-skill-assessment" : role === "COMPANY" ? "/dashboard/company" : "/dashboard/profile");
         }
     };
 

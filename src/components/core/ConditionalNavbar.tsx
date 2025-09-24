@@ -34,10 +34,7 @@ export default function ConditionalNavbar() {
 
   const pathname = usePathname() || "/";
 
-  const hideOn = ["/dashboard", "/verify",];
-
-  const shouldHide = hideOn.some((p) => pathname.startsWith(p));
-
+  const shouldHide = pathname.includes("/dashboard/") || pathname.startsWith("/verify");
   if (shouldHide) return null;
   return <Navbar />;
 }

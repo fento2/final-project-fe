@@ -70,7 +70,10 @@ export default function AuthButtons() {
                                 <div className="flex flex-col gap-1">
                                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                                         <DropdownMenuItem
-                                            onClick={() => router.push("/dashboard")}
+                                                                                        onClick={() => {
+                                                                                            const { role } = useAuthStore.getState();
+                                                                                            router.push(role === "DEVELOPER" ? "/dashboard/list-skill-assessment" : role === "COMPANY" ? "/dashboard/company" : "/dashboard/profile");
+                                                                                        }}
                                             className="text-lg px-4 py-2 rounded-md"
                                         >
                                             Dashboard
@@ -89,10 +92,12 @@ export default function AuthButtons() {
                                                         if (username) {
                                                             router.push(`/profile/${encodeURIComponent(username)}`);
                                                         } else {
-                                                            router.push('/dashboard/profile');
+                                                            const { role } = useAuthStore.getState();
+                                                            router.push(role === "DEVELOPER" ? "/dashboard/list-skill-assessment" : role === "COMPANY" ? "/dashboard/company" : "/dashboard/profile");
                                                         }
                                                     } catch {
-                                                        router.push('/dashboard/profile');
+                                                        const { role } = useAuthStore.getState();
+                                                        router.push(role === "DEVELOPER" ? "/dashboard/list-skill-assessment" : role === "COMPANY" ? "/dashboard/company" : "/dashboard/profile");
                                                     }
                                                 }}
                                                 className="text-lg px-4 py-2 rounded-md"

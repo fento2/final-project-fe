@@ -1,5 +1,5 @@
 "use client";
-
+import { useAuthStore } from "@/lib/zustand/authStore";
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
@@ -74,7 +74,8 @@ export default function PublicUserProfilePage() {
         if (!user) {
             setShowSignUp(true);
         } else {
-            router.push("/dashboard");
+            const { role } = useAuthStore.getState();
+            router.push(role === "DEVELOPER" ? "/dashboard/list-skill-assessment" : role === "COMPANY" ? "/dashboard/company" : "/dashboard/profile");
         }
     };
 
@@ -467,8 +468,8 @@ export default function PublicUserProfilePage() {
                             )}
                             {education.map((edu) => (
                                 <div key={edu.education_id} className="flex gap-3">
-                                    <div className="mt-1">
-                                        <Image src="/images/logo.png" width={28} height={28} alt="edu" className="rounded-full" />
+                                    <div className="mt-1 flex items-center justify-center w-7 h-7 rounded-full bg-indigo-100">
+                                        <GraduationCap className="w-5 h-5 text-indigo-600" />
                                     </div>
                                     <div>
                                         <div className="font-semibold text-gray-900">{edu.institution || edu.university || "Institution"}</div>

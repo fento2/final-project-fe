@@ -1,4 +1,5 @@
 "use client";
+import { useAuthStore } from "@/lib/zustand/authStore";
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -15,7 +16,8 @@ const BrowseCTASection: React.FC = () => {
       setShowSignUp(true);
     } else {
       // User sudah login, bisa diarahkan ke dashboard atau halaman lain
-      router.push("/dashboard");
+  const { role } = useAuthStore.getState();
+  router.push(role === "DEVELOPER" ? "/dashboard/list-skill-assessment" : role === "COMPANY" ? "/dashboard/company" : "/dashboard/profile");
     }
   };
 

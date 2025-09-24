@@ -1,4 +1,5 @@
 "use client";
+import { useAuthStore } from "@/lib/zustand/authStore";
 import React from 'react';
 import Image from 'next/image';
 import { Briefcase, Globe, Users, Clock, Check, Star } from 'lucide-react';
@@ -18,7 +19,8 @@ export default function ServicePage() {
         if (!user) {
             setShowSignUp(true);
         } else {
-            router.push("/dashboard");
+            const { role } = useAuthStore.getState();
+            router.push(role === "DEVELOPER" ? "/dashboard/list-skill-assessment" : role === "COMPANY" ? "/dashboard/company" : "/dashboard/profile");
         }
     };
 
