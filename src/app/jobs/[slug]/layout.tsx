@@ -5,6 +5,7 @@ type Props = {
     children: React.ReactNode;
     params: Promise<any>;
 };
+//test
 
 async function fetchJob(slug: string) {
     const url = `/postings/get-detail/${encodeURIComponent(slug)}`;
