@@ -2,25 +2,15 @@
 
 import { useState, useEffect, useMemo } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Plus, Search } from "lucide-react";
-
+import { Plus } from "lucide-react";
 import { useAuthRole } from "@/helper/authRole";
 import { apiCall } from "@/helper/apiCall";
 import JobPostingsCard from "./componetns/JobsPostingsCard";
 import { PaginationDashboard } from "./componetns/PaginationDashboard";
-import { toSEO, toTitleCase } from "@/helper/toTitleCase";
+import { toSEO } from "@/helper/toTitleCase";
 import debounce from "lodash.debounce";
 import ButtonLoading from "./componetns/ButtonLoading";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
+import FilterAndSearch from "./componetns/FilterAndSearch";
 
 const PostingsPage = () => {
   useAuthRole("COMPANY");
@@ -119,95 +109,7 @@ const PostingsPage = () => {
         <ButtonLoading url="/dashboard/postings/manage/create" icon={Plus} text="Create New Job" />
       </div>
 
-      {/* Search & Filters */}
-      <div className="flex flex-col gap-4">
-        {/* Search bar di atas */}
-        <div className="relative w-full">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5" />
-          <Input
-            placeholder="Search job..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setCurrentPage(1);
-            }}
-            className="pl-10"
-          />
-        </div>
-
-        {/* Filters di bawah */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-          {/* Checkbox filters */}
-          <div className="flex gap-4 lg:flex-row flex-col">
-            {/* Show Preselection */}
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="show-preselection"
-                checked={showPreselection}
-                className="w-5 h-5"
-                onCheckedChange={(checked) => setShowPreselection(!!checked)}
-              />
-              <Label
-                htmlFor="show-preselection"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Only Show Preselection required
-              </Label>
-            </div>
-
-            {/* Show Not Expired */}
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="show-not-expired"
-                checked={showNotExpired}
-                className="w-5 h-5"
-                onCheckedChange={(checked) => setShowNotExpired(!!checked)}
-              />
-              <Label
-                htmlFor="show-not-expired"
-                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-              >
-                Only Show Not Expired
-              </Label>
-            </div>
-          </div>
-
-          {/* Select filters */}
-          <div className="flex items-center gap-2 lg:flex-row flex-col">
-            {/* Category Select */}
-            <Select
-              value={category}
-              onValueChange={(v) => {
-                setCategory(v);
-                setCurrentPage(1);
-              }}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Filter category" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {toTitleCase(cat)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Sort Select */}
-            <Select value={sort} onValueChange={(v) => setSort(v)}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="desc">Desc</SelectItem>
-                <SelectItem value="asc">Asc</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-      </div>
-
+      <FilterAndSearch search={search} setSearch={setSearch} setCurrentPage={setCurrentPage} showPreselection={showPreselection} setShowPreselection={setShowPreselection} showNotExpired={showNotExpired} setShowNotExpired={setShowNotExpired} category={category} setCategory={setCategory} categories={categories} sort={sort} setSort={setSort} />
 
       {/* Jobs Grid */}
       {!loading ? (

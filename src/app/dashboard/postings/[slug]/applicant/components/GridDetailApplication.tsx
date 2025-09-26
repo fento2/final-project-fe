@@ -8,12 +8,12 @@ import { useSchedulesStore } from "@/lib/zustand/scheduleStore";
 import { schemaInterviewInput } from "@/validation/interview.validation";
 import { useToast } from "@/components/basic-toast";
 import { Dots_v2 } from "@/components/ui/spinner";
-import { AllSchedules, DetailApplicant } from "../types";
 import { InterviewEvent } from "./BigCalender";
 import ProfileCard from "./ProfileCard";
 import RightSection from "./RightSection";
 import CalendarModal from "./CalenderModal";
 import ApplicantAction from "./ApplicantAction";
+import { AllSchedules, DetailApplicant } from "@/types/postingsTypes";
 const GridDetailApplication = () => {
     const [applicant, setApplicant] = useState<DetailApplicant | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
