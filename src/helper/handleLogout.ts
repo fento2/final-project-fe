@@ -5,6 +5,7 @@ export const handleLogOut = async (setLogOut: () => void) => {
     const { data } = await apiCall.get("/auth/logout");
     if (data.success) {
       setLogOut();
+      console.log(data);
     }
   } catch (error) {
     console.log(error);

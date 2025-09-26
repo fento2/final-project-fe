@@ -111,7 +111,7 @@ export default function AuthButtons() {
 
                                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                                         <DropdownMenuItem
-                                            onClick={() => handleLogOut(setLogOut)}
+                                            onClick={async () => await handleLogOut(setLogOut)}
                                             className="text-lg flex items-center gap-2 text-red-500 px-4 py-2 rounded-md"
                                         >
                                             <LogOut className="w-5 h-5" />
