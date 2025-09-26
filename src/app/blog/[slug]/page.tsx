@@ -25,14 +25,14 @@ export default function BlogPage() {
         try {
             setLoading(true);
             setError(null);
-            
+
             console.log('Fetching blog post:', slug);
-            
+
             // Coba fetch post spesifik berdasarkan slug
             try {
                 const { data } = await apiCall.get(`/blog/${slug}`);
                 console.log('Single post response:', data);
-                
+
                 // Transform backend data to match frontend BlogPost interface
                 if (data?.data) {
                     const transformedPost: BlogPost = {
@@ -85,13 +85,13 @@ export default function BlogPage() {
                     console.log('Single post endpoint not found, trying to get all posts...');
                     const { data } = await apiCall.get('/blog');
                     const postsData = data?.data?.blogs || data?.blogs || data?.data || data || [];
-                    
+
                     if (Array.isArray(postsData)) {
-                        const foundPost = postsData.find((p: any) => 
-                            p.slug === slug || 
+                        const foundPost = postsData.find((p: any) =>
+                            p.slug === slug ||
                             p.title.toLowerCase().replace(/\s+/g, '-') === slug
                         );
-                        
+
                         if (foundPost) {
                             console.log('Found post in all posts:', foundPost);
                             // Transform the found post
@@ -158,7 +158,7 @@ export default function BlogPage() {
                     <p className="text-gray-600 mb-4">
                         {error || "The blog post you're looking for doesn't exist."}
                     </p>
-                    <Link 
+                    <Link
                         href="/blog"
                         className="text-indigo-600 hover:text-indigo-700 font-medium"
                     >
@@ -171,10 +171,10 @@ export default function BlogPage() {
     // Helper function to format date
     const formatDate = (date: Date | string) => {
         const d = new Date(date);
-        return d.toLocaleDateString('en-US', { 
-            year: 'numeric', 
-            month: 'long', 
-            day: 'numeric' 
+        return d.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
         });
     };
 
@@ -214,11 +214,11 @@ export default function BlogPage() {
                                         Job Trends
                                     </span>
                                 </div>
-                                
+
                                 <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6 leading-tight">
                                     {post.title}
                                 </h1>
-                                
+
                                 <div className="flex items-center gap-4 pb-6">
                                     <div className="flex items-center gap-3">
                                         <Image
@@ -231,7 +231,7 @@ export default function BlogPage() {
                                         <div>
                                             <div className="font-medium text-gray-900">{post.author?.name || "Unknown Author"}</div>
                                             <div className="text-sm text-gray-500">
-                                                {formatDate(post.published_at || post.created_at)}
+                                                {formatDate(post.published_at || new Date())}
                                             </div>
                                         </div>
                                     </div>
@@ -282,8 +282,8 @@ export default function BlogPage() {
                                                     {post.author.name}
                                                 </h3>
                                                 <p className="text-gray-600 mb-3">
-                                                    Content writer and career counseling for business and technology. With over 
-                                                    5 years experience in the industry, Jane has written for leading companies 
+                                                    Content writer and career counseling for business and technology. With over
+                                                    5 years experience in the industry, Jane has written for leading companies
                                                     worldwide, including Fortune 500 Companies and Small Business.
                                                 </p>
                                                 <div className="flex gap-2">
@@ -320,14 +320,14 @@ export default function BlogPage() {
 
                 {/* Navigation */}
                 <div className="mt-12 flex justify-between items-center">
-                    <Link 
+                    <Link
                         href="/blog"
                         className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
                     >
                         <ArrowLeft className="w-4 h-4 mr-2" />
                         Previous Post
                     </Link>
-                    <Link 
+                    <Link
                         href="/blog"
                         className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium"
                     >
