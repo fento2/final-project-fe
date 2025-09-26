@@ -3,7 +3,7 @@ import { useAuthStore } from "@/lib/zustand/authStore";
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
+import { useAuthUIStore } from "@/lib/zustand/uiAuthSrore";
 import { useRouter } from "next/navigation";
 
 const BrowseCTASection: React.FC = () => {
@@ -23,8 +23,8 @@ const BrowseCTASection: React.FC = () => {
         role === "DEVELOPER"
           ? "/dashboard/list-skill-assessment"
           : role === "COMPANY"
-          ? "/dashboard/company"
-          : "/dashboard/profile"
+            ? "/dashboard/company"
+            : "/dashboard/profile"
       );
     }
   };

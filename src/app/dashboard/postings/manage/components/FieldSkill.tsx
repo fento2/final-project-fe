@@ -3,7 +3,7 @@ import { Command, CommandInput, CommandList, CommandItem } from "@/components/ui
 import { useState, useMemo, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
-import { useCreateJobStore } from "@/lib/zustand/createJobStore";
+import { useCreateJobStore } from "@/lib/zustand/postingCreateStore";
 import { apiCall } from "@/helper/apiCall";
 import debounce from "lodash.debounce";
 import { useEditJobStore } from "@/lib/zustand/editJobStore";

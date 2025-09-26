@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { getValue, setValue } from "@/helper/postingsHelper";
-import { useCreateJobStore } from "@/lib/zustand/createJobStore";
+import { useCreateJobStore } from "@/lib/zustand/postingCreateStore";
 import { useEditJobStore } from "@/lib/zustand/editJobStore";
 import { usePathname } from "next/navigation";
 import { useGeneralDataStore } from "@/lib/zustand/generalData";

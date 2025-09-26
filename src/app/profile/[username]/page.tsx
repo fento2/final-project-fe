@@ -12,7 +12,7 @@ import { MapPin, Mail, Phone, Briefcase, GraduationCap, Award } from "lucide-rea
 import { formatDateIDDateOnly } from "@/lib/formatDate";
 import { isCompanyUser, buildCompanySlug } from "@/helper/companySlugHelper";
 import { useAuth } from "@/hooks/useAuth";
-import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
+import { useAuthUIStore } from "@/lib/zustand/uiAuthSrore";
 
 type Profile = {
     name?: string | null;
@@ -67,7 +67,7 @@ export default function PublicUserProfilePage() {
     const [education, setEducation] = useState<Education[]>([]);
     const [experiences, setExperiences] = useState<Experience[]>([]);
     const [skills, setSkills] = useState<string[]>([]);
-    
+
     const [userAssessments, setUserAssessments] = useState<any[]>([]);
 
     const handleCTAClick = () => {
@@ -89,17 +89,17 @@ export default function PublicUserProfilePage() {
 
     useEffect(() => {
         if (!username) return;
-        
+
         let mounted = true;
         const fetchAll = async () => {
             try {
                 setLoading(true);
                 setError(null);
-                
+
                 // Fetch public profile by username
                 const res = await apiCall.get(`/public/profile/${encodeURIComponent(username)}`);
                 const data = res?.data?.data ?? res?.data ?? null;
-                
+
                 console.log('API Response for profile:', res?.data);
                 console.log('Profile data extracted:', data);
                 console.log('All data fields:', Object.keys(data || {}));
@@ -111,7 +111,7 @@ export default function PublicUserProfilePage() {
                     hasEducation: !!data?.education,
                     educationType: typeof data?.education,
                     educationLength: Array.isArray(data?.education) ? data.education.length : 'not array',
-                    hasExperience: !!data?.experience,  
+                    hasExperience: !!data?.experience,
                     experienceType: typeof data?.experience,
                     experienceLength: Array.isArray(data?.experience) ? data.experience.length : 'not array',
                     hasUserAssessment: !!data?.user_assessment,
@@ -132,7 +132,7 @@ export default function PublicUserProfilePage() {
                     createdAt: data?.createdAt,
                     created_at: data?.created_at
                 });
-                
+
                 if (!data) {
                     setError("User not found");
                     setLoading(false);
@@ -161,7 +161,7 @@ export default function PublicUserProfilePage() {
                     role: data.role || data.account_role || data.userRole || null,
                     createdAt: data.createdAt || data.created_at || null,
                 };
-                
+
                 console.log('Mapped profile data:', profileData);
                 setProfile(profileData);
 
@@ -214,23 +214,23 @@ export default function PublicUserProfilePage() {
                 console.log('Mapped assessment data:', assessmentArr);
                 setUserAssessments(assessmentArr);
 
-                    // Skills: try to map from various possible shapes in public endpoint
-                    try {
-                        const rawSkills = Array.isArray(data?.skills)
-                            ? data.skills
-                            : Array.isArray(data?.user_skill)
+                // Skills: try to map from various possible shapes in public endpoint
+                try {
+                    const rawSkills = Array.isArray(data?.skills)
+                        ? data.skills
+                        : Array.isArray(data?.user_skill)
                             ? data.user_skill
                             : Array.isArray(data?.userSkills)
-                            ? data.userSkills
-                            : [];
+                                ? data.userSkills
+                                : [];
 
-                        const names: string[] = rawSkills
-                            .map((s: any) => s?.name || s?.skill?.name || s?.Skill?.name || s)
-                            .filter((x: any) => typeof x === 'string' && x.trim().length > 0);
-                        setSkills(names);
-                    } catch {
-                        setSkills([]);
-                    }
+                    const names: string[] = rawSkills
+                        .map((s: any) => s?.name || s?.skill?.name || s?.Skill?.name || s)
+                        .filter((x: any) => typeof x === 'string' && x.trim().length > 0);
+                    setSkills(names);
+                } catch {
+                    setSkills([]);
+                }
 
             } catch (err: any) {
                 if (!mounted) return;
@@ -240,7 +240,7 @@ export default function PublicUserProfilePage() {
                 if (mounted) setLoading(false);
             }
         };
-        
+
         fetchAll();
         return () => {
             mounted = false;
@@ -250,13 +250,13 @@ export default function PublicUserProfilePage() {
     // Handle contact/view profile action
     const handleContactOrViewProfile = () => {
         if (!profile) return;
-        
+
         console.log('🔍 Profile data for routing:', profile);
         console.log('🔍 Display name:', displayName);
         console.log('🔍 Role value:', profile.role);
         console.log('🔍 Role type:', typeof profile.role);
         console.log('🔍 Is company user:', isCompanyUser(profile));
-        
+
         // Check if user is a company
         if (isCompanyUser(profile)) {
             // Route to company detail page
@@ -271,7 +271,7 @@ export default function PublicUserProfilePage() {
                 const subject = encodeURIComponent(`Job Opportunity - Contact from Job Portal`);
                 const body = encodeURIComponent(`Hello ${displayName},\n\nI found your profile on our job portal and would like to discuss a potential opportunity with you.\n\nBest regards`);
                 const mailtoUrl = `mailto:${profile.email}?subject=${subject}&body=${body}`;
-                
+
                 console.log('📞 Opening email client for:', profile.email);
                 window.open(mailtoUrl, '_self');
             } else {
@@ -318,14 +318,14 @@ export default function PublicUserProfilePage() {
         }
 
         let summary = `Hi, I'm ${displayName}.`;
-        
+
         // Add education info
         if (education.length > 0) {
             const latestEducation = education[0];
             const degree = latestEducation.degree || "";
             const field = latestEducation.field_of_study || latestEducation.fieldOfStudy || "";
             const institution = latestEducation.institution || latestEducation.university || "";
-            
+
             if (degree && field) {
                 summary += ` I hold a ${degree} degree in ${field}`;
                 if (institution) {
@@ -336,38 +336,38 @@ export default function PublicUserProfilePage() {
                 summary += ` I studied at ${institution}.`;
             }
         }
-        
+
         // Add experience info
         if (experiences.length > 0) {
             const latestExp = experiences[0];
             const position = latestExp.position || "";
             const company = latestExp.company || latestExp.name || "";
-            
+
             if (position && company) {
                 summary += ` I currently work as a ${position} at ${company}.`;
             } else if (position) {
                 summary += ` I work as a ${position}.`;
             }
-            
+
             if (yearsExperience && yearsExperience > 0) {
                 summary += ` I have ${yearsExperience}+ years of professional experience.`;
             }
         }
-        
+
         // Add skills/assessment info
         if (userAssessments.length > 0) {
             const skillNames = userAssessments.map(a => a.skill_name).filter(Boolean);
             if (skillNames.length > 0) {
-                const skillList = skillNames.length > 3 
+                const skillList = skillNames.length > 3
                     ? `${skillNames.slice(0, 3).join(", ")} and ${skillNames.length - 3} more skills`
                     : skillNames.join(", ");
                 summary += ` I have demonstrated expertise in ${skillList}.`;
             }
         }
-        
+
         // Add general closing
         summary += " I am passionate about technology and always eager to take on new challenges.";
-        
+
         return summary;
     };
 
@@ -387,8 +387,8 @@ export default function PublicUserProfilePage() {
                         {error === "Profile not available" ? "Profile Not Available" : "User Not Found"}
                     </h1>
                     <p className="text-gray-600 mt-2">
-                        {error === "Profile not available" 
-                            ? "This profile is not available for public viewing." 
+                        {error === "Profile not available"
+                            ? "This profile is not available for public viewing."
                             : error || "We couldn't find the user you searched for."
                         }
                     </p>
@@ -436,7 +436,7 @@ export default function PublicUserProfilePage() {
                         </div>
 
                         <div className="flex items-center gap-3 md:self-center">
-                            <Button 
+                            <Button
                                 onClick={handleContactOrViewProfile}
                                 className="bg-indigo-600 hover:bg-indigo-700"
                             >
@@ -529,15 +529,14 @@ export default function PublicUserProfilePage() {
                                                     {assessment.skill_name}
                                                 </div>
                                             </div>
-                                            
-                                            <div className={`text-2xl font-bold mb-2 ${
-                                                assessment.score >= 80 ? 'text-green-600' : 
-                                                assessment.score >= 60 ? 'text-yellow-600' : 
-                                                'text-red-600'
-                                            }`}>
+
+                                            <div className={`text-2xl font-bold mb-2 ${assessment.score >= 80 ? 'text-green-600' :
+                                                    assessment.score >= 60 ? 'text-yellow-600' :
+                                                        'text-red-600'
+                                                }`}>
                                                 {assessment.score}%
                                             </div>
-                                            
+
                                             {assessment.certificate_code && (
                                                 <div className="mb-2">
                                                     <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
@@ -545,13 +544,13 @@ export default function PublicUserProfilePage() {
                                                     </span>
                                                 </div>
                                             )}
-                                            
+
                                             {assessment.date_taken && (
                                                 <div className="text-xs text-gray-500 mb-1">
                                                     {formatDateIDDateOnly(assessment.date_taken)}
                                                 </div>
                                             )}
-                                            
+
                                             {assessment.certificate_code && (
                                                 <div className="text-xs text-gray-500 font-mono">
                                                     {assessment.certificate_code}
@@ -632,9 +631,9 @@ export default function PublicUserProfilePage() {
                             With our user-friendly platform and up-to-date job listings, you'll be on your way to a fulfilling career in no time.
                         </p>
                     </div>
-                    <Button 
+                    <Button
                         onClick={handleCTAClick}
-                        variant="secondary" 
+                        variant="secondary"
                         className="self-start md:self-auto"
                     >
                         {user ? "Go to Dashboard" : "Join Now"}

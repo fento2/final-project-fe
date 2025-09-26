@@ -1,6 +1,6 @@
 "use client";
 import { useAuth } from "@/hooks/useAuth";
-import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
+import { useAuthUIStore } from "@/lib/zustand/uiAuthSrore";
 import { useAuthStore } from "@/lib/zustand/authStore";
 import { useRouter } from "next/navigation";
 
@@ -28,7 +28,7 @@ export default function CTA() {
                     {isLoggedIn ? "Explore more opportunities on your dashboard!" : "Join Horizon Jobs today and take the first step towards finding your dream job!"}
                 </h3>
                 <p className="text-indigo-200 mb-6 max-w-3xl">
-                    {isLoggedIn 
+                    {isLoggedIn
                         ? "Continue your job search journey and discover new career opportunities that match your skills."
                         : "With our user-friendly platform and up-to-date job listings, you'll be on your way to a fulfilling career in no time. Sign up now and see what opportunities await!"
                     }

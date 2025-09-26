@@ -12,7 +12,7 @@ import { MapPin, Mail, Phone, Briefcase, GraduationCap } from "lucide-react";
 import formatCurrency from "@/lib/formatCurrency";
 import { formatDateIDDateOnly } from "@/lib/formatDate";
 import { useAuth } from "@/hooks/useAuth";
-import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
+import { useAuthUIStore } from "@/lib/zustand/uiAuthSrore";
 import { useRouter } from "next/navigation";
 
 type Profile = {

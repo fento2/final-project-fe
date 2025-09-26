@@ -5,7 +5,7 @@ import FormJobPosting from "./FormJobPosting";
 import { Briefcase, RotateCcw } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { useCreateJobStore } from "@/lib/zustand/createJobStore";
+import { useCreateJobStore } from "@/lib/zustand/postingCreateStore";
 import { postingsCreateFetch, updateJobPostingFetch } from "@/fetch/postings.fetch";
 import { useToast } from "@/components/basic-toast";
 import { useGeneralDataStore } from "@/lib/zustand/generalData";
