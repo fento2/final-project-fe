@@ -101,7 +101,7 @@ export default function PopularArticles() {
                                 </h4>
                                 <div className="flex items-center gap-1 mt-1 text-xs text-gray-500">
                                     <Calendar className="w-3 h-3" />
-                                    {formatDate(post.published_at as any)}
+                                    {formatDate(post.published_at || new Date())}
                                 </div>
                             </div>
                         </div>
