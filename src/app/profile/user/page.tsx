@@ -1,6 +1,5 @@
-import { useAuthStore } from "@/lib/zustand/authStore";
 "use client";
-
+import { useAuthStore } from "@/lib/zustand/authStore";
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useAuthRole } from "@/helper/authRole";
@@ -350,9 +349,9 @@ export default function UserProfileShowcase() {
                             With our user-friendly platform and up-to-date job listings, you'll be on your way to a fulfilling career in no time.
                         </p>
                     </div>
-                    <Button 
+                    <Button
                         onClick={handleCTAClick}
-                        variant="secondary" 
+                        variant="secondary"
                         className="self-start md:self-auto"
                     >
                         {user ? "Go to Dashboard" : "Join Now"}
