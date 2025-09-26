@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useMemo } from "react";
+import { Suspense, useState, useEffect, useMemo } from "react";
 import { Plus } from "lucide-react";
 import { useAuthRole } from "@/helper/authRole";
 import { apiCall } from "@/helper/apiCall";
@@ -145,4 +145,10 @@ const PostingsPage = () => {
   );
 };
 
-export default PostingsPage;
+export default function PostingsPageWrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PostingsPage />
+    </Suspense>
+  );
+}

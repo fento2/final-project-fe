@@ -1,6 +1,6 @@
 "use client";
 import { apiCall } from "@/helper/apiCall";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 type VerifyResponse = {
@@ -25,7 +25,7 @@ type VerifyResponse = {
     };
 };
 
-export default function VerifyCertificatePage() {
+function VerifyCertificatePageContent() {
     const [certificateId, setCertificateId] = useState("");
     const [loading, setLoading] = useState(false);
     const [result, setResult] = useState<VerifyResponse | null>(null);
@@ -154,5 +154,13 @@ export default function VerifyCertificatePage() {
                 )}
             </div>
         </div>
+    );
+}
+
+export default function VerifyCertificatePage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <VerifyCertificatePageContent />
+        </Suspense>
     );
 }
