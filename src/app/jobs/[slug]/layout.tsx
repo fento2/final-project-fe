@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 
 type Props = {
     children: React.ReactNode;
-    params: { slug: string };
+    params: Promise<any>;
 };
 
 async function fetchJob(slug: string) {
