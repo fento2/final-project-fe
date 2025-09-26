@@ -13,9 +13,10 @@ import { Briefcase, GraduationCap } from "lucide-react";
 import ProfileCvGeneratorSection from "./sections/ProfileCvGeneratorSection";
 import ProfileSkillsSection from "./sections/ProfileSkillsSection";
 import ProfileCertificateSection from "./sections/ProfileCertificateSection";
+import { useAuthRole } from "@/helper/useAuthRole";
 
 const ProfileUser = () => {
-
+  useAuthRole('USER')
   return (
     <div className="container md:pl-20 mx-auto min-h-screen px-4 py-6">
       {/* Header */}
