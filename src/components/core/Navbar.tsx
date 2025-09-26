@@ -6,11 +6,11 @@ import AuthButtons from "./AuthButton";
 import MobileNav from "./MobileNav";
 import SignUp from "./SignUp";
 import SignIn from "./SignIn";
-import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
 import SearchUserModal from "@/components/core/SearchUserModal";
 import { useUserSearchSuggestions } from "@/hooks/useUserSearchSuggestions";
 import Image from "next/image";
 import { generateCompanySlug } from "@/helper/companySlugHelper";
+import { useAuthUIStore } from "@/lib/zustand/uiAuthSrore";
 
 const menus = [
   { label: "Home", href: "/" },
@@ -50,11 +50,11 @@ const Navbar: React.FC = () => {
     // Check role first
     const role = user?.role?.toString?.()?.toUpperCase?.();
     if (role === "COMPANY" || role === "COMPANIES") return true;
-    
+
     // Fallback: check username pattern
     const username = user?.username?.toString?.()?.toLowerCase?.();
     if (username?.includes("_company") || username?.endsWith("company")) return true;
-    
+
     return false;
   };
   const findActiveMenu = (pathname: string) => {

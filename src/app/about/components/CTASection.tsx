@@ -4,8 +4,8 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useAuthStore } from "@/lib/zustand/authStore";
-import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
 import { useState } from "react";
+import { useAuthUIStore } from "@/lib/zustand/uiAuthSrore";
 
 export default function CTASection() {
     const { user } = useAuth();
@@ -42,18 +42,18 @@ export default function CTASection() {
                     <p className="text-xl text-indigo-100 mb-12 max-w-2xl mx-auto">
                         Join thousands of professionals who trust Horizon Jobs to find their perfect career match.
                     </p>
-                    
+
                     <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                         {isLoggedIn ? (
-                            <Link 
-                                href="/jobs" 
+                            <Link
+                                href="/jobs"
                                 className="inline-flex items-center bg-white text-indigo-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-50 transition-colors duration-200"
                             >
                                 Find Jobs
                                 <ArrowRight className="ml-2 w-5 h-5" />
                             </Link>
                         ) : (
-                            <button 
+                            <button
                                 onClick={handleGetStarted}
                                 className="inline-flex items-center bg-white text-indigo-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-50 transition-colors duration-200"
                             >
@@ -61,7 +61,7 @@ export default function CTASection() {
                                 <ArrowRight className="ml-2 w-5 h-5" />
                             </button>
                         )}
-                        <button 
+                        <button
                             onClick={handlePostJob}
                             className="inline-flex items-center border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-indigo-600 transition-colors duration-200"
                         >

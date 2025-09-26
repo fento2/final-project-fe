@@ -1,6 +1,5 @@
 "use client";
 
-
 import { useRouter, useParams } from "next/navigation";
 import { X } from "lucide-react";
 import { Card, CardContent, } from "@/components/ui/card";
@@ -10,10 +9,10 @@ import { usePreselectionStore } from "@/lib/zustand/preselectionStore";
 import * as XLSX from "xlsx";
 import DetailPosting from "./components/DetailJobPosting";
 import ApplicantSection from "./components/ApplicantsSection";
-
-
+import { useAuthRole } from "@/helper/authRole";
 
 const DetailPostings = () => {
+  useAuthRole('COMPANY')
   const params = useParams();
   const { slug } = params;
   const router = useRouter();

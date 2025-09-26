@@ -10,7 +10,6 @@ import {
   AtSign,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
 import WithSosmed from "./WithSomed";
 import { schemaSignUp } from "@/validation/auth.validation";
 import InputField from "./InputField";
@@ -22,6 +21,7 @@ import { useToast } from "../basic-toast";
 import RadioButtonSignUp from "./RadioButtonSignUp";
 import axios from "axios";
 import ModalCheckEmail from "./ModalCheckEmail";
+import { useAuthUIStore } from "@/lib/zustand/uiAuthSrore";
 const SignUp = () => {
   const router = useRouter();
   const { setShowSignIn, setShowSignUp } = useAuthUIStore();

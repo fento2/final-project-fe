@@ -8,7 +8,6 @@ import {
     DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/lib/zustand/authStore";
-import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { LogOut, UserCircle2 } from "lucide-react";
@@ -16,6 +15,7 @@ import { toTitleCase } from "@/helper/toTitleCase";
 import { motion, AnimatePresence } from "framer-motion";
 import { handleLogOut } from "@/helper/handleLogout";
 import { apiCall } from "@/helper/apiCall";
+import { useAuthUIStore } from "@/lib/zustand/uiAuthSrore";
 
 export default function AuthButtons() {
     const { setShowSignIn, setShowSignUp } = useAuthUIStore();
@@ -70,10 +70,10 @@ export default function AuthButtons() {
                                 <div className="flex flex-col gap-1">
                                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
                                         <DropdownMenuItem
-                                                                                        onClick={() => {
-                                                                                            const { role } = useAuthStore.getState();
-                                                                                            router.push(role === "DEVELOPER" ? "/dashboard/list-skill-assessment" : role === "COMPANY" ? "/dashboard/company" : "/dashboard/profile");
-                                                                                        }}
+                                            onClick={() => {
+                                                const { role } = useAuthStore.getState();
+                                                router.push(role === "DEVELOPER" ? "/dashboard/list-skill-assessment" : role === "COMPANY" ? "/dashboard/company" : "/dashboard/profile");
+                                            }}
                                             className="text-lg px-4 py-2 rounded-md"
                                         >
                                             Dashboard

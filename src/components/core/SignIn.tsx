@@ -3,7 +3,7 @@ import * as React from "react";
 import { useState } from "react";
 import { LogIn, Lock, Mail, X, EyeOff, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
+import { useAuthUIStore } from "@/lib/zustand/uiAuthSrore";
 import WithSosmed from "./WithSomed";
 import { schemaSignIn } from "@/validation/auth.validation";
 import { apiCall } from "@/helper/apiCall";
@@ -40,7 +40,7 @@ const SignIn = () => {
         remember
       })
       if (data.success) {
-  setAuth(data.data.email, (data.data.role || '').toUpperCase(), data.data.profile_picture)
+        setAuth(data.data.email, (data.data.role || '').toUpperCase(), data.data.profile_picture)
         setShowSignIn(false)
         setIsLogin(true);
         toast.success(data.message)

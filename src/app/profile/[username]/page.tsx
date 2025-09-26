@@ -12,8 +12,10 @@ import { MapPin, Mail, Phone, Briefcase, GraduationCap, Award } from "lucide-rea
 import { formatDateIDDateOnly } from "@/lib/formatDate";
 import { isCompanyUser, buildCompanySlug } from "@/helper/companySlugHelper";
 import { useAuth } from "@/hooks/useAuth";
-import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
 import { UserCompanyItem } from "@/types/userCompany";
+
+import { useAuthUIStore } from "@/lib/zustand/uiAuthSrore";
+
 
 type Profile = {
     name?: string | null;
@@ -68,7 +70,9 @@ export default function PublicUserProfilePage() {
     const [education, setEducation] = useState<Education[]>([]);
     const [experiences, setExperiences] = useState<Experience[]>([]);
     const [skills, setSkills] = useState<string[]>([]);
+
     const [dataUserCompany, setDataUserCompany] = useState<UserCompanyItem[]>([]);
+
 
     const [userAssessments, setUserAssessments] = useState<any[]>([]);
 
@@ -102,8 +106,10 @@ export default function PublicUserProfilePage() {
                 const res = await apiCall.get(`/public/profile/${encodeURIComponent(username)}`);
                 const data = res?.data?.data ?? res?.data ?? null;
 
+
                 const resUserCompany = await apiCall.get("/user-companies");
                 setDataUserCompany(resUserCompany.data.data);
+
 
                 if (!data) {
                     setError("User not found");
@@ -133,6 +139,7 @@ export default function PublicUserProfilePage() {
                     role: data.role || data.account_role || data.userRole || null,
                     createdAt: data.createdAt || data.created_at || null,
                 };
+
 
                 setProfile(profileData);
 
@@ -218,6 +225,7 @@ export default function PublicUserProfilePage() {
     // Handle contact/view profile action
     const handleContactOrViewProfile = () => {
         if (!profile) return;
+
 
         // Check if user is a company
         if (isCompanyUser(profile)) {
@@ -503,8 +511,10 @@ export default function PublicUserProfilePage() {
                                             </div>
 
                                             <div className={`text-2xl font-bold mb-2 ${assessment.score >= 80 ? 'text-green-600' :
+
                                                 assessment.score >= 60 ? 'text-yellow-600' :
                                                     'text-red-600'
+
                                                 }`}>
                                                 {assessment.score}%
                                             </div>

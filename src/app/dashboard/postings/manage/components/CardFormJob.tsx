@@ -5,7 +5,7 @@ import FormJobPosting from "./FormJobPosting";
 import { Briefcase, RotateCcw } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { useParams, usePathname, useRouter } from "next/navigation";
-import { useCreateJobStore } from "@/lib/zustand/createJobStore";
+import { useCreateJobStore } from "@/lib/zustand/postingCreateStore";
 import { postingsCreateFetch, updateJobPostingFetch } from "@/fetch/postings.fetch";
 import { useToast } from "@/components/basic-toast";
 import { useGeneralDataStore } from "@/lib/zustand/generalData";
@@ -22,8 +22,6 @@ const CardJobPosting = () => {
   const { reset: resetGeneralData } = useGeneralDataStore()
   const [loading, setLoading] = useState(false)
   const { slug } = useParams()
-
-
 
   const handleSave = async () => {
     const res = await postingsCreateFetch(useCreateJobStore.getState(), toast, setLoading)
@@ -64,7 +62,7 @@ const CardJobPosting = () => {
             {isEdit ? (
               // Cancel button saat edit
               <Button
-                className="w-full sm:w-auto bg-neutral-300 text-black hover:bg-neutral-700 hover:text-white"
+                className="sm:w-auto bg-neutral-300 text-black hover:bg-neutral-700 hover:text-white"
                 onClick={() => router.back()}
               >
                 Cancel
@@ -72,7 +70,7 @@ const CardJobPosting = () => {
             ) : (
               // Reset button saat create
               <Button
-                className="w-full sm:w-auto bg-neutral-300 text-black hover:bg-neutral-700 hover:text-white"
+                className="sm:w-auto bg-neutral-300 text-black hover:bg-neutral-700 hover:text-white"
                 onClick={reset}
               >
                 Reset <RotateCcw />
@@ -80,7 +78,7 @@ const CardJobPosting = () => {
             )}
 
             <Button
-              className="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-700"
+              className="sm:w-auto bg-indigo-500 hover:bg-indigo-700"
               onClick={() => isEdit ? handleUpdate() : handleSave()}
             >
               {loading ? (
