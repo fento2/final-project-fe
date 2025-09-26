@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import General from "./components/General";
 import Security from "../components/Security";
@@ -116,4 +117,10 @@ const ProfileUser = () => {
   );
 };
 
-export default ProfileUser;
+export default function ProfileUserWrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProfileUser />
+    </Suspense>
+  );
+}
