@@ -1,7 +1,5 @@
-"use client";
-
+'use client'
 import { useState, useEffect, useMemo } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import { Plus } from "lucide-react";
 import { useAuthRole } from "@/helper/authRole";
 import { apiCall } from "@/helper/apiCall";
@@ -11,6 +9,7 @@ import { toSEO } from "@/helper/toTitleCase";
 import debounce from "lodash.debounce";
 import ButtonLoading from "./componetns/ButtonLoading";
 import FilterAndSearch from "./componetns/FilterAndSearch";
+import { useRouter, useSearchParams } from "next/navigation";
 
 const PostingsPage = () => {
   useAuthRole("COMPANY");
