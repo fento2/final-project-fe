@@ -7,14 +7,6 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 import { apiCall } from "@/helper/apiCall";
 import { toTitleCase } from "@/helper/toTitleCase";
 import { Wallet } from "lucide-react";

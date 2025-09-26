@@ -10,13 +10,12 @@ import EducationForm from "./components/EducationForm";
 import ExperienceForm from "./components/ExperienceForm";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Briefcase, GraduationCap } from "lucide-react";
-import { useAuthRole } from "@/helper/authRole";
 import ProfileCvGeneratorSection from "./sections/ProfileCvGeneratorSection";
 import ProfileSkillsSection from "./sections/ProfileSkillsSection";
 import ProfileCertificateSection from "./sections/ProfileCertificateSection";
 
 const ProfileUser = () => {
-  useAuthRole('USER')
+
   return (
     <div className="container md:pl-20 mx-auto min-h-screen px-4 py-6">
       {/* Header */}

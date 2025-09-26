@@ -13,7 +13,6 @@ import formatCurrency from "@/lib/formatCurrency";
 import { submitApplication } from "@/fetch/applicationFetch";
 import { validateFile, formatSalaryInput, extractSalaryValue } from "@/validation/application.validation";
 import Image from "next/image";
-import { useAuthRole } from "@/helper/authRole";
 import { apiCall } from "@/helper/apiCall";
 import { isAxiosError } from "axios";
 
@@ -23,7 +22,7 @@ interface ApplicationFormData {
 }
 
 export default function ApplyJobPage() {
-    useAuthRole('USER')
+    // useAuthRole('USER')
     const router = useRouter();
     const params = useParams();
     const slug = params.slug as string;

@@ -6,10 +6,10 @@ import { useGeneralDataStore } from "@/lib/zustand/generalData";
 import { getDetailForEditFetch } from "@/fetch/postings.fetch";
 import { useEditJobStore } from "@/lib/zustand/editJobStore";
 import { useParams } from "next/navigation";
-import { useAuthRole } from "@/helper/authRole";
+
 
 const EditPosting = () => {
-  useAuthRole('COMPANY')
+
   const { setCategories, setCurrencies, setJobTypes, setPeriodSalary } = useGeneralDataStore()
   const { slug } = useParams()
   const { reset } = useEditJobStore()

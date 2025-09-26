@@ -9,18 +9,7 @@ import {
     CardDescription,
 } from "@/components/ui/card";
 import LoadingCard from "./LoadingCard";
-import { toTitleCase } from "@/helper/toTitleCase";
 import { Activity } from "lucide-react";
-import {
-    ResponsiveContainer,
-    XAxis,
-    YAxis,
-    CartesianGrid,
-    Tooltip,
-    Label as RechartsLabel,
-    Bar,
-    BarChart,
-} from "recharts";
 import SelectFilter from "./SelectFilter";
 import GeneralBarChart from "./GeneralBarChart";
 

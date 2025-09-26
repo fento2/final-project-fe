@@ -4,10 +4,10 @@ import SalaryTrends from "./components/SalaryTrends";
 import ApplicantInterest from "./components/ApplicantInterest";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useEffect, useState } from "react";
-import { useAuthRole } from "@/helper/authRole";
+
 
 const AnalyticsPage = () => {
-    useAuthRole('COMPANY')
+    // useAuthRole('COMPANY')
     const [open, setOpen] = useState(false);
 
     useEffect(() => {

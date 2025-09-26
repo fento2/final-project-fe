@@ -2,7 +2,6 @@
 import { useAuthStore } from "@/lib/zustand/authStore";
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { useAuthRole } from "@/helper/authRole";
 import { apiCall } from "@/helper/apiCall";
 import { useToast } from "@/components/basic-toast";
 import { Button } from "@/components/ui/button";
@@ -47,7 +46,7 @@ type Experience = {
 };
 
 export default function UserProfileShowcase() {
-    useAuthRole("USER");
+
     const toast = useToast();
     const { user } = useAuth();
     const { setShowSignUp } = useAuthUIStore();
