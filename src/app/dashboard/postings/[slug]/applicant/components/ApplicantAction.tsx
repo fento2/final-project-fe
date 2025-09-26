@@ -1,6 +1,5 @@
 "use client";
 
-import TextEditor from "@/app/dashboard/components/TextEditor";
 import { useToast } from "@/components/basic-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
@@ -10,7 +9,7 @@ import { format } from "date-fns";
 import { CheckCircle, XCircle, Clock, CalendarCheck, Edit3, CircleX } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { ModalTextArea } from "./ModalTextArea";
 
 interface ApplicantActionProps {
     status: string;
@@ -178,29 +177,8 @@ const ApplicantAction = ({ setIsModalOpen, status, interview, getDetail }: Appli
                 )}
             </div>
             {/* Modal Text Area */}
-            <Dialog open={showEditor} onOpenChange={setShowEditor}>
-                <DialogContent className="max-w-3xl">
-                    <DialogHeader>
-                        <DialogTitle>Custom Message</DialogTitle>
-                    </DialogHeader>
-
-                    <textarea
-                        className="w-full h-48 p-2 border rounded-md"
-                        value={text}
-                        onChange={(e) => setText(e.target.value)}
-                        placeholder="Tulis pesan custom untuk dikirim ke email di sini..."
-                    />
-
-                    <DialogFooter className="flex gap-3 mt-4">
-                        <Button variant="outline" onClick={() => setShowEditor(false)}>Cancel</Button>
-                        <Button onClick={handleSend} disabled={loading}>
-                            {loading ? <Dots_v2 /> : "Send"}
-                        </Button>
-                    </DialogFooter>
-                </DialogContent>
-            </Dialog>
+            <ModalTextArea showEditor={showEditor} setShowEditor={setShowEditor} text={text} setText={setText} handleSend={handleSend} loading={loading} />
         </Card>
     );
 };
-
 export default ApplicantAction;

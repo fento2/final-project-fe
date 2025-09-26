@@ -160,7 +160,7 @@ const SalaryTrends = () => {
                             <Bar
                                 dataKey="avgSalary"
                                 fill="oklch(76.9% 0.188 70.08)"
-                                barSize={40}
+                                // barSize={60}
                                 name="Average Salary"
                             />
                         </BarChart>

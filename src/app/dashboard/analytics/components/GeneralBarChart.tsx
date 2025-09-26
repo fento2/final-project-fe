@@ -35,7 +35,7 @@ const GeneralBarChart = ({ data, dataKeyBar, label, colorBar, dataKeyX, colorLab
                 <Bar
                     dataKey={dataKeyBar}
                     fill={colorBar}
-                    barSize={40}
+                // barSize={40}
                 />
             </BarChart>
         </ResponsiveContainer>

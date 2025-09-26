@@ -23,8 +23,6 @@ const CardJobPosting = () => {
   const [loading, setLoading] = useState(false)
   const { slug } = useParams()
 
-
-
   const handleSave = async () => {
     const res = await postingsCreateFetch(useCreateJobStore.getState(), toast, setLoading)
     if (res) {
@@ -64,7 +62,7 @@ const CardJobPosting = () => {
             {isEdit ? (
               // Cancel button saat edit
               <Button
-                className="w-full sm:w-auto bg-neutral-300 text-black hover:bg-neutral-700 hover:text-white"
+                className="sm:w-auto bg-neutral-300 text-black hover:bg-neutral-700 hover:text-white"
                 onClick={() => router.back()}
               >
                 Cancel
@@ -72,7 +70,7 @@ const CardJobPosting = () => {
             ) : (
               // Reset button saat create
               <Button
-                className="w-full sm:w-auto bg-neutral-300 text-black hover:bg-neutral-700 hover:text-white"
+                className="sm:w-auto bg-neutral-300 text-black hover:bg-neutral-700 hover:text-white"
                 onClick={reset}
               >
                 Reset <RotateCcw />
@@ -80,7 +78,7 @@ const CardJobPosting = () => {
             )}
 
             <Button
-              className="w-full sm:w-auto bg-indigo-500 hover:bg-indigo-700"
+              className="sm:w-auto bg-indigo-500 hover:bg-indigo-700"
               onClick={() => isEdit ? handleUpdate() : handleSave()}
             >
               {loading ? (
