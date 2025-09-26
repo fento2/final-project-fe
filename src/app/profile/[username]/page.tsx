@@ -12,7 +12,10 @@ import { MapPin, Mail, Phone, Briefcase, GraduationCap, Award } from "lucide-rea
 import { formatDateIDDateOnly } from "@/lib/formatDate";
 import { isCompanyUser, buildCompanySlug } from "@/helper/companySlugHelper";
 import { useAuth } from "@/hooks/useAuth";
+import { UserCompanyItem } from "@/types/userCompany";
+
 import { useAuthUIStore } from "@/lib/zustand/uiAuthSrore";
+
 
 type Profile = {
     name?: string | null;
@@ -68,6 +71,9 @@ export default function PublicUserProfilePage() {
     const [experiences, setExperiences] = useState<Experience[]>([]);
     const [skills, setSkills] = useState<string[]>([]);
 
+    const [dataUserCompany, setDataUserCompany] = useState<UserCompanyItem[]>([]);
+
+
     const [userAssessments, setUserAssessments] = useState<any[]>([]);
 
     const handleCTAClick = () => {
@@ -100,38 +106,10 @@ export default function PublicUserProfilePage() {
                 const res = await apiCall.get(`/public/profile/${encodeURIComponent(username)}`);
                 const data = res?.data?.data ?? res?.data ?? null;
 
-                console.log('API Response for profile:', res?.data);
-                console.log('Profile data extracted:', data);
-                console.log('All data fields:', Object.keys(data || {}));
-                console.log('Role from API:', data?.role);
-                console.log('Role type:', typeof data?.role);
-                console.log('Full API response data:', data);
-                console.log('Response data structure:', {
-                    hasUser: !!data,
-                    hasEducation: !!data?.education,
-                    educationType: typeof data?.education,
-                    educationLength: Array.isArray(data?.education) ? data.education.length : 'not array',
-                    hasExperience: !!data?.experience,
-                    experienceType: typeof data?.experience,
-                    experienceLength: Array.isArray(data?.experience) ? data.experience.length : 'not array',
-                    hasUserAssessment: !!data?.user_assessment,
-                    userAssessmentType: typeof data?.user_assessment,
-                    userAssessmentLength: Array.isArray(data?.user_assessment) ? data.user_assessment.length : 'not array',
-                    sampleEducation: data?.education?.[0],
-                    sampleExperience: data?.experience?.[0],
-                    sampleUserAssessment: data?.user_assessment?.[0]
-                });
-                console.log('Raw data values:', {
-                    name: data?.name,
-                    username: data?.username,
-                    email: data?.email,
-                    phone: data?.phone,
-                    role: data?.role,
-                    address: data?.address,
-                    profile_picture: data?.profile_picture,
-                    createdAt: data?.createdAt,
-                    created_at: data?.created_at
-                });
+
+                const resUserCompany = await apiCall.get("/user-companies");
+                setDataUserCompany(resUserCompany.data.data);
+
 
                 if (!data) {
                     setError("User not found");
@@ -162,7 +140,7 @@ export default function PublicUserProfilePage() {
                     createdAt: data.createdAt || data.created_at || null,
                 };
 
-                console.log('Mapped profile data:', profileData);
+
                 setProfile(profileData);
 
                 // Map education array based on new API structure
@@ -181,7 +159,6 @@ export default function PublicUserProfilePage() {
                         description: e.description || '',
                     }))
                     : [];
-                console.log('Mapped education data:', eduArr);
                 setEducation(eduArr);
 
                 // Map experience array based on new API structure
@@ -198,7 +175,6 @@ export default function PublicUserProfilePage() {
                         description: x.description || '',
                     }))
                     : [];
-                console.log('Mapped experience data:', expArr);
                 setExperiences(expArr);
 
                 // Map user assessment array
@@ -211,7 +187,6 @@ export default function PublicUserProfilePage() {
                         certificate_code: assessment.certificate_code || null,
                     }))
                     : [];
-                console.log('Mapped assessment data:', assessmentArr);
                 setUserAssessments(assessmentArr);
 
                 // Skills: try to map from various possible shapes in public endpoint
@@ -251,19 +226,12 @@ export default function PublicUserProfilePage() {
     const handleContactOrViewProfile = () => {
         if (!profile) return;
 
-        console.log('🔍 Profile data for routing:', profile);
-        console.log('🔍 Display name:', displayName);
-        console.log('🔍 Role value:', profile.role);
-        console.log('🔍 Role type:', typeof profile.role);
-        console.log('🔍 Is company user:', isCompanyUser(profile));
 
         // Check if user is a company
         if (isCompanyUser(profile)) {
             // Route to company detail page
             const companySlug = buildCompanySlug(profile);
-            console.log('🏗️ Generated company slug:', companySlug);
             const companyUrl = `/jobs/companies/${companySlug}`;
-            console.log('🚀 Navigating to:', companyUrl);
             router.push(companyUrl);
         } else {
             // For regular users, open email client to contact them
@@ -272,14 +240,12 @@ export default function PublicUserProfilePage() {
                 const body = encodeURIComponent(`Hello ${displayName},\n\nI found your profile on our job portal and would like to discuss a potential opportunity with you.\n\nBest regards`);
                 const mailtoUrl = `mailto:${profile.email}?subject=${subject}&body=${body}`;
 
-                console.log('📞 Opening email client for:', profile.email);
                 window.open(mailtoUrl, '_self');
             } else {
                 toast.error(
                     "Email not available",
                     "This user hasn't provided a public email address."
                 );
-                console.log('📞 No email available for user');
             }
         }
     };
@@ -507,6 +473,20 @@ export default function PublicUserProfilePage() {
                                     </CardContent>
                                 </Card>
                             ))}
+                            {
+                                dataUserCompany && (
+                                    dataUserCompany.map((val) => (
+                                        <Card key={val.user_company_id} className="shadow-sm">
+                                            <CardContent className="p-4">
+                                                <div className="font-semibold text-gray-900">{val.company.name}</div>
+                                                <div className="text-xs text-gray-500">
+                                                    {formatDateIDDateOnly(val.start_date)} - {val.end_date ? formatDateIDDateOnly(val.end_date) : "Present"}
+                                                </div>
+                                            </CardContent>
+                                        </Card>
+                                    ))
+                                )
+                            }
                         </div>
                     </section>
 
@@ -531,8 +511,10 @@ export default function PublicUserProfilePage() {
                                             </div>
 
                                             <div className={`text-2xl font-bold mb-2 ${assessment.score >= 80 ? 'text-green-600' :
-                                                    assessment.score >= 60 ? 'text-yellow-600' :
-                                                        'text-red-600'
+
+                                                assessment.score >= 60 ? 'text-yellow-600' :
+                                                    'text-red-600'
+
                                                 }`}>
                                                 {assessment.score}%
                                             </div>

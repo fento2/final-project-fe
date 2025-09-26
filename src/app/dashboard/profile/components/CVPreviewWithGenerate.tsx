@@ -7,14 +7,16 @@ import { apiCall } from "@/helper/apiCall";
 import { UserSubscriptionActiveDTO } from "@/types/userSubscription";
 import { Button } from "@/components/ui/button";
 import { QRCodeCanvas } from "qrcode.react";
+import { UserCompanyItem } from "@/types/userCompany";
 
 type Props = {
     user: BackendUser | null;
     cvData: CVData;
     btnLabel?: string;
+    userCompany?: UserCompanyItem[];
 };
 
-export default function CVPreviewWithGenerate({ user, cvData, btnLabel = "Generate / Print CV" }: Props) {
+export default function CVPreviewWithGenerate({ user, cvData, btnLabel = "Generate / Print CV", userCompany }: Props) {
     const previewRef = useRef<HTMLDivElement | null>(null);
     const handlePrint = usePrint(previewRef, `CV_${user?.name ?? user?.username ?? "profile"}`);
     const [subActive, setSubActive] = useState(false);
@@ -100,9 +102,18 @@ export default function CVPreviewWithGenerate({ user, cvData, btnLabel = "Genera
                         <ul className="text-sm text-gray-700 list-disc pl-5">
                             {user.experience.slice(0, 3).map((exp) => (
                                 <li key={exp.experience_id}>
-                                    {exp.position} — {exp.name} ({new Date(exp.startDate).getFullYear()} - {exp.endDate ? new Date(exp.endDate).getFullYear() : "Present"})
+                                    {exp.position} — {exp.name} ({new Date(exp.startDate).toLocaleString("en-US", { month: "long", year: "numeric" })} - {exp.endDate ? new Date(exp.endDate).toLocaleString("en-US", { month: "long", year: "numeric" }) : "Present"})
                                 </li>
                             ))}
+                            {
+                                userCompany && (
+                                    userCompany.map((val) => (
+                                        <li key={val.user_company_id}>
+                                            {val.company.name} ({new Date(val.start_date).toLocaleString("en-US", { month: "long", year: "numeric" })} - {val.end_date ? new Date(val.end_date).toLocaleString("en-US", { month: "long", year: "numeric" }) : "Present"})
+                                        </li>
+                                    ))
+                                )
+                            }
                         </ul>
                     </div>
                 ) : null}

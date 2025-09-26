@@ -7,6 +7,7 @@ import CVPreviewWithGenerate from "../components/CVPreviewWithGenerate";
 import { Card, CardContent } from "@/components/ui/card";
 import { useSubscription } from "@/hooks/useSubscription";
 import { deriveHeadline, deriveSummary, getLatestExperience } from "@/lib/cvHelper";
+import { UserCompanyItem } from "@/types/userCompany";
 
 export default function ProfileCvGeneratorSection() {
     const [cvData, setCvData] = useState<CVData>({
@@ -19,6 +20,7 @@ export default function ProfileCvGeneratorSection() {
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const subActive = useSubscription();
+    const [dataUserCompany, setDataUserCompany] = useState<UserCompanyItem[]>([]);
 
     const fetchData = async () => {
         let mounted = true;
@@ -28,6 +30,8 @@ export default function ProfileCvGeneratorSection() {
             const res = await apiCall.get("/account/cv/generator");
             const raw = res.data?.data ?? res.data;
             const extracted: BackendUser | null = Array.isArray(raw) ? (raw[0] ?? null) : (raw ?? null);
+            const resUserCompany = await apiCall.get("/user-companies");
+            setDataUserCompany(resUserCompany.data.data);
 
             if (mounted) {
                 setUser(extracted);
@@ -133,7 +137,7 @@ export default function ProfileCvGeneratorSection() {
                         />
                     </div>
 
-                    <CVPreviewWithGenerate user={user} cvData={cvData} />
+                    <CVPreviewWithGenerate user={user} cvData={cvData} userCompany={dataUserCompany} />
                 </div>
             )}
         </section>
