@@ -10,6 +10,7 @@ export type Filters = {
     categories: string[];
     salaryMin: number;
     salaryMax: number;
+    tools?: string[];
 };
 
 interface JobsFilterSectionProps {
@@ -31,7 +32,7 @@ const JobsFilterSection: React.FC<JobsFilterSectionProps> = ({ filters, onChange
                             <div className="text-sm text-gray-500">Loading...</div>
                         ) : (
                             Object.entries(stats.categories)
-                                .sort(([,a], [,b]) => b - a) // Sort by count descending
+                                .sort(([, a], [, b]) => b - a) // Sort by count descending
                                 .map(([category, count]) => (
                                     <label key={category} className="flex items-center justify-between text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
                                         <div className="flex items-center gap-2">
@@ -93,7 +94,7 @@ const JobsFilterSection: React.FC<JobsFilterSectionProps> = ({ filters, onChange
                             <div className="text-sm text-gray-500">Loading...</div>
                         ) : (
                             Object.entries(stats.jobTypes)
-                                .sort(([,a], [,b]) => b - a) // Sort by count descending
+                                .sort(([, a], [, b]) => b - a) // Sort by count descending
                                 .map(([jobType, count]) => (
                                     <label key={jobType} className="flex items-center justify-between text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
                                         <div className="flex items-center gap-2">
@@ -127,7 +128,7 @@ const JobsFilterSection: React.FC<JobsFilterSectionProps> = ({ filters, onChange
                             <div className="text-sm text-gray-500">Loading...</div>
                         ) : (
                             Object.entries(stats.locations)
-                                .sort(([,a], [,b]) => b - a) // Sort by count descending
+                                .sort(([, a], [, b]) => b - a) // Sort by count descending
                                 .slice(0, 6) // Show top 6
                                 .map(([location, count]) => (
                                     <label key={location} className="flex items-center justify-between text-sm cursor-pointer hover:bg-gray-50 p-1 rounded">
@@ -171,7 +172,7 @@ const JobsFilterSection: React.FC<JobsFilterSectionProps> = ({ filters, onChange
                             <span>{formatCompactIDR(IDR_SALARY_RANGES.min)}</span>
                             <span>{formatCompactIDR(IDR_SALARY_RANGES.max)}</span>
                         </div>
-                        
+
                         {/* Dual Range Slider */}
                         <div className="relative mt-4">
                             {/* Min Salary Slider */}
@@ -181,13 +182,13 @@ const JobsFilterSection: React.FC<JobsFilterSectionProps> = ({ filters, onChange
                                 max={IDR_SALARY_RANGES.max}
                                 step={IDR_SALARY_RANGES.step}
                                 value={Math.min(filters.salaryMin, filters.salaryMax - IDR_SALARY_RANGES.step)}
-                                onChange={(e) => onChange({ 
-                                    ...filters, 
-                                    salaryMin: Math.min(parseInt(e.target.value), filters.salaryMax - IDR_SALARY_RANGES.step) 
+                                onChange={(e) => onChange({
+                                    ...filters,
+                                    salaryMin: Math.min(parseInt(e.target.value), filters.salaryMax - IDR_SALARY_RANGES.step)
                                 })}
                                 className="absolute w-full h-2 bg-transparent appearance-none cursor-pointer z-10 range-slider"
                             />
-                            
+
                             {/* Max Salary Slider */}
                             <input
                                 type="range"
@@ -195,16 +196,16 @@ const JobsFilterSection: React.FC<JobsFilterSectionProps> = ({ filters, onChange
                                 max={IDR_SALARY_RANGES.max}
                                 step={IDR_SALARY_RANGES.step}
                                 value={Math.max(filters.salaryMax, filters.salaryMin + IDR_SALARY_RANGES.step)}
-                                onChange={(e) => onChange({ 
-                                    ...filters, 
-                                    salaryMax: Math.max(parseInt(e.target.value), filters.salaryMin + IDR_SALARY_RANGES.step) 
+                                onChange={(e) => onChange({
+                                    ...filters,
+                                    salaryMax: Math.max(parseInt(e.target.value), filters.salaryMin + IDR_SALARY_RANGES.step)
                                 })}
                                 className="absolute w-full h-2 bg-transparent appearance-none cursor-pointer z-20 range-slider"
                             />
 
                             {/* Slider Track */}
                             <div className="relative w-full h-2 bg-gray-200 rounded-lg">
-                                <div 
+                                <div
                                     className="absolute h-2 bg-indigo-600 rounded-lg"
                                     style={{
                                         left: `${((Math.min(filters.salaryMin, filters.salaryMax - IDR_SALARY_RANGES.step) - IDR_SALARY_RANGES.min) / (IDR_SALARY_RANGES.max - IDR_SALARY_RANGES.min)) * 100}%`,
@@ -234,8 +235,8 @@ const JobsFilterSection: React.FC<JobsFilterSectionProps> = ({ filters, onChange
                                     <button
                                         key={index}
                                         onClick={() => {
-                                            onChange({ 
-                                                ...filters, 
+                                            onChange({
+                                                ...filters,
                                                 salaryMin: range.min,
                                                 salaryMax: range.max
                                             });
@@ -250,7 +251,7 @@ const JobsFilterSection: React.FC<JobsFilterSectionProps> = ({ filters, onChange
                     </div>
                 </div>
             </aside>
-            
+
             {/* CSS untuk styling range slider */}
             <style jsx>{`
                 .range-slider {

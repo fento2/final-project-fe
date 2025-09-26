@@ -44,11 +44,11 @@ const useJobsWithFilters = (filters: Filters, page: number, perPage: number = 12
         try {
             setLoading(true);
             const params = new URLSearchParams();
-            
+
             // Add pagination
             params.append("page", page.toString());
             params.append("limit", perPage.toString());
-            
+
             // Add filter parameters
             if (filters.categories.length > 0) {
                 params.append("category", filters.categories.join(','));
@@ -65,7 +65,7 @@ const useJobsWithFilters = (filters: Filters, page: number, perPage: number = 12
             if (filters.salaryMax < 50000000) {
                 params.append("salaryMax", filters.salaryMax.toString());
             }
-            
+
             console.log('🔍 Fetching jobs with params:', params.toString());
 
             // Try both endpoints
@@ -84,9 +84,9 @@ const useJobsWithFilters = (filters: Filters, page: number, perPage: number = 12
             // Handle backend response structure
             const jobsData = data?.data?.data || data?.data || data || [];
             const paginationData = data?.data?.pagination || data?.pagination;
-            
+
             setJobs(Array.isArray(jobsData) ? jobsData : []);
-            
+
             if (paginationData) {
                 setPagination({
                     page: paginationData.page || page,
@@ -103,7 +103,7 @@ const useJobsWithFilters = (filters: Filters, page: number, perPage: number = 12
                     totalPages: Math.ceil(jobsData.length / perPage)
                 });
             }
-            
+
             setError(null);
         } catch (err: any) {
             console.error('❌ Error fetching jobs:', err);
@@ -166,8 +166,8 @@ const Pagination: React.FC<{
                     key={pageNum}
                     onClick={() => onChange(pageNum)}
                     className={`px-3 py-2 text-sm rounded-lg ${pageNum === page
-                            ? "bg-indigo-600 text-white"
-                            : "border border-gray-300 hover:bg-gray-50"
+                        ? "bg-indigo-600 text-white"
+                        : "border border-gray-300 hover:bg-gray-50"
                         }`}
                 >
                     {pageNum}
@@ -265,7 +265,7 @@ const JobsGridSection: React.FC<JobsGridSectionProps> = ({ filters }) => {
                 return {
                     id,
                     title: job.title || 'Untitled Position',
-                    company: job.Companies?.name ,
+                    company: job.Companies?.name,
                     type,
                     location,
                     salaryMin: salaryNum || 0,
@@ -274,7 +274,7 @@ const JobsGridSection: React.FC<JobsGridSectionProps> = ({ filters }) => {
                     category: getCategoryDisplay(job.category || job.Category || job.category_name),
                     description: job.requirements || '',
                     tags,
-                    slug: job.slug ,
+                    slug: job.slug,
                     companyLogo: job.Companies?.profile_picture,
                     createdAt: job.createdAt || job.created_at,
                     expiredAt: job.expiredAt || job.expired_at,
@@ -293,7 +293,7 @@ const JobsGridSection: React.FC<JobsGridSectionProps> = ({ filters }) => {
             }
 
             // Filter by tools/skills
-            if (filters.tools.length && !filters.tools.some(tool =>
+            if (filters.tools?.length && !filters.tools.some(tool =>
                 job.tags?.some(tag => tag.toLowerCase().includes(tool.toLowerCase()))
             )) {
                 return false;

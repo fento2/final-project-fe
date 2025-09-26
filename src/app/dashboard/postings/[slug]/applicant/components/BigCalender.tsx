@@ -37,8 +37,7 @@ export interface InterviewEvent extends Event {
     isFixed?: boolean; // dari backend (readonly)
     location?: string;
 }
-
-const DnDCalendar = withDragAndDrop(BigCalendar);
+const DnDCalendar = withDragAndDrop<InterviewEvent>(BigCalendar);
 
 interface InterviewCalendarProps {
     existingEvents: InterviewEvent[]; // jadwal dari backend (readonly)
@@ -114,7 +113,7 @@ const InterviewCalendar: React.FC<InterviewCalendarProps> = ({
         <div style={{ height: "80vh", padding: "1rem" }}>
             <DnDCalendar
                 localizer={localizer}
-                events={events}
+                events={events as any}
                 date={currentDate}
                 onNavigate={(d) => setCurrentDate(d)}
                 defaultView={Views.WEEK}

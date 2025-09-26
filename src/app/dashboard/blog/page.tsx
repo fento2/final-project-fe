@@ -74,8 +74,8 @@ export default function BlogDashboardPage() {
                                             {p.status}
                                         </span>
                                     </td>
-                                    <td className="px-4 py-3">{new Date(p.created_at).toLocaleDateString()}</td>
-                                    <td className="px-4 py-3">{new Date(p.updated_at).toLocaleDateString()}</td>
+                                    <td className="px-4 py-3">{new Date(p.created_at as any).toLocaleDateString()}</td>
+                                    <td className="px-4 py-3">{new Date(p.updated_at as any).toLocaleDateString()}</td>
                                     <td className="px-4 py-3">
                                         <div className="flex items-center justify-end gap-2">
                                             <Link href={`/blog/${p.slug}`} className="p-2 hover:bg-gray-100 rounded-md" title="View">
