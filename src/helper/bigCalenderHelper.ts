@@ -11,7 +11,7 @@ export const eventPropGetter =
         style: {
           backgroundColor: "oklch(58.6% 0.253 17.585)", // merah = fix (readonly)
           color: "white",
-          pointerEvents: "none",
+          pointerEvents: "none" as const,
         },
       };
     }

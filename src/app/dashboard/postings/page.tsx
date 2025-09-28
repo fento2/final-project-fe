@@ -1,9 +1,13 @@
-"use client";
 
-import { useState, useEffect, useMemo } from "react";
+'use client'
+import { Suspense, useState, useEffect, useMemo } from "react";
+import { Plus } from "lucide-react";
+
+
 import { useRouter, useSearchParams } from "next/navigation";
 import { Plus } from "lucide-react";
 import { useAuthRole } from "@/helper/authRole";
+
 import { apiCall } from "@/helper/apiCall";
 import JobPostingsCard from "./componetns/JobsPostingsCard";
 import { PaginationDashboard } from "./componetns/PaginationDashboard";
@@ -12,8 +16,10 @@ import debounce from "lodash.debounce";
 import ButtonLoading from "./componetns/ButtonLoading";
 import FilterAndSearch from "./componetns/FilterAndSearch";
 
+
+
 const PostingsPage = () => {
-  useAuthRole("COMPANY");
+  // useAuthRole("COMPANY");
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -146,4 +152,10 @@ const PostingsPage = () => {
   );
 };
 
-export default PostingsPage;
+export default function PostingsPageWrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <PostingsPage />
+    </Suspense>
+  );
+}

@@ -4,7 +4,10 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { getValue, setValue } from "@/helper/postingsHelper"
 import { toTitleCase } from "@/helper/toTitleCase"
-import { useCreateJobStore } from "@/lib/zustand/createJobStore"
+
+import { useCreateJobStore } from "@/lib/zustand/postingCreateStore"
+
+
 import { useEditJobStore } from "@/lib/zustand/editJobStore"
 import { useGeneralDataStore } from "@/lib/zustand/generalData"
 import { usePathname } from "next/navigation"

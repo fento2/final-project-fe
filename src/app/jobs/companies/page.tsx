@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback, Suspense } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { apiCall } from "@/helper/apiCall";
 import { Company } from "@/types/userCompany";
@@ -11,7 +11,7 @@ import HowItWorksSection from "@/app/components/HowItWorksSection";
 import BrowseTestimonialSection from "../browse/components/BrowseTestimonialSection";
 import BrowseCTASection from "../browse/components/BrowseCTASection";
 
-export default function CompaniesPage() {
+function CompaniesPageContent() {
     const [companies, setCompanies] = useState<Company[]>([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [loading, setLoading] = useState(false);
@@ -209,5 +209,13 @@ export default function CompaniesPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function CompaniesPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <CompaniesPageContent />
+        </Suspense>
     );
 }

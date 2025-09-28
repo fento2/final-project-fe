@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import BrowseHeroSection from "./components/BrowseHeroSection";
 import JobsFilterSection, { Filters } from "./components/JobsFilterSection";
@@ -8,7 +8,7 @@ import HowItWorksSection from "@/app/components/HowItWorksSection";
 import BrowseTestimonialSection from "./components/BrowseTestimonialSection";
 import BrowseCTASection from "./components/BrowseCTASection";
 
-export default function Page() {
+function BrowsePageContent() {
 	const searchParams = useSearchParams();
 	const router = useRouter();
 	const pathname = usePathname();
@@ -117,6 +117,14 @@ export default function Page() {
 					</div>
 			</div>
 		</div>
+	);
+}
+
+export default function Page() {
+	return (
+		<Suspense fallback={<div>Loading...</div>}>
+			<BrowsePageContent />
+		</Suspense>
 	);
 }
 

@@ -17,7 +17,7 @@ import { CalendarIcon } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import BasicForm from "./BasicForm";
-import { useCreateJobStore } from "@/lib/zustand/createJobStore";
+import { useCreateJobStore } from "@/lib/zustand/postingCreateStore";
 import { useEditJobStore } from "@/lib/zustand/editJobStore";
 import { usePathname } from "next/navigation";
 import { getValue, setValue } from "@/helper/postingsHelper";

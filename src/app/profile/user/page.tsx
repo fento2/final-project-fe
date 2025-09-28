@@ -2,7 +2,6 @@
 import { useAuthStore } from "@/lib/zustand/authStore";
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
-import { useAuthRole } from "@/helper/authRole";
 import { apiCall } from "@/helper/apiCall";
 import { useToast } from "@/components/basic-toast";
 import { Button } from "@/components/ui/button";
@@ -12,7 +11,7 @@ import { MapPin, Mail, Phone, Briefcase, GraduationCap } from "lucide-react";
 import formatCurrency from "@/lib/formatCurrency";
 import { formatDateIDDateOnly } from "@/lib/formatDate";
 import { useAuth } from "@/hooks/useAuth";
-import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
+import { useAuthUIStore } from "@/lib/zustand/uiAuthSrore";
 import { useRouter } from "next/navigation";
 
 type Profile = {
@@ -47,7 +46,7 @@ type Experience = {
 };
 
 export default function UserProfileShowcase() {
-    useAuthRole("USER");
+
     const toast = useToast();
     const { user } = useAuth();
     const { setShowSignUp } = useAuthUIStore();

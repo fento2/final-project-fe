@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import CTA from '../contact/components/CTA';
 import LocalizedPricing from './components/LocalizedPricing';
 import { useAuth } from '@/hooks/useAuth';
-import { useAuthUIStore } from '@/lib/zustand/authUIASrore';
+import { useAuthUIStore } from '@/lib/zustand/uiAuthSrore';
 import { useRouter } from 'next/navigation';
 
 export default function ServicePage() {
@@ -43,13 +43,13 @@ export default function ServicePage() {
                         <h1 className="text-4xl md:text-5xl font-extrabold text-indigo-900 mb-6">Services that help you hire and grow faster</h1>
                         <p className="text-gray-600 mb-8">We provide end-to-end hiring solutions: job posting, candidate discovery, applicant tracking, and employer branding tools — all in one intuitive platform.</p>
                         <div className="flex justify-center gap-4">
-                            <Button 
+                            <Button
                                 onClick={handleGetStarted}
                                 className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-3 rounded-md"
                             >
                                 {isLoggedIn ? "Go to Dashboard" : "Get Started"}
                             </Button>
-                            <Button 
+                            <Button
                                 onClick={handleTalkToSales}
                                 className="bg-white border hover:bg-indigo-700 border-indigo-600 text-indigo-600 hover:text-white px-6 py-3 rounded-md"
                             >
@@ -60,7 +60,7 @@ export default function ServicePage() {
                 </div>
             </div>
 
-                    <LocalizedPricing />
+            <LocalizedPricing />
 
             {/* Services Grid */}
             <div className="max-w-7xl mx-auto px-6 py-16">

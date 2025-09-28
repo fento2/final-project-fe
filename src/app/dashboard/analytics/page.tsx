@@ -6,8 +6,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { useEffect, useState } from "react";
 import { useAuthRole } from "@/helper/authRole";
 
+
 const AnalyticsPage = () => {
-    useAuthRole('COMPANY')
     const [open, setOpen] = useState(false);
 
     useEffect(() => {

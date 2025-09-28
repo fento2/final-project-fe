@@ -18,7 +18,7 @@ export default function FeaturedArticles() {
         try {
             const { data } = await apiCall.get('/blog');
             const postsData = data?.data?.blogs || data?.blogs || data?.data || data || [];
-            
+
             if (Array.isArray(postsData)) {
                 // Transform and get first 2 posts as featured
                 const transformedPosts: BlogPost[] = postsData.slice(0, 2).map((post: any) => ({
@@ -40,7 +40,7 @@ export default function FeaturedArticles() {
                     read_time: Math.max(1, Math.ceil(post.content?.split(' ').length / 200)) || 5,
                     status: (post.published ? 'published' : 'draft') as 'published' | 'draft'
                 }));
-                
+
                 setFeaturedPosts(transformedPosts);
             }
         } catch (error) {
@@ -52,10 +52,10 @@ export default function FeaturedArticles() {
 
     const formatDate = (date: Date | string) => {
         const d = new Date(date);
-        return d.toLocaleDateString('en-US', { 
-            month: 'short', 
-            day: 'numeric', 
-            year: 'numeric' 
+        return d.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
         });
     };
 
@@ -87,7 +87,7 @@ export default function FeaturedArticles() {
         <div className="mb-12">
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold text-gray-900">Featured Articles</h2>
-                <Link 
+                <Link
                     href="/blog/all"
                     className="text-blue-600 hover:text-blue-700 font-medium text-sm flex items-center gap-1"
                 >
@@ -95,7 +95,7 @@ export default function FeaturedArticles() {
                     <ArrowRight className="w-4 h-4" />
                 </Link>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {featuredPosts.map((post, index) => (
                     <article key={post.id} className="bg-white rounded-lg overflow-hidden shadow-sm border hover:shadow-md transition-shadow">
@@ -112,27 +112,27 @@ export default function FeaturedArticles() {
                                 </span>
                             </div>
                         </div>
-                        
+
                         <div className="p-6">
                             <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
                                 {index === 0 ? "5 Tips for Crafting a Winning Resume" : "The Top 10 In-Demand IT Jobs of 2023"}
                             </h3>
-                            
+
                             <p className="text-gray-600 mb-4 line-clamp-2">
-                                {index === 0 
+                                {index === 0
                                     ? "Our advice on how to create the winning resume in your current job application process to impress and compete..."
                                     : "What you think say about the top 10 in-Demand IT Jobs of 2023 from thousands of years of highlighting job market..."
                                 }
                             </p>
-                            
+
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-sm text-gray-500">
                                     <span className="font-medium">{index === 0 ? "Sarah Jones" : "John Smith"}</span>
                                     <span>•</span>
-                                    <span>{formatDate(post.published_at)}</span>
+                                    <span>{formatDate(post.published_at || new Date())}</span>
                                 </div>
-                                
-                                <Link 
+
+                                <Link
                                     href={`/blog/${post.slug}`}
                                     className="text-blue-600 hover:text-blue-700 font-medium text-sm"
                                 >

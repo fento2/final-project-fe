@@ -19,15 +19,15 @@ export default function BlogGrid() {
         try {
             setLoading(true);
             setError(null);
-            
+
             console.log('Fetching posts from backend...');
             const { data } = await apiCall.get('/blog');
-            
+
             console.log('Backend response:', data);
-            
+
             // Handle different response structures
             const postsData = data?.data?.blogs || data?.blogs || data?.data || data || [];
-            
+
             if (Array.isArray(postsData)) {
                 // Transform backend data to match frontend BlogPost interface
                 const transformedPosts: BlogPost[] = postsData.map((post: any) => ({
@@ -49,7 +49,7 @@ export default function BlogGrid() {
                     read_time: Math.max(1, Math.ceil(post.content?.split(' ').length / 200)) || 5,
                     status: (post.published ? 'published' : 'draft') as 'published' | 'draft'
                 }));
-                
+
                 setPosts(transformedPosts);
                 console.log('Posts transformed and set successfully:', transformedPosts);
             } else {
@@ -58,7 +58,7 @@ export default function BlogGrid() {
             }
         } catch (err: any) {
             console.error('Error fetching blog posts:', err);
-            
+
             // Check for specific backend errors
             if (err.response?.status === 500) {
                 setError('Backend database connection issue. Please check if the database is running.');
@@ -92,16 +92,16 @@ export default function BlogGrid() {
     // Filter posts by category
     const filteredPosts = useMemo(() => {
         console.log("Filtering posts:", { posts, selectedCategory });
-        
+
         if (selectedCategory === "All") {
             // Menampilkan semua post yang published
             const published = posts.filter((post: BlogPost) => post.status === 'published');
             console.log("All posts filtered:", published);
             return published;
         }
-        
+
         // Filter berdasarkan kategori spesifik
-        const categoryFiltered = posts.filter((post: BlogPost) => 
+        const categoryFiltered = posts.filter((post: BlogPost) =>
             post.category === selectedCategory && post.status === 'published'
         );
         console.log("Category filtered posts:", categoryFiltered);
@@ -111,10 +111,10 @@ export default function BlogGrid() {
     // Format date helper
     const formatDate = (dateString: string | Date) => {
         const date = new Date(dateString);
-        return date.toLocaleDateString('en-US', { 
-            month: 'short', 
-            day: 'numeric', 
-            year: 'numeric' 
+        return date.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
         });
     };
 
@@ -137,11 +137,10 @@ export default function BlogGrid() {
                         <button
                             key={category}
                             onClick={() => setSelectedCategory(category)}
-                            className={`px-4 py-2 rounded-full text-sm font-medium transition ${
-                                category === selectedCategory
-                                    ? "bg-indigo-600 text-white shadow-sm"
-                                    : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
-                            }`}
+                            className={`px-4 py-2 rounded-full text-sm font-medium transition ${category === selectedCategory
+                                ? "bg-indigo-600 text-white shadow-sm"
+                                : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-200"
+                                }`}
                         >
                             {category}
                         </button>
@@ -158,13 +157,13 @@ export default function BlogGrid() {
                             <h3 className="text-lg font-semibold text-red-800 mb-2">Connection Issue</h3>
                             <p className="text-red-600 mb-4">{error}</p>
                             <div className="flex gap-3 justify-center">
-                                <button 
+                                <button
                                     onClick={fetchPosts}
                                     className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
                                 >
                                     Try Again
                                 </button>
-                                <button 
+                                <button
                                     onClick={() => window.location.reload()}
                                     className="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
                                 >
@@ -182,7 +181,7 @@ export default function BlogGrid() {
                         {filteredPosts.length === 0 && posts.length === 0 && (
                             <div className="text-center py-12">
                                 <p className="text-gray-500">No blog posts available at the moment.</p>
-                                <button 
+                                <button
                                     onClick={fetchPosts}
                                     className="mt-2 text-indigo-600 hover:text-indigo-700 font-medium"
                                 >
@@ -195,7 +194,7 @@ export default function BlogGrid() {
                         {filteredPosts.length === 0 && posts.length > 0 && (
                             <div className="text-center py-12">
                                 <p className="text-gray-500">No blog posts found for the selected category.</p>
-                                <button 
+                                <button
                                     onClick={() => setSelectedCategory("All")}
                                     className="mt-2 text-indigo-600 hover:text-indigo-700 font-medium"
                                 >
@@ -225,28 +224,28 @@ export default function BlogGrid() {
                                                 </span>
                                             </div>
                                         </div>
-                                        
+
                                         <div className="p-6">
                                             <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
                                                 <div className="flex items-center gap-1">
                                                     <Calendar className="w-4 h-4" />
-                                                    {formatDate(post.published_at || post.created_at)}
+                                                    {formatDate(post.published_at || new Date())}
                                                 </div>
                                                 <div className="flex items-center gap-1">
                                                     <Clock className="w-4 h-4" />
                                                     {getReadTime(post)}
                                                 </div>
                                             </div>
-                                            
+
                                             <h3 className="text-xl font-semibold text-gray-900 mb-2 line-clamp-2">
                                                 {post.title}
                                             </h3>
-                                            
+
                                             <p className="text-gray-600 mb-5 line-clamp-3">
                                                 {post.excerpt}
                                             </p>
-                                            
-                                            <Link 
+
+                                            <Link
                                                 href={`/blog/${post.slug}`}
                                                 className="inline-flex items-center text-indigo-600 font-semibold hover:text-indigo-700 transition-colors group"
                                             >

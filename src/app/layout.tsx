@@ -36,7 +36,7 @@ export default function RootLayout({
       >
         <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
           {/* Ensure auth store is initialized globally on all routes */}
-          <AuthInit />
+          {/* <AuthInit /> */}
           <ShowSideBar />
           <ConditionalNavbar />
           <ToastProvider />

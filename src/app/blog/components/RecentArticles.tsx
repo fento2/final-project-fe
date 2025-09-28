@@ -20,7 +20,7 @@ export default function RecentArticles() {
         try {
             const { data } = await apiCall.get('/blog');
             const postsData = data?.data?.blogs || data?.blogs || data?.data || data || [];
-            
+
             if (Array.isArray(postsData)) {
                 // Transform all posts for recent section
                 const transformedPosts: BlogPost[] = postsData.map((post: any, index: number) => ({
@@ -42,7 +42,7 @@ export default function RecentArticles() {
                     read_time: Math.max(1, Math.ceil(post.content?.split(' ').length / 200)) || 5,
                     status: (post.published ? 'published' : 'draft') as 'published' | 'draft'
                 }));
-                
+
                 setRecentPosts(transformedPosts);
             }
         } catch (error) {
@@ -64,10 +64,10 @@ export default function RecentArticles() {
 
     const formatDate = (date: Date | string) => {
         const d = new Date(date);
-        return d.toLocaleDateString('en-US', { 
-            month: 'short', 
-            day: 'numeric', 
-            year: 'numeric' 
+        return d.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
         });
     };
 
@@ -75,7 +75,7 @@ export default function RecentArticles() {
         const titles = [
             "The Importance of Soft Skills in Today's Job Market",
             "How to Nail Your Next Job Interview: Tips from HR",
-            "Work-Life Balance for Employee Health and Happiness", 
+            "Work-Life Balance for Employee Health and Happiness",
             "The Future of Job Marketplaces: What to Expect"
         ];
         return titles[index % titles.length];
@@ -120,7 +120,7 @@ export default function RecentArticles() {
     return (
         <div className="mb-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Recent Articles</h2>
-            
+
             <div className="space-y-6">
                 {currentPosts.map((post, index) => (
                     <article key={post.id} className="flex gap-6 group">
@@ -132,28 +132,28 @@ export default function RecentArticles() {
                                 className="object-cover group-hover:scale-105 transition-transform duration-300"
                             />
                         </div>
-                        
+
                         <div className="flex-1">
                             <div className="mb-2">
                                 <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
                                     {getCategoryForPost(startIndex + index)}
                                 </span>
                             </div>
-                            
+
                             <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
                                 <Link href={`/blog/${post.slug}`}>
                                     {getTitleForPost(post, startIndex + index)}
                                 </Link>
                             </h3>
-                            
+
                             <p className="text-gray-600 mb-3 line-clamp-2">
                                 {getExcerptForPost(startIndex + index)}
                             </p>
-                            
+
                             <div className="flex items-center gap-4 text-sm text-gray-500">
                                 <span className="font-medium">{getAuthorForPost(startIndex + index)}</span>
                                 <span>•</span>
-                                <span>{formatDate(post.published_at)}</span>
+                                <span>{formatDate(post.published_at || new Date())}</span>
                             </div>
                         </div>
                     </article>
@@ -170,21 +170,20 @@ export default function RecentArticles() {
                     >
                         <ChevronLeft className="w-4 h-4" />
                     </button>
-                    
+
                     {[...Array(totalPages)].map((_, i) => (
                         <button
                             key={i + 1}
                             onClick={() => setCurrentPage(i + 1)}
-                            className={`px-3 py-2 rounded-lg text-sm font-medium ${
-                                currentPage === i + 1
+                            className={`px-3 py-2 rounded-lg text-sm font-medium ${currentPage === i + 1
                                     ? "bg-blue-600 text-white"
                                     : "border border-gray-200 hover:bg-gray-50"
-                            }`}
+                                }`}
                         >
                             {i + 1}
                         </button>
                     ))}
-                    
+
                     <button
                         onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                         disabled={currentPage === totalPages}

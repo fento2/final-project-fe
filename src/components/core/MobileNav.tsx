@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "../ui/button";
-import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
-import { LayoutDashboardIcon, LogOut, UserCircle2 } from "lucide-react";
+import { LogOut, UserCircle2 } from "lucide-react";
 import { useAuthStore } from "@/lib/zustand/authStore";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { toTitleCase } from "@/helper/toTitleCase";
@@ -12,9 +11,9 @@ import { handleLogOut } from "@/helper/handleLogout";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUserSearchSuggestions } from "@/hooks/useUserSearchSuggestions";
-import SearchUserModal from "@/components/core/SearchUserModal";
 import { generateCompanySlug } from "@/helper/companySlugHelper";
 import Image from "next/image";
+import { useAuthUIStore } from "@/lib/zustand/uiAuthSrore";
 
 interface IMobileNav {
   setOpen: (open: boolean) => void;
@@ -26,7 +25,7 @@ const MobileNav = ({ setOpen, setActive, active }: IMobileNav) => {
   const { setShowSignIn, setShowSignUp } = useAuthUIStore();
   const { isLogin, setLogOut, email, role, profile_picture } = useAuthStore();
   const router = useRouter();
-  
+
   // Search state
   const [query, setQuery] = useState("");
   const [showModal, setShowModal] = useState(false);

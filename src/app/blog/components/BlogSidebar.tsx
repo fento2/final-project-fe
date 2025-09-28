@@ -19,7 +19,7 @@ export default function BlogSidebar() {
         try {
             const { data } = await apiCall.get('/blog');
             const postsData = data?.data?.blogs || data?.blogs || data?.data || data || [];
-            
+
             if (Array.isArray(postsData)) {
                 const transformedPosts: BlogPost[] = postsData.slice(0, 4).map((post: any, index: number) => ({
                     id: post.id,
@@ -40,7 +40,7 @@ export default function BlogSidebar() {
                     read_time: Math.max(1, Math.ceil(post.content?.split(' ').length / 200)) || 5,
                     status: (post.published ? 'published' : 'draft') as 'published' | 'draft'
                 }));
-                
+
                 setPopularPosts(transformedPosts);
             }
         } catch (error) {
@@ -92,9 +92,9 @@ export default function BlogSidebar() {
 
     const formatDate = (date: Date | string) => {
         const d = new Date(date);
-        return d.toLocaleDateString('en-US', { 
-            month: 'short', 
-            day: 'numeric' 
+        return d.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric'
         });
     };
 
@@ -150,7 +150,7 @@ export default function BlogSidebar() {
             {/* Popular Articles */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Popular Articles</h3>
-                
+
                 {loading ? (
                     <div className="space-y-4">
                         {[1, 2, 3, 4].map((i) => (
@@ -186,7 +186,7 @@ export default function BlogSidebar() {
                                     </h4>
                                     <div className="flex items-center gap-2 text-xs text-gray-500">
                                         <Calendar className="w-3 h-3" />
-                                        <span>{formatDate(post.published_at)}</span>
+                                        <span>{formatDate(post.published_at || new Date())}</span>
                                     </div>
                                 </div>
                             </Link>

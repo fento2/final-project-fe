@@ -1,3 +1,4 @@
+'use client'
 import { toTitleCase } from "@/helper/toTitleCase"
 import { Bar, BarChart, CartesianGrid, Label, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts"
 

@@ -3,8 +3,9 @@ import type { Metadata } from 'next';
 
 type Props = {
     children: React.ReactNode;
-    params: { slug: string };
+    params: Promise<any>;
 };
+//test
 
 async function fetchJob(slug: string) {
     const url = `/postings/get-detail/${encodeURIComponent(slug)}`;

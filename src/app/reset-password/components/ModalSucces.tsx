@@ -11,7 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { ShieldCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
+import { useAuthUIStore } from "@/lib/zustand/uiAuthSrore";
 
 interface ModalSuccseseProps {
     open: boolean

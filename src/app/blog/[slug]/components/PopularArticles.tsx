@@ -18,7 +18,7 @@ export default function PopularArticles() {
         try {
             const { data } = await apiCall.get('/blog');
             const postsData = data?.data?.blogs || data?.blogs || data?.data || data || [];
-            
+
             if (Array.isArray(postsData)) {
                 // Transform and get first 3 posts as popular
                 const transformedPosts: BlogPost[] = postsData.slice(0, 3).map((post: any) => ({
@@ -40,7 +40,7 @@ export default function PopularArticles() {
                     read_time: Math.max(1, Math.ceil(post.content?.split(' ').length / 200)) || 5,
                     status: (post.published ? 'published' : 'draft') as 'published' | 'draft'
                 }));
-                
+
                 setPopularPosts(transformedPosts);
             }
         } catch (error) {
@@ -52,10 +52,10 @@ export default function PopularArticles() {
 
     const formatDate = (date: Date | string) => {
         const d = new Date(date);
-        return d.toLocaleDateString('en-US', { 
-            month: 'short', 
-            day: 'numeric', 
-            year: 'numeric' 
+        return d.toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric'
         });
     };
 
@@ -81,8 +81,8 @@ export default function PopularArticles() {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Popular Articles</h3>
             <div className="space-y-4">
                 {popularPosts.map((post) => (
-                    <Link 
-                        key={post.id} 
+                    <Link
+                        key={post.id}
                         href={`/blog/${post.slug}`}
                         className="block group"
                     >
@@ -101,7 +101,7 @@ export default function PopularArticles() {
                                 </h4>
                                 <div className="flex items-center gap-1 mt-1 text-xs text-gray-500">
                                     <Calendar className="w-3 h-3" />
-                                    {formatDate(post.published_at)}
+                                    {formatDate(post.published_at || new Date())}
                                 </div>
                             </div>
                         </div>

@@ -1,11 +1,4 @@
-// export const authRole = (validRole: string, userRole: string) => {
-//   if (validRole !== userRole) {
-//     return false;
-//   } else {
-//     return true;
-//   }
-// };
-
+"use client";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/zustand/authStore";
@@ -21,4 +14,6 @@ export const useAuthRole = (validRole: string) => {
       router.replace("/");
     }
   }, [role, validRole, isLogin, checkLogin, router]);
+
+  return null;
 };

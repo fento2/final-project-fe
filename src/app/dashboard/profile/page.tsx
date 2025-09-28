@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import General from "./components/General";
 import Security from "../components/Security";
@@ -9,10 +10,10 @@ import EducationForm from "./components/EducationForm";
 import ExperienceForm from "./components/ExperienceForm";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Briefcase, GraduationCap } from "lucide-react";
-import { useAuthRole } from "@/helper/authRole";
 import ProfileCvGeneratorSection from "./sections/ProfileCvGeneratorSection";
 import ProfileSkillsSection from "./sections/ProfileSkillsSection";
 import ProfileCertificateSection from "./sections/ProfileCertificateSection";
+import { useAuthRole } from "@/helper/useAuthRole";
 
 const ProfileUser = () => {
   useAuthRole('USER')
@@ -116,4 +117,10 @@ const ProfileUser = () => {
   );
 };
 
-export default ProfileUser;
+export default function ProfileUserWrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProfileUser />
+    </Suspense>
+  );
+}

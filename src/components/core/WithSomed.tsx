@@ -4,7 +4,7 @@ import { apiCall } from "@/helper/apiCall";
 import { useAuthStore } from "@/lib/zustand/authStore";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useToast } from "../basic-toast";
-import { useAuthUIStore } from "@/lib/zustand/authUIASrore";
+import { useAuthUIStore } from "@/lib/zustand/uiAuthSrore";
 
 interface WithSosmedProps {
   role?: string
@@ -38,7 +38,7 @@ const WithSosmed = ({ role, setLoading, url, remember }: WithSosmedProps) => {
         setIsLogin(true)
         setShowSignIn(false)
         setShowSignUp(false)
-  setAuth(data.data.email, (data.data.role || '').toUpperCase(), data.data.profile_picture)
+        setAuth(data.data.email, (data.data.role || '').toUpperCase(), data.data.profile_picture)
         toast.success(data.message)
         console.log(data)
       }
