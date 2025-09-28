@@ -8,19 +8,17 @@ import {
     DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useAuthStore } from "@/lib/zustand/authStore";
-import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { LogOut, UserCircle2 } from "lucide-react";
 import { toTitleCase } from "@/helper/toTitleCase";
 import { motion, AnimatePresence } from "framer-motion";
 import { handleLogOut } from "@/helper/handleLogout";
-import { apiCall } from "@/helper/apiCall";
 import { useAuthUIStore } from "@/lib/zustand/uiAuthSrore";
+import { CompanyOption, DeveloperOption, UserOption } from "./OptionSection";
 
 export default function AuthButtons() {
     const { setShowSignIn, setShowSignUp } = useAuthUIStore();
     const { isLogin, profile_picture, setLogOut, email, role } = useAuthStore();
-    const router = useRouter();
 
     if (isLogin) {
         return (
@@ -69,43 +67,10 @@ export default function AuthButtons() {
                                 {/* Menu Items dengan hover animasi */}
                                 <div className="flex flex-col gap-1">
                                     <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                        <DropdownMenuItem
-                                            onClick={() => {
-                                                const { role } = useAuthStore.getState();
-                                                router.push(role === "DEVELOPER" ? "/dashboard/list-skill-assessment" : role === "COMPANY" ? "/dashboard/company" : "/dashboard/profile");
-                                            }}
-                                            className="text-lg px-4 py-2 rounded-md"
-                                        >
-                                            Dashboard
-                                        </DropdownMenuItem>
+                                        {role === 'DEVELOPER' && <DeveloperOption />}
+                                        {role === 'USER' && <UserOption />}
+                                        {role === 'COMPANY' && <CompanyOption />}
                                     </motion.div>
-
-                                    {/* Profile page (USER) */}
-                                    {role === 'USER' && (
-                                        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                            <DropdownMenuItem
-                                                onClick={async () => {
-                                                    try {
-                                                        const res = await apiCall.get('/account/get-data/user');
-                                                        const u = res?.data?.data ?? res?.data ?? {};
-                                                        const username = u?.username || u?.user?.username || '';
-                                                        if (username) {
-                                                            router.push(`/profile/${encodeURIComponent(username)}`);
-                                                        } else {
-                                                            const { role } = useAuthStore.getState();
-                                                            router.push(role === "DEVELOPER" ? "/dashboard/list-skill-assessment" : role === "COMPANY" ? "/dashboard/company" : "/dashboard/profile");
-                                                        }
-                                                    } catch {
-                                                        const { role } = useAuthStore.getState();
-                                                        router.push(role === "DEVELOPER" ? "/dashboard/list-skill-assessment" : role === "COMPANY" ? "/dashboard/company" : "/dashboard/profile");
-                                                    }
-                                                }}
-                                                className="text-lg px-4 py-2 rounded-md"
-                                            >
-                                                Profile
-                                            </DropdownMenuItem>
-                                        </motion.div>
-                                    )}
 
                                     <DropdownMenuSeparator className="w-full" />
 

@@ -38,7 +38,7 @@ export default function BlogDashboardPage() {
     };
 
     return (
-        <div className="max-w-7xl mx-auto p-6">
+        <div className="container md:pl-20 mx-auto min-h-screen px-4 py-6 space-y-6">
             <div className="flex items-center justify-between mb-6">
                 <h1 className="text-2xl font-bold">Blog Manager</h1>
                 <Link href="/dashboard/blog/new" className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">

@@ -13,7 +13,6 @@ import Link from "next/link";
 import CompanyOption from "./CompanyOption";
 import { useAuthStore } from "@/lib/zustand/authStore";
 import DeveloperOption from "./DeveloperOption";
-import AdminOption from "@/app/dashboard/components/AdminOption";
 import { handleLogOut } from "@/helper/handleLogout";
 import { useRouter } from "next/navigation";
 
@@ -133,10 +132,6 @@ function SidebarContent({ isCollapsed, setIsCollapsed }: { isCollapsed: boolean,
                   </>}
                   {role === 'DEVELOPER' && <>
                     <DeveloperOption isCollapsed={isCollapsed} />
-                    <Separator className="w-full" />
-                  </>}
-                  {['DEVELOPER', 'ADMIN'].includes((role || '').toUpperCase()) && <>
-                    <AdminOption isCollapsed={isCollapsed} />
                     <Separator className="w-full" />
                   </>}
 

@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { ChevronDown, ClipboardList, ListIcon } from "lucide-react";
+import { ChevronDown, ClipboardList, FileText, ListIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
@@ -13,10 +13,8 @@ const menus = [
     {
         title: "List Skill Assessment",
         icon: ClipboardList,
-        sub: [
-            { title: "List Skill Assessment", href: "/dashboard/list-skill-assessment" },
-            { title: "User Skill Assessment", href: "/dashboard/user-skill-assessment" },
-        ],
+        href: "/dashboard/list-skill-assessment"
+
     },
     {
         title: "Subscriptions",
@@ -24,6 +22,13 @@ const menus = [
         sub: [
             { title: "List Subscriptions", href: "/dashboard/subscription" },
             { title: "User Subscription", href: "/dashboard/user-subscription" },
+        ],
+    },
+    {
+        title: "Content",
+        icon: FileText,
+        sub: [
+            { title: "Blog", href: "/dashboard/blog" },
         ],
     },
 ]
