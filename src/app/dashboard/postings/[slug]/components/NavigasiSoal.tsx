@@ -51,7 +51,6 @@ const NavigasiSoal: React.FC<NavigasiSoalProps> = ({
                 setJob(data.data);
             }
         } catch (error) {
-            console.log(error);
         }
     };
     const handleSave = async () => {
@@ -61,7 +60,6 @@ const NavigasiSoal: React.FC<NavigasiSoalProps> = ({
             if (!result.success) {
                 const messages = result.error.issues[0].message;
                 toast.error(messages);
-                console.log(result.error);
                 return;
             }
             const { data } = await apiCall.post(`/preselection/create/${slug}`, result.data)
@@ -74,7 +72,6 @@ const NavigasiSoal: React.FC<NavigasiSoalProps> = ({
             }
         } catch (error) {
             toast.error('faild create preselection test')
-            console.log(error)
         } finally {
             setLoading(false)
         }
@@ -86,7 +83,6 @@ const NavigasiSoal: React.FC<NavigasiSoalProps> = ({
             if (!result.success) {
                 const messages = result.error.issues[0].message;
                 toast.error(messages);
-                console.log(result.error);
                 return;
             }
             const { data } = await apiCall.patch(`/preselection/edit/${selection_id}`, result.data)
@@ -99,7 +95,6 @@ const NavigasiSoal: React.FC<NavigasiSoalProps> = ({
             }
         } catch (error) {
             toast.error('faild edit preselection test')
-            console.log(error)
         } finally {
             setLoading(false)
         }

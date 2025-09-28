@@ -43,7 +43,6 @@ const FieldSkill = () => {
   );
 
   useEffect(() => {
-    console.log(currentSkills)
     return () => debouncedFetch.cancel();
   }, [debouncedFetch]);
 

@@ -25,10 +25,8 @@ const EditPosting = () => {
         setCurrencies(data.data.currencies)
         setJobTypes(data.data.jobTypes)
         setPeriodSalary(data.data.periodSalary)
-        console.log(data)
       }
     } catch (error) {
-      console.log(error)
     }
   }
   useEffect(() => {

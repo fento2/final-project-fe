@@ -40,7 +40,6 @@ const PreselectionControl = ({ initialEnabled, getDetailJob }: PreselectionContr
                 );
             }
         } catch (error) {
-            console.log(error);
         } finally {
             setLoading(false);
         }
@@ -59,7 +58,6 @@ const PreselectionControl = ({ initialEnabled, getDetailJob }: PreselectionContr
                 );
             }
         } catch (error) {
-            console.log(error);
             toast.error("Failed to deactivate preselection test");
         } finally {
             setLoadingActiveORDeactive(false);
@@ -77,7 +75,6 @@ const PreselectionControl = ({ initialEnabled, getDetailJob }: PreselectionContr
                 }
             }
         } catch (error) {
-            console.log(error)
         } finally {
             setLoadingActiveORDeactive(false)
         }

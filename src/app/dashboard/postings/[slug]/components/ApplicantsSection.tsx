@@ -93,14 +93,12 @@ const ApplicantSection = () => {
 
             const { data } = await apiCall.get(`/applications/company/list/${slug}?${params.toString()}`);
             if (data.success) {
-                console.log('run', data)
                 if (reset) {
                     setApplicants(data.data.data);
                 } else {
                     setApplicants((prev) => [...prev, ...data.data.data]);
                 }
                 setTotal(data.data.total);
-                console.log("ini", data)
             }
         } catch (error) {
             console.error(error);

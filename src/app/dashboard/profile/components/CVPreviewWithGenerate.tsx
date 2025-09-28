@@ -32,7 +32,6 @@ export default function CVPreviewWithGenerate({ user, cvData, btnLabel = "Genera
                 setSubActive(false);
             }
         } catch (error) {
-            console.log(error);
         }
     }
 

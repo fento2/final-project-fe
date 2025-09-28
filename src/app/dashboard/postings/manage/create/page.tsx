@@ -10,7 +10,7 @@ const CreateNewJobPage = () => {
 
   // useAuthRole('COMPANY')
 
-  
+
   const { setCategories, setCurrencies, setJobTypes, setPeriodSalary } = useGeneralDataStore();
   const [loading, setLoading] = useState(true);
 
@@ -25,7 +25,6 @@ const CreateNewJobPage = () => {
         setPeriodSalary(data.data.periodSalary);
       }
     } catch (error) {
-      console.log(error);
     } finally {
       setLoading(false);
     }
