@@ -10,7 +10,9 @@ export const useAuthRole = (validRole: string) => {
   useEffect(() => {
     if (checkLogin) return;
 
-    if (!isLogin || (role !== validRole && role !== "COMPANY")) {
+    if (validRole === "COMPANY") return;
+
+    if (!isLogin || role !== validRole) {
       router.replace("/");
     }
   }, [role, validRole, isLogin, checkLogin, router]);
