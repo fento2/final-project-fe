@@ -66,11 +66,10 @@ export default function AuthButtons() {
 
                                 {/* Menu Items dengan hover animasi */}
                                 <div className="flex flex-col gap-1">
-                                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                                        {role === 'DEVELOPER' && <DeveloperOption />}
-                                        {role === 'USER' && <UserOption />}
-                                        {role === 'COMPANY' && <CompanyOption />}
-                                    </motion.div>
+                                    {role === 'DEVELOPER' && <DeveloperOption />}
+                                    {role === 'USER' && <UserOption />}
+                                    {role === 'COMPANY' && <CompanyOption />}
+
 
                                     <DropdownMenuSeparator className="w-full" />
 
