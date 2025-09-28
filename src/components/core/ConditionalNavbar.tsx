@@ -16,11 +16,10 @@ export default function ConditionalNavbar() {
       if (data.success) {
         setIsLogin(true)
         setAuth(data.data.email, data.data.role.toUpperCase(), data.data.profile_picture, data.data.username)
-        console.log(data.data)
+
       }
     } catch (error) {
       setLogOut()
-      console.log(error)
     } finally {
       setChekLogin(false)
     }
