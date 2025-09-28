@@ -24,6 +24,16 @@ export const DeveloperOption = () => {
             Manage Subscription
         </DropdownMenuItem>
 
+        <DropdownMenuItem
+            onClick={() => {
+                router.push("/dashboard/blog");
+            }}
+            className="text-lg px-4 py-2 rounded-md"
+        >
+            Manage Blog
+        </DropdownMenuItem>
+
+
     </>
 }
 export const UserOption = () => {
@@ -179,6 +189,15 @@ export const MobileDeveloperOption = ({ setOpen }: MobileOptionProps) => {
                 onClick={() => setOpen(false)}
             >
                 Manage Subscription
+            </Link>
+        </li>
+        <li>
+            <Link
+                href={"/dashboard/blog"}
+                className="block px-2 py-1 rounded hover:bg-gray-100"
+                onClick={() => setOpen(false)}
+            >
+                Manage Blog
             </Link>
         </li>
     </>
