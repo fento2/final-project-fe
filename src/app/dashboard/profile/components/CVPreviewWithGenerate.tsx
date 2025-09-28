@@ -152,7 +152,7 @@ export default function CVPreviewWithGenerate({ user, cvData, btnLabel = "Genera
                                                     <div className="text-xs text-gray-500">Date: {new Date(c.createAt).toLocaleDateString()} • Score: {ua.score}</div>
                                                 </div>
                                                 <div className="flex justify-end">
-                                                    <QRCodeCanvas value={`http://localhost:3000/verify-certificate?id=${c.certificate_code}`} size={128} level="H" />
+                                                    <QRCodeCanvas value={`${process.env.NEXT_PUBLIC_BASE_URL}/verify-certificate?id=${c.certificate_code}`} size={128} level="H" />
                                                 </div>
                                             </div>
                                         </article>
