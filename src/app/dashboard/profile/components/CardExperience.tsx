@@ -138,7 +138,6 @@ const ExperienceCard = () => {
             const result = await apiCall.get("/user-companies")
             setDataUserCompany(result.data.data)
         } catch (error) {
-            console.log(error);
         }
     }
 
@@ -167,7 +166,7 @@ const ExperienceCard = () => {
                 onEdit={handleEdit}
                 onDelete={handleDelete}
             />
-            
+
             <UserCompanyCardList userCompany={dataUserCompany} />
 
             <ExperienceEditModal

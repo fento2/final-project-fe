@@ -27,7 +27,6 @@ const Security = () => {
   };
   const onBtChangePassword = async () => {
     try {
-      console.log('run')
       const result = schemaChangePassword.safeParse(form)
       if (!result.success) {
         const messages = result.error.issues[0].message;
@@ -41,12 +40,10 @@ const Security = () => {
       if (data.success) {
         toast.success(data.message)
       }
-      console.log(data)
     } catch (error: any) {
       if (error.status === 409) {
         toast.error('yor account register with google')
       }
-      console.log(error)
     }
   }
   return (
