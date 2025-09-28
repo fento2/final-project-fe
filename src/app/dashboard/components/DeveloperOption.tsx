@@ -13,8 +13,7 @@ const menus = [
     {
         title: "List Skill Assessment",
         icon: ClipboardList,
-        href: "/dashboard/list-skill-assessment"
-
+        href: "/dashboard/list-skill-assessment",
     },
     {
         title: "Subscriptions",
@@ -25,35 +24,69 @@ const menus = [
         ],
     },
     {
-        title: "Content",
+        title: "Blog",
         icon: FileText,
-        sub: [
-            { title: "Blog", href: "/dashboard/blog" },
-        ],
+        href: "/dashboard/blog"
     },
-]
+];
 
 const DeveloperOption = ({ isCollapsed }: IDeveloperOption) => {
     const pathname = usePathname();
     const [open, setOpen] = useState<string | null>(null);
 
-    const variants = {
-        open: { x: 0, opacity: 1 },
-        closed: { x: -20, opacity: 0 },
-    };
-
     return (
         <div className="grid gap-3">
-            {menus.map(({ title, icon: Icon, sub }) => {
+            {menus.map(({ title, icon: Icon, href, sub }) => {
                 const isOpen = open === title;
 
+                // 1) Jika tidak ada sub
+                if (!sub) {
+                    return (
+                        <Link
+                            key={title}
+                            href={href || "#"}
+                            className={cn(
+                                "flex h-8 items-center rounded-md px-2 py-1.5 transition hover:bg-muted",
+                                pathname === href && "bg-muted text-blue-600"
+                            )}
+                        >
+                            <Icon className="h-6 w-6 flex-shrink-0" />
+                            {!isCollapsed && (
+                                <p className="ml-4 text-md font-medium">{title}</p>
+                            )}
+                        </Link>
+                    );
+                }
+
+                // 2) Jika sub hanya 1 → langsung link
+                if (sub.length === 1) {
+                    const onlyItem = sub[0];
+                    return (
+                        <Link
+                            key={title}
+                            href={onlyItem.href}
+                            className={cn(
+                                "flex h-8 items-center rounded-md px-2 py-1.5 transition hover:bg-muted",
+                                pathname === onlyItem.href && "bg-muted text-blue-600"
+                            )}
+                        >
+                            <Icon className="h-6 w-6 flex-shrink-0" />
+                            {!isCollapsed && (
+                                <p className="ml-4 text-md font-medium">{onlyItem.title}</p>
+                            )}
+                        </Link>
+                    );
+                }
+
+                // 3) Jika sub lebih dari 1 → dropdown
                 return (
                     <div key={title} className="flex flex-col">
                         <button
                             onClick={() => setOpen(isOpen ? null : title)}
                             className={cn(
                                 "flex h-8 items-center rounded-md px-2 py-1.5 transition hover:bg-muted",
-                                sub?.some((s) => s.href === pathname) && "bg-muted text-blue-600"
+                                sub.some((s) => s.href === pathname) &&
+                                "bg-muted text-blue-600"
                             )}
                         >
                             <Icon className="h-6 w-6 flex-shrink-0" />
@@ -71,7 +104,7 @@ const DeveloperOption = ({ isCollapsed }: IDeveloperOption) => {
                         </button>
 
                         <AnimatePresence>
-                            {sub && isOpen && !isCollapsed && (
+                            {isOpen && !isCollapsed && (
                                 <motion.ul
                                     initial={{ height: 0, opacity: 0 }}
                                     animate={{ height: "auto", opacity: 1 }}
@@ -84,7 +117,8 @@ const DeveloperOption = ({ isCollapsed }: IDeveloperOption) => {
                                                 href={item.href}
                                                 className={cn(
                                                     "block rounded-md px-2 py-1 hover:bg-muted",
-                                                    pathname === item.href && "bg-muted text-blue-600"
+                                                    pathname === item.href &&
+                                                    "bg-muted text-blue-600"
                                                 )}
                                             >
                                                 {item.title}
@@ -98,7 +132,7 @@ const DeveloperOption = ({ isCollapsed }: IDeveloperOption) => {
                 );
             })}
         </div>
-    )
-}
+    );
+};
 
 export default DeveloperOption;
