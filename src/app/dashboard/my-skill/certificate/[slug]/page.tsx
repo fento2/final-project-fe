@@ -103,7 +103,7 @@ export default function DetailCertificatePage() {
                                 <p className="font-mono font-bold text-lg">{dataCertificate.certificate_code}</p>
                             </div>
                             <div className="flex justify-center">
-                                <QRCodeCanvas value={`http://localhost:3000/verify-certificate?id=${dataCertificate.certificate_code}`} size={200} level="H" />
+                                <QRCodeCanvas value={`${process.env.NEXT_PUBLIC_BASE_URL}/verify-certificate?id=${dataCertificate.certificate_code}`} size={200} level="H" />
                             </div>
                             <div className="flex flex-col items-end">
                                 <p className="text-gray-500 mb-1">Date Completed</p>
