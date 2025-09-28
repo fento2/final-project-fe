@@ -13,6 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Briefcase, Calendar, FileText } from "lucide-react";
 import formatDate from "@/lib/formatDate";
 import formatCurrency from "@/lib/formatCurrency";
+import { useAuthRole } from "@/helper/useAuthRole";
 // import { downloadCV } from "@/fetch/applicationFetch";
 
 function StatusBadge({ status }: { status: string }) {
@@ -27,6 +28,7 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 export default function MyApplicationsPage() {
+  useAuthRole('USER')
   const router = useRouter();
   const { isLogin, role, checkLogin } = useAuthStore();
 

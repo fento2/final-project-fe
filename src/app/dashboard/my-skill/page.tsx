@@ -1,5 +1,6 @@
 "use client";
 import { apiCall } from "@/helper/apiCall";
+import { useAuthRole } from "@/helper/useAuthRole";
 import formatDateID from "@/lib/formatDate";
 import { UserAssessment } from "@/types/userAssessment";
 import { Award, Calendar, Star } from "lucide-react";
@@ -7,6 +8,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export default function MySkillPage() {
+    useAuthRole('USER')
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [data, setData] = useState<UserAssessment[]>([]);

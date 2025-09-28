@@ -7,8 +7,10 @@ import { RefreshCw } from "lucide-react";
 import { useEffect, useState } from "react";
 import SubmitDialog from "../skill-assessment/_components/SubmitDialog";
 import Image from "next/image";
+import { useAuthRole } from "@/helper/useAuthRole";
 
 export default function UserSubscriptionPage() {
+    useAuthRole('DEVELOPER')
     const [data, setData] = useState<UserSubscriptionsGetDTO[]>([])
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");

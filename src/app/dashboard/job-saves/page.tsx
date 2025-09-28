@@ -8,6 +8,7 @@ import formatCurrency from '@/lib/formatCurrency';
 import { formatDateIDDateOnly } from '@/lib/formatDate';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useAuthRole } from '@/helper/useAuthRole';
 
 interface SavedJob {
     id: number;
@@ -34,6 +35,7 @@ interface SavedJob {
 }
 
 export default function SavedJobsPage() {
+    useAuthRole('USER')
     const [savedJobs, setSavedJobs] = useState<SavedJob[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -125,7 +127,7 @@ export default function SavedJobsPage() {
             console.error('Saved jobs fetch error:', err);
             const status = err?.response?.status;
             const serverMessage = err?.response?.data?.message;
-            
+
             if (status === 401) {
                 // Not authenticated -> go to login
                 router.push('/login');
@@ -186,7 +188,7 @@ export default function SavedJobsPage() {
                         <ShieldX className="w-16 h-16 text-red-500 mx-auto mb-4" />
                         <h1 className="text-2xl font-bold text-gray-900 mb-4">Access Denied</h1>
                         <p className="text-gray-600 mb-6">
-                            This page is only available for job seekers. 
+                            This page is only available for job seekers.
                             {role === 'COMPANY' && ' Companies can manage their job postings from the company dashboard.'}
                             {role === 'DEVELOPER' && ' Developers have access to different dashboard features.'}
                         </p>

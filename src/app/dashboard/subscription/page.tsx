@@ -9,8 +9,10 @@ import CreateSubscriptionModal from "./_components/CreateSubscriptionModal";
 import formatCurrency from "@/lib/formatCurrency";
 import UpdateSubscriptionModal from "./_components/UpdateSubscriptionModal";
 import SubmitDialog from "../skill-assessment/_components/SubmitDialog";
+import { useAuthRole } from "@/helper/useAuthRole";
 
 export default function SubscriptionPage() {
+    useAuthRole('COMPANY')
     const [data, setData] = useState<Subscription[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");

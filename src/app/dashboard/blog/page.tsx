@@ -5,8 +5,10 @@ import { Plus, Edit, Trash2, Eye, Loader2 } from "lucide-react";
 import { useBlogPosts } from "@/hooks/useBlog";
 import { deleteBlogPost } from "@/fetch/blog.fetch";
 import { useAuthStore } from "@/lib/zustand/authStore";
+import { useAuthRole } from "@/helper/useAuthRole";
 
 export default function BlogDashboardPage() {
+    useAuthRole('DEVELOPER')
     const { role, isLogin } = useAuthStore();
     const { posts, loading, error, refetch } = useBlogPosts();
     const [deleting, setDeleting] = useState<string | null>(null);
