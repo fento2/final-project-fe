@@ -5,8 +5,12 @@ import { useGeneralDataStore } from "@/lib/zustand/generalData";
 import { useEffect, useState } from "react";
 
 
+
 const CreateNewJobPage = () => {
+
   // useAuthRole('COMPANY')
+
+  
   const { setCategories, setCurrencies, setJobTypes, setPeriodSalary } = useGeneralDataStore();
   const [loading, setLoading] = useState(true);
 

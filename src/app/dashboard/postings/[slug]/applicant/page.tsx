@@ -2,7 +2,7 @@
 import GridDetailApplication from "./components/GridDetailApplication"
 
 const ApplicantionPage = () => {
-
+  
     return (
         <>
             <GridDetailApplication />

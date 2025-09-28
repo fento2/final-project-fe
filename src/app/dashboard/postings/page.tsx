@@ -1,7 +1,13 @@
+
 'use client'
 import { Suspense, useState, useEffect, useMemo } from "react";
 import { Plus } from "lucide-react";
-// import { useAuthRole } from "@/helper/authRole";
+
+
+import { useRouter, useSearchParams } from "next/navigation";
+import { Plus } from "lucide-react";
+import { useAuthRole } from "@/helper/authRole";
+
 import { apiCall } from "@/helper/apiCall";
 import JobPostingsCard from "./componetns/JobsPostingsCard";
 import { PaginationDashboard } from "./componetns/PaginationDashboard";
@@ -9,7 +15,8 @@ import { toSEO } from "@/helper/toTitleCase";
 import debounce from "lodash.debounce";
 import ButtonLoading from "./componetns/ButtonLoading";
 import FilterAndSearch from "./componetns/FilterAndSearch";
-import { useRouter, useSearchParams } from "next/navigation";
+
+
 
 const PostingsPage = () => {
   // useAuthRole("COMPANY");

@@ -8,7 +8,10 @@ import { useEditJobStore } from "@/lib/zustand/editJobStore";
 import { useParams } from "next/navigation";
 
 
+
 const EditPosting = () => {
+
+
 
   const { setCategories, setCurrencies, setJobTypes, setPeriodSalary } = useGeneralDataStore()
   const { slug } = useParams()

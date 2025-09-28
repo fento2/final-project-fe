@@ -12,7 +12,6 @@ import ApplicantSection from "./components/ApplicantsSection";
 
 
 const DetailPostings = () => {
-
   const params = useParams();
   const { slug } = params;
   const router = useRouter();
