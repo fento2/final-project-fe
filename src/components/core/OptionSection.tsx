@@ -1,28 +1,45 @@
+'use clinet'
 import { useAuthStore } from "@/lib/zustand/authStore";
 import { DropdownMenuItem } from "../ui/dropdown-menu";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-
+import { motion } from "framer-motion";
 export const DeveloperOption = () => {
     const router = useRouter()
     return <>
-        <DropdownMenuItem
-            onClick={() => {
-                router.push("/dashboard/list-skill-assessment");
-            }}
-            className="text-lg px-4 py-2 rounded-md"
-        >
-            Manage Skill Assesment
-        </DropdownMenuItem>
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <DropdownMenuItem
+                onClick={() => {
+                    router.push("/dashboard/list-skill-assessment");
+                }}
+                className="text-lg px-4 py-2 rounded-md"
+            >
+                Manage Skill Assesment
+            </DropdownMenuItem>
+        </motion.div>
 
-        <DropdownMenuItem
-            onClick={() => {
-                router.push("/dashboard/subscription");
-            }}
-            className="text-lg px-4 py-2 rounded-md"
-        >
-            Manage Subscription
-        </DropdownMenuItem>
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <DropdownMenuItem
+                onClick={() => {
+                    router.push("/dashboard/subscription");
+                }}
+                className="text-lg px-4 py-2 rounded-md"
+            >
+                Manage Subscription
+            </DropdownMenuItem>
+        </motion.div>
+
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <DropdownMenuItem
+                onClick={() => {
+                    router.push("/dashboard/blog");
+                }}
+                className="text-lg px-4 py-2 rounded-md"
+            >
+                Manage Blog
+            </DropdownMenuItem>
+        </motion.div>
+
 
     </>
 }
@@ -30,64 +47,77 @@ export const UserOption = () => {
     const router = useRouter()
     const { username } = useAuthStore()
     return <>
-        <DropdownMenuItem
-            onClick={() => {
-                router.push("/dashboard/profile");
-            }}
-            className="text-lg px-4 py-2 rounded-md"
-        >
-            Dashboard
-        </DropdownMenuItem>
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <DropdownMenuItem
+                onClick={() => {
+                    router.push("/dashboard/profile");
+                }}
+                className="text-lg px-4 py-2 rounded-md"
+            >
+                Dashboard
+            </DropdownMenuItem>
+        </motion.div>
 
-        <DropdownMenuItem
-            onClick={() => {
-                router.push(`/profile/${username}`);
-            }}
-            className="text-lg px-4 py-2 rounded-md"
-        >
-            My Profile
-        </DropdownMenuItem>
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <DropdownMenuItem
+                onClick={() => {
+                    router.push(`/profile/${username}`);
+                }}
+                className="text-lg px-4 py-2 rounded-md"
+            >
+                My Profile
+            </DropdownMenuItem>
+        </motion.div>
 
-        <DropdownMenuItem
-            onClick={() => {
-                router.push(`/dashboard/my-subscription`);
-            }}
-            className="text-lg px-4 py-2 rounded-md"
-        >
-            My Subscription
-        </DropdownMenuItem>
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <DropdownMenuItem
+                onClick={() => {
+                    router.push(`/dashboard/my-subscription`);
+                }}
+                className="text-lg px-4 py-2 rounded-md"
+            >
+                My Subscription
+            </DropdownMenuItem>
+        </motion.div>
 
     </>
 }
 export const CompanyOption = () => {
     const router = useRouter()
     return <>
-        <DropdownMenuItem
-            onClick={() => {
-                router.push("/dashboard/company");
-            }}
-            className="text-lg px-4 py-2 rounded-md"
-        >
-            Dashboard
-        </DropdownMenuItem>
 
-        <DropdownMenuItem
-            onClick={() => {
-                router.push(`/dashboard/postings`);
-            }}
-            className="text-lg px-4 py-2 rounded-md"
-        >
-            My Postings
-        </DropdownMenuItem>
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <DropdownMenuItem
+                onClick={() => {
+                    router.push("/dashboard/company");
+                }}
+                className="text-lg px-4 py-2 rounded-md"
+            >
+                Dashboard
+            </DropdownMenuItem>
+        </motion.div>
 
-        <DropdownMenuItem
-            onClick={() => {
-                router.push(`/dashboard/analytics`);
-            }}
-            className="text-lg px-4 py-2 rounded-md"
-        >
-            Analytics
-        </DropdownMenuItem>
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <DropdownMenuItem
+                onClick={() => {
+                    router.push(`/dashboard/postings`);
+                }}
+                className="text-lg px-4 py-2 rounded-md"
+            >
+                My Postings
+            </DropdownMenuItem>
+        </motion.div>
+
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+            <DropdownMenuItem
+                onClick={() => {
+                    router.push(`/dashboard/analytics`);
+                }}
+                className="text-lg px-4 py-2 rounded-md"
+            >
+                Analytics
+            </DropdownMenuItem>
+        </motion.div>
 
     </>
 }
@@ -179,6 +209,15 @@ export const MobileDeveloperOption = ({ setOpen }: MobileOptionProps) => {
                 onClick={() => setOpen(false)}
             >
                 Manage Subscription
+            </Link>
+        </li>
+        <li>
+            <Link
+                href={"/dashboard/blog"}
+                className="block px-2 py-1 rounded hover:bg-gray-100"
+                onClick={() => setOpen(false)}
+            >
+                Manage Blog
             </Link>
         </li>
     </>
