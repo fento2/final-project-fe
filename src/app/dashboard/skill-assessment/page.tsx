@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import SubmitDialog from "./_components/SubmitDialog";
 import { UserSubscriptionActiveDTO } from "@/types/userSubscription";
+import { useAuthRole } from "@/helper/useAuthRole";
 
 interface SkillAssessment {
     assessment_id: number;
@@ -16,6 +17,7 @@ interface SkillAssessment {
 }
 
 export default function SkillAssessmentListPage() {
+    useAuthRole('USER')
     const router = useRouter();
     const [data, setData] = useState<SkillAssessment[]>([]);
     const [loading, setLoading] = useState(false);

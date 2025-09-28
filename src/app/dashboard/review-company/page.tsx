@@ -6,8 +6,10 @@ import AddUserCompanyModal from "./_components/AddUserCompanyModal";
 import ReviewCompanyModal from "./_components/ReviewCompanyModal";
 import { UserCompanyItem } from "@/types/userCompany";
 import { apiCall } from "@/helper/apiCall";
+import { useAuthRole } from "@/helper/useAuthRole";
 
 export default function ReviewCompanyPage() {
+    useAuthRole('USER')
     const { items, loading, error, refetch } = useUserCompanies();
     const [addOpen, setAddOpen] = useState(false);
 

@@ -12,11 +12,12 @@ import { toSEO } from "@/helper/toTitleCase";
 import debounce from "lodash.debounce";
 import ButtonLoading from "./componetns/ButtonLoading";
 import FilterAndSearch from "./componetns/FilterAndSearch";
+import { useAuthRole } from "@/helper/useAuthRole";
 
 
 
 const PostingsPage = () => {
-  // useAuthRole("COMPANY");
+  useAuthRole("COMPANY");
 
   const router = useRouter();
   const searchParams = useSearchParams();

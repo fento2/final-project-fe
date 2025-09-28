@@ -8,6 +8,7 @@ import { WorkHistoryModal } from "./components/WorkHistoryModal";
 import { apiCall } from "@/helper/apiCall";
 import { toDateStartTimestamp } from "@/lib/formatDate";
 import { generateCompanySlug } from "@/helper/companySlugHelper";
+import { useAuthRole } from "@/helper/useAuthRole";
 
 interface Job {
     nameJob: string;
@@ -30,6 +31,7 @@ const statusColors: Record<Job["status"], string> = {
 };
 
 export default function MyJobsPage() {
+    useAuthRole('USER')
     const [search, setSearch] = useState("");
     const [filterJobStatus, setFilterJobStatus] = useState("All");
     const [page, setPage] = useState(1);

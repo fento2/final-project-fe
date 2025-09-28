@@ -8,8 +8,10 @@ import CreateSkillModal from "./components/CreateSkillModal";
 import { SkillAssessment } from "@/types/skillAssessment";
 import UpdateSkillModal from "./components/UpdateSkillModal";
 import ViewSkillModal from "./components/ViewSkillModal";
+import { useAuthRole } from "@/helper/useAuthRole";
 
 const ListSKillAssessmentPage = () => {
+    useAuthRole('COMPANY')
     const [data, setData] = useState<SkillAssessment[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
