@@ -13,7 +13,6 @@ import { LogOut, UserCircle2 } from "lucide-react";
 import { toTitleCase } from "@/helper/toTitleCase";
 import { motion, AnimatePresence } from "framer-motion";
 import { handleLogOut } from "@/helper/handleLogout";
-import { apiCall } from "@/helper/apiCall";
 import { useAuthUIStore } from "@/lib/zustand/uiAuthSrore";
 import { CompanyOption, DeveloperOption, UserOption } from "./OptionSection";
 

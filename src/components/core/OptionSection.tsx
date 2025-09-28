@@ -41,7 +41,7 @@ export const UserOption = () => {
 
         <DropdownMenuItem
             onClick={() => {
-                router.push(`/dashboard/profile/${username}`);
+                router.push(`/profile/${username}`);
             }}
             className="text-lg px-4 py-2 rounded-md"
         >
