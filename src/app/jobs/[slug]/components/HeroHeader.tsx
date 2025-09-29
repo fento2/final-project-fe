@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { MapPin, Banknote, CircleCheck, Bookmark, BookmarkCheck, Share2, Copy, MessageCircle } from "lucide-react";
+import { toTitleCase } from "@/helper/toTitleCase";
 
 interface HeroHeaderProps {
   jobTitle: string;
@@ -55,8 +56,8 @@ const HeroHeader: React.FC<HeroHeaderProps> = ({ jobTitle, companyName, companyL
           </div>
         </div>
         <div className="flex flex-wrap gap-2 mb-8">
-          {category && <span className="px-3 py-1 text-sm font-medium bg-blue-600 text-white rounded-md">{category}</span>}
-          {jobType && <span className="px-3 py-1 text-sm font-medium bg-purple-600 text-white rounded-md">{jobType}</span>}
+          {category && <span className="px-3 py-1 text-sm font-medium bg-blue-600 text-white rounded-md">{toTitleCase(category)}</span>}
+          {jobType && <span className="px-3 py-1 text-sm font-medium bg-purple-600 text-white rounded-md">{toTitleCase(jobType)}</span>}
           <span className="px-3 py-1 text-sm font-medium bg-red-600 text-white rounded-md">Urgently Needed</span>
         </div>
         {/* Action Buttons */}
@@ -80,7 +81,7 @@ const HeroHeader: React.FC<HeroHeaderProps> = ({ jobTitle, companyName, companyL
               className={`px-6 py-3 rounded-lg transition-colors flex items-center gap-2 font-semibold ${isSaved
                 ? 'bg-indigo-600 hover:bg-indigo-700 text-white border border-indigo-600'
                 : 'bg-white/10 hover:bg-white/20 text-white border border-white/30'
-              }`}
+                }`}
               title={isSaved ? 'Remove from saved jobs' : 'Save this job'}
             >
               {isSaved ? (

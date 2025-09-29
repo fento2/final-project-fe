@@ -1,6 +1,6 @@
 "use client";
 
-import { Bookmark, BookmarkCheck,Banknote} from "lucide-react";
+import { Bookmark, BookmarkCheck, Banknote } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useRef } from "react";
@@ -20,6 +20,7 @@ import JobRequirements from "./components/JobRequirements";
 import CompanyOverview from "./components/CompanyOverview";
 import JobSidebar from "./components/JobSidebar";
 import RelatedJobsSection from "./components/RelatedJobsSection";
+import { toTitleCase } from "@/helper/toTitleCase";
 
 
 function toAbsoluteUrl(url?: string): string {
@@ -293,7 +294,7 @@ export default function JobDetailPage() {
                         <li>/</li>
                         <li><Link href="/jobs/browse" className="hover:underline">Browse</Link></li>
                         <li>/</li>
-                        <li className="text-white font-semibold">{displayJob?.category}</li>
+                        <li className="text-white font-semibold flex-wrap">{toTitleCase(displayJob?.category || '')}</li>
                     </ol>
                 </nav>
             </HeroHeader>
@@ -316,11 +317,11 @@ export default function JobDetailPage() {
                         skills={(displayJob as any)?.skills}
                     />
                 </div>
-                        <RelatedJobsSection
-                            relatedJobs={relatedJobs}
-                            displayJobId={displayJob?.job_id ?? ""}
-                            loading={relatedLoading}
-                        />
+                <RelatedJobsSection
+                    relatedJobs={relatedJobs}
+                    displayJobId={displayJob?.job_id ?? ""}
+                    loading={relatedLoading}
+                />
                 <div className="mt-16">
                     <BrowseCTASection />
                 </div>
