@@ -294,7 +294,7 @@ export default function JobDetailPage() {
                         <li>/</li>
                         <li><Link href="/jobs/browse" className="hover:underline">Browse</Link></li>
                         <li>/</li>
-                        <li className="text-white font-semibold">{toTitleCase(displayJob?.category || '')}</li>
+                        <li className="text-white font-semibold">{toTitleCase(displayJob?.title || '')}</li>
                     </ol>
                 </nav>
             </HeroHeader>
