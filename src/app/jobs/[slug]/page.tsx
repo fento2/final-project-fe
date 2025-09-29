@@ -287,14 +287,14 @@ export default function JobDetailPage() {
             >
                 {/* Breadcrumb */}
                 <nav className="text-sm text-white/80 mb-6">
-                    <ol className="flex space-x-2">
+                    <ol className="flex space-x-2 flex-wrap">
                         <li><Link href="/" className="hover:underline">Home</Link></li>
                         <li>/</li>
                         <li><Link href="/jobs" className="hover:underline">Jobs</Link></li>
                         <li>/</li>
                         <li><Link href="/jobs/browse" className="hover:underline">Browse</Link></li>
                         <li>/</li>
-                        <li className="text-white font-semibold flex-wrap">{toTitleCase(displayJob?.category || '')}</li>
+                        <li className="text-white font-semibold">{toTitleCase(displayJob?.title || '')}</li>
                     </ol>
                 </nav>
             </HeroHeader>
