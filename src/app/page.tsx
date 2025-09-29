@@ -15,16 +15,16 @@ export default function Home() {
   return (
     <>
 
-      <section>
+      <section className="overflow-hidden">
         <div className="my-8 overflow-hidden">
           <HeroSection />
         </div>
-        
+
         {/* Search Results Section - appears when search is performed */}
         <Suspense fallback={<div>Loading search results...</div>}>
           <SearchResultsSection />
         </Suspense>
-        
+
         <div className="my-8">
           <JobCategories />
         </div>
