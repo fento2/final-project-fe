@@ -19,7 +19,7 @@ export const useJobs = (filters?: JobFilters) => {
             setLoading(true);
             const filterParams = currentFilters || filters || {};
             const params = new URLSearchParams();
-            
+
             if (filterParams.search) params.append("search", filterParams.search);
             if (filterParams.category) params.append("category", filterParams.category);
             if (filterParams.location) params.append("location", filterParams.location);
@@ -43,9 +43,9 @@ export const useJobs = (filters?: JobFilters) => {
                 }
                 return normalized;
             }) : [];
-            
+
             setJobs(normalizedJobs);
-            
+
             // Handle pagination if available
             if (data?.data?.pagination) {
                 setPagination(data.data.pagination);
@@ -111,12 +111,12 @@ export const useAllJobs = (baseFilters?: JobFilters, maxPages?: number) => {
         const jobsData = data?.data?.data || data?.data || data || [];
         const normalizedJobs = Array.isArray(jobsData)
             ? jobsData.map((job: any) => {
-                  const normalized = { ...job };
-                  if (!normalized.Company && normalized.Companies) {
-                      normalized.Company = normalized.Companies;
-                  }
-                  return normalized;
-              })
+                const normalized = { ...job };
+                if (!normalized.Company && normalized.Companies) {
+                    normalized.Company = normalized.Companies;
+                }
+                return normalized;
+            })
             : [];
 
         const pg = data?.data?.pagination || null;
@@ -228,36 +228,38 @@ export const useJobBySlug = (slug: string) => {
                 setLoading(true);
                 setError(null);
                 console.log('🔍 Fetching job with slug:', slug);
-                
+
                 // Use same endpoint and approach as jobs/browse and featured jobs
-                const { data } = await apiCall.get('/postings?limit=100&sort=created_at&order=desc');
-                
+                // const { data } = await apiCall.get('/postings?limit=100&sort=created_at&order=desc');
+                const { data } = await apiCall.get(`/postings/get-detail/${slug}`);
+
                 // Handle backend response structure same as useFeaturedJobs and jobs/browse
                 const jobsData = data?.data?.data || data?.data || data || [];
-                const jobs = Array.isArray(jobsData) ? jobsData : [];
-                
-                console.log('🌐 Fetched jobs from /postings:', jobs.length, 'jobs');
-                
+                // const jobs = Array.isArray(jobsData) ? jobsData : [];
+
+                // console.log('🌐 Fetched jobs from /postings:', jobs.length, 'jobs');
+
                 // Find job by slug or job_id
-                let foundJob = jobs.find((j: any) => j.slug === slug || j.job_id?.toString() === slug);
-                
+                // let foundJob = jobs.find((j: any) => j.slug === slug || j.job_id?.toString() === slug);
+                const foundJob = jobsData;
+
                 if (!foundJob) {
                     console.log('❌ Job not found in listings');
                     setJob(null);
                     setError('Job not found');
                     return;
                 }
-                
+
                 // Normalize relation naming: Companies -> Company (same as jobs/browse)
                 const normalized: any = { ...foundJob };
                 if (!normalized.Company && normalized.Companies) {
                     normalized.Company = normalized.Companies;
                     console.log('🔄 Normalized Companies -> Company');
                 }
-                
+
                 console.log('✅ Found job:', normalized);
                 setJob(normalized as Job);
-                
+
             } catch (err: any) {
                 console.error('💥 Job fetch error:', err);
                 // Handle errors same way as jobs/browse and useFeaturedJobs
@@ -296,11 +298,11 @@ export const useFeaturedJobs = (limit = 6) => {
                 setLoading(true);
                 // Use /postings endpoint with limit and sort by created_at
                 const { data } = await apiCall.get(`/postings?limit=${limit}&sort=created_at&order=desc`);
-                
+
                 // Handle backend response structure: { success, message, data: { data: [...] } }
                 const jobsData = data?.data?.data || data?.data || data || [];
                 const featuredJobs = Array.isArray(jobsData) ? jobsData.slice(0, limit) : [];
-                
+
                 setJobs(featuredJobs);
             } catch (err: any) {
                 // Silently handle backend connection issues and auth errors
