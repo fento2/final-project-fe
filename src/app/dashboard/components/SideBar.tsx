@@ -91,7 +91,7 @@ export function SideBar() {
         transition={transitionProps as any}
       >
 
-        <div className="flex items-center justify-center h-16 border-b py-14">
+        <div className="flex items-center justify-center h-10 border-b py-10">
           <img
             src="/images/logo.png"
             alt="Website Logo"
