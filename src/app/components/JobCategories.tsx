@@ -12,14 +12,14 @@ const JobCategories = () => {
   const getCategoryImage = (category: string): string => {
     const categoryImages: { [key: string]: string } = {
       "Software Engineering": "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop",
-      "Data Science": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop", 
+      "Data Science": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=300&fit=crop",
       "Product Management": "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop",
       "Design": "https://images.unsplash.com/photo-1561070791-2526d30994b5?w=400&h=300&fit=crop",
       "Marketing": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=300&fit=crop",
       "Sales": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=300&fit=crop",
       "Customer Service": "https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=400&h=300&fit=crop",
       "Finance": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&h=300&fit=crop",
-      "Healthcare": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=400&h=300&fit=crop",
+      "Healthcare": "hhttps://plus.unsplash.com/premium_photo-1673953509975-576678fa6710?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "Education": "https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=400&h=300&fit=crop",
       "Human Resources": "https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=400&h=300&fit=crop",
       "Operations": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=400&h=300&fit=crop",
@@ -46,31 +46,31 @@ const JobCategories = () => {
       "UI/UX Design": "https://images.unsplash.com/photo-1559028006-448665bd7c7f?w=400&h=300&fit=crop",
       "Graphic Design": "https://images.unsplash.com/photo-1572044162444-ad60f128bdea?w=400&h=300&fit=crop",
     };
-    
+
     // Smart matching for similar categories
     const normalizedCategory = category.toLowerCase();
-    
+
     // Direct match first
     if (categoryImages[category]) {
       return categoryImages[category];
     }
-    
+
     // Fallback matching for variations
     for (const [key, image] of Object.entries(categoryImages)) {
       const normalizedKey = key.toLowerCase();
-      if (normalizedCategory.includes(normalizedKey.split(' ')[0]) || 
-          normalizedKey.includes(normalizedCategory.split(' ')[0])) {
+      if (normalizedCategory.includes(normalizedKey.split(' ')[0]) ||
+        normalizedKey.includes(normalizedCategory.split(' ')[0])) {
         return image;
       }
     }
-    
+
     // Default fallback
     return "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=400&h=300&fit=crop";
   };
 
   // Convert backend stats to category format
   const categories = Object.entries(stats.categories)
-    .sort(([,a], [,b]) => b - a) // Sort by job count descending
+    .sort(([, a], [, b]) => b - a) // Sort by job count descending
     .map(([category, count]) => ({
       label: category,
       Logo: getCategoryImage(category),
@@ -92,8 +92,8 @@ const JobCategories = () => {
           Explore our <br /> Job Categories
         </h1>
         <p className="text-lg text-gray-500">
-          {loading 
-            ? "Loading job categories..." 
+          {loading
+            ? "Loading job categories..."
             : `Get started by looking at our job categories. ${stats.totalJobs > 0 ? `${stats.totalJobs} jobs available!` : 'New jobs everyday!'}`
           }
         </p>
