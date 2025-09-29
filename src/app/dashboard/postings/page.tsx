@@ -5,8 +5,7 @@ import { Plus } from "lucide-react";
 
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { Plus } from "lucide-react";
-import { useAuthRole } from "@/helper/authRole";
+import { useAuthRole } from "@/helper/useAuthRole";
 
 import { apiCall } from "@/helper/apiCall";
 import JobPostingsCard from "./componetns/JobsPostingsCard";
