@@ -61,18 +61,12 @@ const JobItem = ({ job, companyName }: { job: Job; companyName: string }) => {
                 </div>
             </div>
             <div className="flex items-center gap-3">
-                {canApplyJobs ? (
-                    <Link
-                        href={`/jobs/${job.slug}`}
-                        className={`bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-indigo-700 transition ${canSaveJobs ? '' : 'flex-1 text-center'}`}
-                    >
-                        Apply This Job
-                    </Link>
-                ) : (
-                    <div className={`bg-gray-100 text-gray-500 px-4 py-2 rounded-xl text-sm font-semibold ${canSaveJobs ? '' : 'flex-1 text-center'}`}>
-                        Application not available
-                    </div>
-                )}
+                <Link
+                    href={`/jobs/${job.slug || job.job_id}`}
+                    className={`bg-indigo-600 text-white px-4 py-2 rounded-xl text-sm font-semibold hover:bg-indigo-700 transition ${canSaveJobs ? '' : 'flex-1 text-center'}`}
+                >
+                    View Detail Job
+                </Link>
                 {canSaveJobs && (
                     <button 
                         onClick={toggleSave}
@@ -97,13 +91,19 @@ const JobItem = ({ job, companyName }: { job: Job; companyName: string }) => {
 };
 
 export default function JobListCompany({ company }: Props) {
+    // Filter hanya job yang punya slug atau job_id
+    const openableJobs = company.job.filter(job => job.slug || job.job_id);
     return (
         <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Job Openings</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {company.job.map((job) => (
-                    <JobItem key={job.job_id} job={job} companyName={company.name} />
-                ))}
+                {openableJobs.length > 0 ? (
+                    openableJobs.map((job) => (
+                        <JobItem key={job.job_id} job={job} companyName={company.name} />
+                    ))
+                ) : (
+                    <div className="text-gray-500">No openable jobs found.</div>
+                )}
             </div>
         </section>
     )
