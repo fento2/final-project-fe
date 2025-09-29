@@ -17,6 +17,7 @@ import { getCompanyDetailUrl } from "@/helper/companySlugHelper";
 import BrowseCTASection from "@/app/jobs/browse/components/BrowseCTASection";
 import ReadOnlyQuill from "@/app/dashboard/components/ReadOnlyReactQuil";
 import { useToast } from "@/components/basic-toast";
+import { toTitleCase } from "@/helper/toTitleCase";
 
 
 function toAbsoluteUrl(url?: string): string {
@@ -501,7 +502,7 @@ export default function JobDetailPage() {
                                         </div>
                                         <div className="flex items-center gap-2">
                                             <Layers className="w-4 h-4" />
-                                            <span>{displayJob?.category}</span>
+                                            <span className="truncate">{toTitleCase(displayJob?.category || '')}</span>
                                         </div>
                                     </div>
                                 </div>
