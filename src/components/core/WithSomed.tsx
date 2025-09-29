@@ -22,9 +22,7 @@ const WithSosmed = ({ role, setLoading, url, remember }: WithSosmedProps) => {
   const handleSuccess = async (credentialResponse: any) => {
     try {
       setLoading(true)
-      console.log(credentialResponse)
       const access_token = credentialResponse.access_token; // ambil token dari Google
-      console.log(access_token)
       const payload = url === 'sign-up' ? {
         access_token,
         role
@@ -38,13 +36,11 @@ const WithSosmed = ({ role, setLoading, url, remember }: WithSosmedProps) => {
         setIsLogin(true)
         setShowSignIn(false)
         setShowSignUp(false)
-        setAuth(data.data.email, (data.data.role || '').toUpperCase(), data.data.profile_picture)
+        setAuth(data.data.email, data.data.role.toUpperCase(), data.data.profile_picture, data.data.username)
         toast.success(data.message)
-        console.log(data)
       }
 
     } catch (error) {
-      console.error(error);
 
     } finally {
       setLoading(false)

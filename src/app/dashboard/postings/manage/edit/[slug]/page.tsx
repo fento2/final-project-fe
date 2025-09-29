@@ -6,13 +6,12 @@ import { useGeneralDataStore } from "@/lib/zustand/generalData";
 import { getDetailForEditFetch } from "@/fetch/postings.fetch";
 import { useEditJobStore } from "@/lib/zustand/editJobStore";
 import { useParams } from "next/navigation";
+import { useAuthRole } from "@/helper/useAuthRole";
 
 
 
 const EditPosting = () => {
-
-
-
+  useAuthRole('COMPANY')
   const { setCategories, setCurrencies, setJobTypes, setPeriodSalary } = useGeneralDataStore()
   const { slug } = useParams()
   const { reset } = useEditJobStore()
@@ -25,10 +24,8 @@ const EditPosting = () => {
         setCurrencies(data.data.currencies)
         setJobTypes(data.data.jobTypes)
         setPeriodSalary(data.data.periodSalary)
-        console.log(data)
       }
     } catch (error) {
-      console.log(error)
     }
   }
   useEffect(() => {

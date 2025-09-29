@@ -6,8 +6,14 @@ type AuthState = {
   isLogin: boolean;
   checkLogin: boolean;
   profile_picture: string;
+  username: string;
 
-  setAuth: (email: string, role: string, profile_picture: string) => void;
+  setAuth: (
+    email: string,
+    role: string,
+    profile_picture: string,
+    username: string
+  ) => void;
   setIsLogin: (isLogin: boolean) => void;
   setChekLogin: (checkLogin: boolean) => void;
   setLogOut: () => void;
@@ -18,14 +24,16 @@ export const useAuthStore = create<AuthState>((set) => ({
   email: "",
   role: "",
   profile_picture: "",
+  username: "",
   isLogin: false,
   checkLogin: true,
 
-  setAuth: (email, role, profile_picture) =>
+  setAuth: (email, role, profile_picture, username) =>
     set({
       email,
-      role: (role as string)?.toUpperCase?.() ? (role as string).toUpperCase() : (role as string),
+      role: role.toUpperCase(),
       profile_picture,
+      username,
     }),
   setIsLogin: (isLogin) => set({ isLogin }),
   setChekLogin: (checkLogin) => set({ checkLogin }),
@@ -36,5 +44,6 @@ export const useAuthStore = create<AuthState>((set) => ({
       profile_picture: "",
       isLogin: false,
       checkLogin: true,
+      username: "",
     }),
 }));

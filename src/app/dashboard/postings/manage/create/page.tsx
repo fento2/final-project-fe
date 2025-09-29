@@ -3,14 +3,12 @@ import { apiCall } from "@/helper/apiCall";
 import CardJobPosting from "../components/CardFormJob";
 import { useGeneralDataStore } from "@/lib/zustand/generalData";
 import { useEffect, useState } from "react";
+import { useAuthRole } from "@/helper/useAuthRole";
 
 
 
 const CreateNewJobPage = () => {
-
-  // useAuthRole('COMPANY')
-
-  
+  useAuthRole('COMPANY')
   const { setCategories, setCurrencies, setJobTypes, setPeriodSalary } = useGeneralDataStore();
   const [loading, setLoading] = useState(true);
 
@@ -25,7 +23,6 @@ const CreateNewJobPage = () => {
         setPeriodSalary(data.data.periodSalary);
       }
     } catch (error) {
-      console.log(error);
     } finally {
       setLoading(false);
     }

@@ -15,12 +15,11 @@ export default function ConditionalNavbar() {
       const { data } = await apiCall.get("/auth/keep-login")
       if (data.success) {
         setIsLogin(true)
-        setAuth(data.data.email, (data.data.role || '').toUpperCase(), data.data.profile_picture)
-        console.log(data.data)
+        setAuth(data.data.email, data.data.role.toUpperCase(), data.data.profile_picture, data.data.username)
+
       }
     } catch (error) {
       setLogOut()
-      console.log(error)
     } finally {
       setChekLogin(false)
     }

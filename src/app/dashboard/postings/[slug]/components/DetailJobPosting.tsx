@@ -20,7 +20,6 @@ const DetailPostingWithApplicant = () => {
             const { data } = await apiCall.get(`/postings/get-detail/${slug}`);
             if (data.success) setJob(data.data);
         } catch (error) {
-            console.log(error);
         }
     };
     useEffect(() => {

@@ -42,7 +42,6 @@ const ManagePosting = ({ slug }: Job) => {
       }
     } catch (error) {
       toast.error("Failed to delete");
-      console.log(error);
     } finally {
       setLoadingDelete(false);
     }

@@ -17,8 +17,10 @@ import { Subscription } from "@/types/subscription";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuthStore } from "@/lib/zustand/authStore";
+import { useAuthRole } from "@/helper/useAuthRole";
 
 export default function SubscriptionPage() {
+    useAuthRole('USER')
     const [activeSub, setActiveSub] = useState<UserSubscriptionActiveDTO>();
     const [loading, setLoading] = useState(false);
     const [subsHistory, setSubsHistory] = useState<UserSubscriptionActiveDTO[]>([]);

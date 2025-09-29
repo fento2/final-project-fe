@@ -5,8 +5,6 @@ import { Plus } from "lucide-react";
 
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useAuthRole } from "@/helper/useAuthRole";
-
 import { apiCall } from "@/helper/apiCall";
 import JobPostingsCard from "./componetns/JobsPostingsCard";
 import { PaginationDashboard } from "./componetns/PaginationDashboard";
@@ -14,11 +12,12 @@ import { toSEO } from "@/helper/toTitleCase";
 import debounce from "lodash.debounce";
 import ButtonLoading from "./componetns/ButtonLoading";
 import FilterAndSearch from "./componetns/FilterAndSearch";
+import { useAuthRole } from "@/helper/useAuthRole";
 
 
 
 const PostingsPage = () => {
-  // useAuthRole("COMPANY");
+  useAuthRole("COMPANY");
 
   const router = useRouter();
   const searchParams = useSearchParams();

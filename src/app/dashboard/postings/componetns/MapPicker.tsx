@@ -57,7 +57,6 @@ const MapPicker = ({
       const { data } = await axios.get(
         `https://api.opencagedata.com/geocode/v1/json?q=${lat},${lng}&key=${process.env.NEXT_PUBLIC_API_KEY_OPEN_CAGE}`
       );
-
       // ambil komponen lokasi
       const components = data.results[0]?.components || {};
 
@@ -67,9 +66,7 @@ const MapPicker = ({
       const country = components.country || "";
 
       setLocation(`${city}, ${country}`);
-      console.log(data);
     } catch (err) {
-      console.log("Gagal reverse geocode:", err);
     }
   };
 
@@ -106,7 +103,6 @@ const MapPicker = ({
         setPosition([lat, lng]); // pindahkan marker & map
       }
     } catch (err) {
-      console.log("Gagal geocode lokasi:", err);
     }
   }, 3000);
 

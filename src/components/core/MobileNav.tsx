@@ -14,6 +14,7 @@ import { useUserSearchSuggestions } from "@/hooks/useUserSearchSuggestions";
 import { generateCompanySlug } from "@/helper/companySlugHelper";
 import Image from "next/image";
 import { useAuthUIStore } from "@/lib/zustand/uiAuthSrore";
+import { MobileCompanyOption, MobileDeveloperOption, MobileUserOption } from "./OptionSection";
 
 interface IMobileNav {
   setOpen: (open: boolean) => void;
@@ -216,24 +217,10 @@ const MobileNav = ({ setOpen, setActive, active }: IMobileNav) => {
 
               {/* Submenu */}
               <ul className="pl-4 flex flex-col gap-2 mt-1">
-                <li>
-                  <Link
-                    href={useAuthStore.getState().role === "DEVELOPER" ? "/dashboard/list-skill-assessment" : useAuthStore.getState().role === "COMPANY" ? "/dashboard/company" : "/dashboard/profile"}
-                    className="block px-2 py-1 rounded hover:bg-gray-100"
-                    onClick={() => setOpen(false)}
-                  >
-                    Profile
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href={useAuthStore.getState().role === "DEVELOPER" ? "/dashboard/list-skill-assessment" : useAuthStore.getState().role === "COMPANY" ? "/dashboard/company" : "/dashboard/profile"}
-                    className="block px-2 py-1 rounded hover:bg-gray-100"
-                    onClick={() => setOpen(false)}
-                  >
-                    Dashboard
-                  </Link>
-                </li>
+                {role === 'DEVELOPER' && <MobileDeveloperOption setOpen={setOpen} />}
+                {role === 'COMPANY' && <MobileCompanyOption setOpen={setOpen} />}
+                {role === 'USER' && < MobileUserOption setOpen={setOpen} />}
+
                 <div className="border-t border-gray-300 mb-4 " />
                 <li>
                   <Button

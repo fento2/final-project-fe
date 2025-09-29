@@ -9,6 +9,7 @@ import Link from "next/link";
 import { schemaChangePassword } from "@/validation/auth.validation";
 import { useToast } from "@/components/basic-toast";
 import { apiCall } from "@/helper/apiCall";
+import { Dots_v2 } from "@/components/ui/spinner";
 
 const Security = () => {
   const [form, setForm] = useState({
@@ -22,12 +23,13 @@ const Security = () => {
     confirm: false,
   });
   const toast = useToast()
+  const [loading, setLoading] = useState(false)
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
   const onBtChangePassword = async () => {
     try {
-      console.log('run')
+      setLoading(true)
       const result = schemaChangePassword.safeParse(form)
       if (!result.success) {
         const messages = result.error.issues[0].message;
@@ -40,13 +42,18 @@ const Security = () => {
       const { data } = await apiCall.post('/auth/change-password', payload)
       if (data.success) {
         toast.success(data.message)
+        setForm({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        })
       }
-      console.log(data)
     } catch (error: any) {
       if (error.status === 409) {
         toast.error('yor account register with google')
       }
-      console.log(error)
+    } finally {
+      setLoading(false)
     }
   }
   return (
@@ -166,8 +173,10 @@ const Security = () => {
               type="button"
               className="w-full sm:w-auto flex items-center gap-2"
             >
-              <Lock className="w-4 h-4" />
-              Change Password
+              {loading ? <Dots_v2 /> : <>
+                <Lock className="w-4 h-4" />
+                Change Password
+              </>}
             </Button>
           </div>
         </CardContent>
