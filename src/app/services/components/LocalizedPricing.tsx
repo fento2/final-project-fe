@@ -49,7 +49,7 @@ export default function LocalizedPricing() {
                             </ul>
 
                             <div className="mt-auto">
-                                <Button className="w-full bg-indigo-50 text-indigo-700 hover:bg-indigo-100" onClick={() => router.push("/dashboard/subscription")}>Start Now</Button>
+                                <Button className="w-full bg-indigo-50 text-indigo-700 hover:bg-indigo-100" onClick={() => router.push("/dashboard/my-subscription")}>Start Now</Button>
                             </div>
                         </div>
                     ))
