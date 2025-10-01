@@ -85,7 +85,6 @@ const ApplicantAction = ({ setIsModalOpen, status, interview, getDetail }: Appli
                 setShowEditor(false);
             }
         } catch (error) {
-            console.log(error);
             toast.error('Failed to send message');
         } finally {
             setLoading(false);

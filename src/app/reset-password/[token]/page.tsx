@@ -48,7 +48,7 @@ const ResetPasswordPage = () => {
                 setOpen(true);
             }
         } catch (error) {
-            console.log(error);
+
         } finally {
             setLoading(false);
         }

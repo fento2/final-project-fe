@@ -12,7 +12,7 @@ export const postingsCreateFetch = async (
     if (!result.success) {
       const messages = result.error.issues[0].message;
       toast.error(messages);
-      console.log(result.error);
+
       return;
     }
     const { data } = await apiCall.post("/postings/create", result.data);
@@ -50,9 +50,7 @@ export const getDetailForEditFetch = async (
       setEditSkills,
     } = useEditJobStore.getState();
     const { data } = await apiCall.get(`/postings/get-detail/${slug}`);
-    console.log(data);
     if (data.success) {
-      console.log(data);
       setEditTitle(data.data.title);
       setEditCategory(data.data.category);
       setEditCurrency(data.data.currency);

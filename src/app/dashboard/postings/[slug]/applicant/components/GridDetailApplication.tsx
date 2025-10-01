@@ -111,7 +111,7 @@ const GridDetailApplication = () => {
             end: new Date(item.endDate),
             isFixed: true,
         }));
-        console.log('ini map', mapped)
+
         setCalendarSchedules(mapped);
     }, [rawSchedules]);
     // Set global schedule
