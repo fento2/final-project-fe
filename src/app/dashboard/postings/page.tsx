@@ -79,7 +79,6 @@ const PostingsPage = () => {
       setPostingList(data.data.data);
       setTotalPage(data.data.totalPage);
       setCategories(["all", ...data.data.categories]);
-      console.log(data)
     } catch (error) {
       console.error(error);
     } finally {
@@ -94,11 +93,6 @@ const PostingsPage = () => {
     return () => deboucedFetchJobs.cancel();
   }, [search, sort, category, currentPage, showNotExpired, showPreselection]);
   ;
-
-  useEffect(() => {
-    router.prefetch('/dashboard/postings/create')
-    console.log('ini jalan')
-  }, [])
 
   return (
     <div className="md:px-20 px-4 space-y-6 container mx-auto my-8">

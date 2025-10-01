@@ -39,10 +39,10 @@ const UserDemographics = () => {
                 setAgeData(data.data.ageData);
                 setLocationData(data.data.locationData);
                 setTotalUsers(data.data.total);
-                console.log(data)
+
             }
         } catch (error) {
-            console.log(error);
+
         } finally {
             setLoading(false);
         }

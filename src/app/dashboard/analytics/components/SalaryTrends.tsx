@@ -68,7 +68,7 @@ const SalaryTrends = () => {
                 }));
                 setSalaryData(salary);
                 setCities(data.data.cities)
-                console.log(data)
+
             }
         } catch (error) {
             console.error(error);

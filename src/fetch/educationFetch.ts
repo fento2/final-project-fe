@@ -49,11 +49,9 @@ export const createEducationFetch = async (
         reset();
         return data.success;
       }
-      console.log("ini lolos", result.data);
     }
   } catch (error: any) {
     toast.error(error.message);
-    console.log(error);
   } finally {
     reset();
     setOpen(false);
@@ -76,7 +74,6 @@ export const getEducationListFetch = async (
     if (data.success) {
       setEducations(data.data);
     }
-    console.log(data);
   } catch (error) {
     console.error("Failed to fetch education list:", error);
   }
@@ -119,11 +116,8 @@ export const getEducationDetailFetch = async (
       setField("endYear", end.year ? end.year.toString() : "");
       setField("description", edu.description || "");
       setField("isEditing", true);
-      console.log(data);
     }
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 };
 export const editEducationFetch = async (
   toast: {
@@ -140,7 +134,6 @@ export const editEducationFetch = async (
   setOpen: (value: SetStateAction<boolean>) => void
 ) => {
   try {
-    console.log("run");
     const result = schemaEducation.safeParse({
       ...data,
       startYear: Number(data.startYear),
@@ -160,11 +153,9 @@ export const editEducationFetch = async (
         toast.success(data.message);
         return data.success;
       }
-      console.log("ini lolos", result.data);
     }
   } catch (error: any) {
     toast.error(error.message);
-    console.log(error);
   } finally {
     reset();
     setOpen(false);
@@ -184,11 +175,8 @@ export const delateEducationFetch = async (
       `/account/education/delete/${education_id}`
     );
     if (data.success) {
-      console.log(data);
       toast.success(data.message);
       return data.success;
     }
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 };

@@ -52,7 +52,7 @@ const SelectionPage = () => {
                 const { data } = await apiCall.get(`/preselection/detail/${slug}`);
                 setSelectionTest(data.data);
             } catch (error) {
-                console.log(error);
+
             } finally {
                 setLoading(false);
             }
@@ -104,11 +104,6 @@ const SelectionPage = () => {
                 answer: answers[q.selection_question_id] || "",
             }));
 
-            console.log({
-                selection_id: selectionTest.selection_id,
-                answers: payload,
-                score: finalScore,
-            })
 
             const { data } = await apiCall.post("/preselection/submit", {
                 selection_id: selectionTest.selection_id,

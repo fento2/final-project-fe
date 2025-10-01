@@ -48,7 +48,6 @@ export default function ApplyJobPage() {
                     return router.replace(`/selection/${currentJob?.slug}`)
                 }
             }
-            console.log(error)
         } finally {
             setCheckLoading(false)
         }
