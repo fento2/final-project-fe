@@ -12,7 +12,7 @@ import SubmitDialog from "../skill-assessment/_components/SubmitDialog";
 import { useAuthRole } from "@/helper/useAuthRole";
 
 export default function SubscriptionPage() {
-    useAuthRole('COMPANY')
+    useAuthRole('DEVELOPER')
     const [data, setData] = useState<Subscription[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
