@@ -103,6 +103,9 @@ export default function JobsListPage() {
                             <h2 className="text-2xl font-bold text-gray-900 mb-2">Featured Companies</h2>
                             <p className="text-gray-600">Discover great companies actively hiring</p>
                         </div>
+                        <Link href="/jobs/companies" className="text-indigo-600 hover:text-indigo-700 font-medium">
+                            View All Companies →
+                        </Link>
                     </div>
 
                     {loading ? (
