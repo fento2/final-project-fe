@@ -45,7 +45,7 @@ export function useFacebookSDK() {
             }
 
             js.onload = () => {
-                console.log("[FacebookSDK] Script loaded successfully");
+
                 setFbReady(true);
             };
         }(document, 'script', 'facebook-jssdk'));

@@ -145,7 +145,7 @@ export default function ApplyJobPage() {
             router.push(`/dashboard/my-applications`);
 
         } catch (error: any) {
-            console.error('Application submission error:', error);
+
             setSubmitError(error.message || "Failed to submit application. Please try again.");
         } finally {
             setIsSubmitting(false);

@@ -21,9 +21,9 @@ export function useUserCompanies() {
                         ? res.data.data.data
                         : [];
             setItems(list);
-            console.log(list);
+
         } catch (e) {
-            console.error(e);
+
             setError("Gagal memuat data perusahaan.");
         } finally {
             setLoading(false);

@@ -64,7 +64,7 @@ export const useFilterStats = () => {
                 if (err.response?.status === 404 || err.response?.status === 402 || err.code === 'ECONNREFUSED' || err.code === 'ERR_NETWORK') {
                     setJobs(generateMockJobsForStats());
                 } else {
-                    console.error('Filter stats fetch error:', err);
+
                     setJobs(generateMockJobsForStats());
                 }
             } finally {

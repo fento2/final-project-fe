@@ -88,7 +88,7 @@ const BrowseJobCard: React.FC<BrowseJobCardProps> = ({ job }) => {
         e.stopPropagation();
         if (!canApplyJobs) {
             // Could show a toast/alert here explaining why they can't apply
-            console.warn('Job applications are only available for job seekers (USER role)');
+
             return;
         }
         

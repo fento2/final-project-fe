@@ -37,7 +37,15 @@ const HeroHeader: React.FC<HeroHeaderProps> = ({ jobTitle, companyName, companyL
       <div className="text-white">
         <h1 className="text-4xl md:text-5xl font-bold mb-4">{jobTitle}</h1>
         <div className="flex items-center gap-4 mb-6">
-          <Image src={companyLogo} alt={companyName} width={64} height={64} className="w-16 h-16 rounded-lg bg-white/10 object-cover" />
+          {companyLogo ? (
+            <Image src={companyLogo} alt={companyName} width={64} height={64} className="w-16 h-16 rounded-lg bg-white/10 object-cover" />
+          ) : (
+            <div className="w-16 h-16 rounded-lg bg-white/10 flex items-center justify-center">
+              <span className="text-white font-bold text-xl">
+                {companyName.charAt(0).toUpperCase()}
+              </span>
+            </div>
+          )}
           <div>
             <div className="flex items-center gap-2 mb-1">
               <h2 className="text-xl font-bold">{companyName}</h2>

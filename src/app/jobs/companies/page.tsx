@@ -58,7 +58,7 @@ function CompaniesPageContent() {
         } catch (err: any) {
             const name = err?.name;
             if (name !== "CanceledError" && name !== "AbortError") {
-                console.error("Error fetching companies:", err);
+
                 setCompanies([]);
             }
         } finally {

@@ -7,13 +7,16 @@ import type { Filters } from "./JobsFilterSection";
 interface BrowseHeroSectionProps {
   filters?: Filters;
   onClearFilter?: (filterType: string, value: string) => void;
+  onChange?: (filters: Filters) => void;
 }
 
-const BrowseHeroSection: React.FC<BrowseHeroSectionProps> = ({ filters, onClearFilter }) => {
+const BrowseHeroSection: React.FC<BrowseHeroSectionProps> = ({ filters, onClearFilter, onChange }) => {
   const hasActiveFilters = filters && (
+    (filters.title && filters.title.trim()) ||
     filters.categories.length > 0 ||
     filters.types.length > 0 ||
-    filters.location.length > 0
+    filters.location.length > 0 ||
+    (filters.date && filters.date !== "Anytime")
   );
   return (
     <div className="relative overflow-hidden">
@@ -43,6 +46,34 @@ const BrowseHeroSection: React.FC<BrowseHeroSectionProps> = ({ filters, onClearF
           <div className="bg-white/90 backdrop-blur-sm rounded-lg p-4 border border-indigo-200">
             <div className="flex items-center flex-wrap gap-2">
               <span className="text-sm font-medium text-gray-700 mr-2">Active filters:</span>
+              
+              {filters?.title && filters.title.trim() && (
+                <span className="inline-flex items-center gap-1 bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm">
+                  Title: "{filters.title}"
+                  {onChange && (
+                    <button
+                      onClick={() => onChange({ ...filters, title: "" })}
+                      className="ml-1 hover:bg-purple-200 rounded-full p-0.5"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                </span>
+              )}
+
+              {filters?.date && filters.date !== "Anytime" && (
+                <span className="inline-flex items-center gap-1 bg-orange-100 text-orange-800 px-3 py-1 rounded-full text-sm">
+                  Date: {filters.date}
+                  {onChange && (
+                    <button
+                      onClick={() => onChange({ ...filters, date: "Anytime", dateFrom: "", dateTo: "" })}
+                      className="ml-1 hover:bg-orange-200 rounded-full p-0.5"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                </span>
+              )}
               
               {filters?.categories.map((category) => (
                 <span

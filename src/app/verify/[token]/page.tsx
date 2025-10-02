@@ -23,7 +23,7 @@ const VerifyPage = () => {
                 setOpenModal(true)
             }
         } catch (error) {
-            console.log(error);
+
         } finally {
             setLoading(false);
         }

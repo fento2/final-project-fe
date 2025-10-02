@@ -42,20 +42,20 @@ export const useJobSave = (jobId: string | number): UseJobSaveReturn => {
         setIsSaved(false);
         return;
       }
-      console.error('Error checking save status:', error);
+
       setIsSaved(false);
     }
   };
 
   const toggleSave = async (): Promise<void> => {
     if (!jobId) {
-      console.error('Job ID is required');
+
       return;
     }
 
     // Only allow USER role to save jobs
     if (!isLogin || role !== 'USER') {
-      console.warn('Job saving is only available for job seekers (USER role)');
+
       if (!isLogin) {
         router.push('/login');
       }
@@ -76,10 +76,10 @@ export const useJobSave = (jobId: string | number): UseJobSaveReturn => {
       // Optionally re-check to sync with server state
       // await checkSaveStatus();
     } catch (error: any) {
-      console.error('Error toggling save status:', error);
+
       // You can add error handling/toast notification here
       const errorMessage = error.response?.data?.message || 'Failed to update save status';
-      console.error(errorMessage);
+
       // If unauthorized, redirect to login
       if (error.response?.status === 401 || error.response?.status === 403) {
         try {

@@ -5,6 +5,6 @@ export const fetchData = async () => {
         const { data } = await apiCall.get("/experiences");
         // setData(data.data)
     } catch (error) {
-        console.log(error);
+
     }
 }

@@ -66,7 +66,7 @@ const useJobsWithFilters = (filters: Filters, page: number, perPage: number = 12
                 params.append("salaryMax", filters.salaryMax.toString());
             }
 
-            console.log('🔍 Fetching jobs with params:', params.toString());
+
 
             // Try both endpoints
             let data;
@@ -79,7 +79,7 @@ const useJobsWithFilters = (filters: Filters, page: number, perPage: number = 12
                 data = response.data;
             }
 
-            console.log('📦 Received job data:', data);
+
 
             // Handle backend response structure
             const jobsData = data?.data?.data || data?.data || data || [];
@@ -106,7 +106,7 @@ const useJobsWithFilters = (filters: Filters, page: number, perPage: number = 12
 
             setError(null);
         } catch (err: any) {
-            console.error('❌ Error fetching jobs:', err);
+
             setError('Failed to fetch jobs');
             setJobs([]);
         } finally {

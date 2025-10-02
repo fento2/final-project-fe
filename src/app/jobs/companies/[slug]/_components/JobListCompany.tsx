@@ -92,7 +92,7 @@ const JobItem = ({ job, companyName }: { job: Job; companyName: string }) => {
 
 export default function JobListCompany({ company }: Props) {
     // Filter hanya job yang punya slug atau job_id
-    const openableJobs = company.job.filter(job => job.slug || job.job_id);
+    const openableJobs = (company.job || []).filter(job => job.slug || job.job_id);
     return (
         <section>
             <h2 className="text-2xl font-bold text-gray-900 mb-6">Job Openings</h2>
