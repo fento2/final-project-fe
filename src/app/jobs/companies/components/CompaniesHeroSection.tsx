@@ -1,7 +1,8 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { X } from "lucide-react";
+import Link from "next/link";
+import { X, ChevronRight } from "lucide-react";
 
 interface CompaniesHeroSectionProps {
     filters: {
@@ -30,6 +31,17 @@ const CompaniesHeroSection: React.FC<CompaniesHeroSectionProps> = ({ filters, on
             </div>
             
             <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+                {/* Breadcrumb */}
+                <div className="mb-8">
+                    <nav className="flex items-center space-x-2 text-sm">
+                        <Link href="/jobs" className="text-indigo-200 hover:text-white transition-colors">
+                            Jobs
+                        </Link>
+                        <ChevronRight size={16} className="text-indigo-300" />
+                        <span className="text-white font-medium">Companies</span>
+                    </nav>
+                </div>
+
                 <div className="text-center">
                     <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6">
                         Discover Top Companies
@@ -37,6 +49,22 @@ const CompaniesHeroSection: React.FC<CompaniesHeroSectionProps> = ({ filters, on
                     <p className="text-xl text-indigo-100 max-w-3xl mx-auto mb-8">
                         Explore leading companies and find your next career opportunity with the best employers in the industry.
                     </p>
+                    
+                    {/* Navigation buttons */}
+                    <div className="flex flex-wrap gap-4 justify-center">
+                        <Link 
+                            href="/jobs/browse" 
+                            className="bg-white text-indigo-900 px-6 py-3 rounded-lg font-semibold hover:bg-indigo-50 transition-colors"
+                        >
+                            Browse All Jobs
+                        </Link>
+                        <Link 
+                            href="/jobs" 
+                            className="border-2 border-white text-white px-6 py-3 rounded-lg font-semibold hover:bg-white hover:text-indigo-900 transition-colors"
+                        >
+                            Back to Jobs
+                        </Link>
+                    </div>
                 </div>
 
                 {/* Active Filters */}
