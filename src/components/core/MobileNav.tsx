@@ -90,7 +90,7 @@ const MobileNav = ({ setOpen, setActive, active }: IMobileNav) => {
         {/* Mobile Menu */}
         <motion.div
           key="menu"
-          className="fixed top-0 right-0 h-full w-72 bg-white shadow-lg flex flex-col pt-6 px-6"
+          className="fixed top-0 right-0 h-full w-80 max-w-[90vw] bg-white shadow-lg flex flex-col pt-6 px-6 overflow-y-auto"
           initial={{ x: "100%" }}
           animate={{ x: 0 }}
           exit={{ x: "100%" }}
@@ -158,9 +158,9 @@ const MobileNav = ({ setOpen, setActive, active }: IMobileNav) => {
                         }}
                       >
                         <Image src={s.profile_picture || "/images/logo.png"} alt="avatar" width={24} height={24} className="rounded-full object-cover" />
-                        <div className="flex flex-col">
-                          <span className="text-sm font-medium text-gray-900">@{s.username}</span>
-                          <span className="text-xs text-gray-600">{s.name || (s.role ? s.role : "")}</span>
+                        <div className="flex flex-col min-w-0">
+                          <span className="text-sm font-medium text-gray-900 truncate">@{s.username}</span>
+                          <span className="text-xs text-gray-600 truncate">{s.name || (s.role ? s.role : "")}</span>
                         </div>
                       </button>
                     ))}
@@ -206,10 +206,10 @@ const MobileNav = ({ setOpen, setActive, active }: IMobileNav) => {
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex flex-col min-w-0">
-                  <span className="truncate text-sm font-medium text-gray-900 dark:text-white">
+                  <span className="truncate text-sm font-medium text-gray-900">
                     {email}
                   </span>
-                  <span className="truncate text-xs text-gray-500 dark:text-gray-400">
+                  <span className="truncate text-xs text-gray-500">
                     {toTitleCase(role)}
                   </span>
                 </div>
