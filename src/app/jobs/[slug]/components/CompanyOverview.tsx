@@ -12,7 +12,15 @@ interface CompanyOverviewProps {
 const CompanyOverview: React.FC<CompanyOverviewProps> = ({ companyName, companyLogo, location, description }) => (
   <div className="bg-white rounded-xl shadow-sm p-8">
     <div className="flex items-center gap-4 mb-6">
-      <Image src={companyLogo} alt={companyName} width={80} height={80} className="w-20 h-20 rounded-xl object-cover" />
+      {companyLogo ? (
+        <Image src={companyLogo} alt={companyName} width={80} height={80} className="w-20 h-20 rounded-xl object-cover" />
+      ) : (
+        <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center">
+          <span className="text-white font-bold text-2xl">
+            {companyName.charAt(0).toUpperCase()}
+          </span>
+        </div>
+      )}
       <div>
         <div className="flex items-center gap-2 mb-2">
           <h4 className="text-2xl font-bold text-gray-900">{companyName}</h4>

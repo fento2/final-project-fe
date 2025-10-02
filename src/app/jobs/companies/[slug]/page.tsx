@@ -117,7 +117,7 @@ export default function CompanyDetailPage() {
             );
             setUserCompany(existingRelation || null);
         } catch (error) {
-            console.log("Error fetching user companies:", error);
+            // Error handling
         } finally {
             setLoadingUserCompany(false);
         }

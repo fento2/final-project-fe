@@ -15,7 +15,7 @@ export const useAuth = () => {
                 const { data } = await apiCall.get('/account/profile');
                 setUser(data);
             } catch (err) {
-                console.log('User not authenticated');
+
             } finally {
                 setLoading(false);
             }
@@ -70,7 +70,7 @@ export const useAuth = () => {
             setUser(null);
             return { success: true };
         } catch (err) {
-            console.error('Logout error:', err);
+
             // Force logout even if API call fails
             setUser(null);
             return { success: true };
@@ -178,7 +178,7 @@ export const useProfile = () => {
             setProfile(data);
         } catch (err) {
             setError('Failed to fetch profile');
-            console.error('Profile fetch error:', err);
+
         } finally {
             setLoading(false);
         }

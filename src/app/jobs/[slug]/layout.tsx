@@ -11,13 +11,13 @@ async function fetchJob(slug: string) {
     const url = `/postings/get-detail/${encodeURIComponent(slug)}`;
     try {
         const res = await apiCall.get(url);
-        console.log("res.data", res.data);
+
         if (!res.data.success) return null;
         // Try common wrappers: { data: {...} } or direct object
         const job = res.data.data ?? res.data;
         return job || null;
     } catch (error) {
-        console.error("Error fetching job:", error);
+
         return null;
     }
 }

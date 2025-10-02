@@ -108,7 +108,7 @@ export function useAutocomplete(
 
       setSuggestions(suggestions.slice(0, maxResults));
     } catch (error) {
-      console.error(`Error fetching ${type} suggestions:`, error);
+
       setSuggestions([]);
     } finally {
       setLoading(false);

@@ -69,13 +69,12 @@ export default function ReviewSection({ companyName }: ReviewSectionProps) {
                 const company: Company = res.data.data;
                 if (company) {
                     const { data } = await apiCall.get(`/reviewCompany/${company.company_id}`)
-                    console.log(data.data);
+
                     if (data.data) {
                         setReviews(data.data);
                     }
                 }
             } catch (err) {
-                // console.error("Failed to fetch reviews:", err);
                 setError("Gagal memuat review");
             } finally {
                 setLoading(false)

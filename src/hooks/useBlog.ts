@@ -21,14 +21,11 @@ export const useBlogPosts = (limit?: number): UseBlogPostsReturn => {
             setLoading(true);
             setError(null);
             
-            console.log('Fetching blog posts from backend...');
             const { data } = await apiCall.get('/blog', {
                 params: {
                     limit
                 }
             });
-            
-            console.log('Backend response:', data);
             
                         // Handle different response structures
             const postsData = data?.data?.blogs || data?.blogs || data?.data || data || [];
@@ -56,13 +53,10 @@ export const useBlogPosts = (limit?: number): UseBlogPostsReturn => {
                 }));
                 
                 setPosts(transformedPosts);
-                console.log('Posts transformed and set successfully:', transformedPosts);
             } else {
-                console.log('Invalid posts data structure, setting empty array');
                 setPosts([]);
             }
         } catch (err: any) {
-            console.error('Blog API Error:', err.response?.status, err.message);
             setError(err.message || 'Failed to fetch blog posts');
             setPosts([]); // Set empty array pada error
         } finally {
@@ -99,12 +93,9 @@ export const useBlogPost = (slug: string): UseBlogPostReturn => {
             setLoading(true);
             setError(null);
             
-            console.log('Fetching blog post from backend:', slug);
-            
             // Try to fetch specific post by slug first
             try {
                 const { data } = await apiCall.get(`/blog/${slug}`);
-                console.log('Blog post response:', data);
                 
                 // Transform backend data to match frontend BlogPost interface
                 if (data) {
@@ -133,7 +124,6 @@ export const useBlogPost = (slug: string): UseBlogPostReturn => {
             } catch (slugErr: any) {
                 // If specific endpoint doesn't exist, try getting all posts and finding by slug
                 if (slugErr.response?.status === 404) {
-                    console.log('Single post endpoint not found, trying to get all posts...');
                     const { data } = await apiCall.get('/blog');
                     const postsData = data?.data?.blogs || data?.blogs || data?.data || data || [];
                     
@@ -144,7 +134,6 @@ export const useBlogPost = (slug: string): UseBlogPostReturn => {
                         );
                         
                         if (foundPost) {
-                            console.log('Found post in all posts:', foundPost);
                             // Transform the found post
                             const transformedPost: BlogPost = {
                                 id: foundPost.id,
@@ -167,11 +156,9 @@ export const useBlogPost = (slug: string): UseBlogPostReturn => {
                             };
                             setPost(transformedPost);
                         } else {
-                            console.log('Post not found in all posts');
                             setPost(null);
                         }
                     } else {
-                        console.log('Invalid posts data structure');
                         setPost(null);
                     }
                 } else {
@@ -179,7 +166,6 @@ export const useBlogPost = (slug: string): UseBlogPostReturn => {
                 }
             }
         } catch (err: any) {
-            console.error('Blog Post API Error:', err.response?.status, err.message);
             setError(err.message || 'Failed to fetch blog post');
             setPost(null);
         } finally {
