@@ -99,7 +99,7 @@ function BrowsePageContent() {
 	};
 
 	return (
-		<div className="min-h-screen bg-gray-50">
+		<div className="min-h-screen bg-gray-50 overflow-x-hidden">
 			{/* Hero */}
 			<BrowseHeroSection filters={filters} onClearFilter={handleClearFilter} onChange={setFilters} />
 
@@ -107,12 +107,12 @@ function BrowsePageContent() {
 			<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
 				<div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
 					{/* Filters Sidebar */}
-					<div className="lg:col-span-1">
+					<div className="lg:col-span-1 w-full">
 						<JobsFilterSection filters={filters} onChange={setFilters} />
 					</div>
 
 					{/* Jobs Grid */}
-					<div className="lg:col-span-3">
+					<div className="lg:col-span-3 w-full min-w-0">
 						<JobsGridSection filters={filters} />
 					</div>
 				</div>
