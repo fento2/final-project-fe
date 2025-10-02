@@ -109,9 +109,9 @@ const JobsGridSection: React.FC<JobsGridSectionProps> = ({ filters }) => {
     }
 
     return (
-        <div>
+        <div className="w-full">
             {/* Results Summary */}
-            <div className="flex items-center justify-between mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-2">
                 <div className="text-sm text-gray-600">
                     Showing {((page - 1) * perPage) + 1}-{Math.min(page * perPage, processedJobs.length)} of {processedJobs.length} jobs
                 </div>
@@ -123,7 +123,7 @@ const JobsGridSection: React.FC<JobsGridSectionProps> = ({ filters }) => {
             </div>
 
             {/* Jobs Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 {processedJobs.map((job) => (
                     <div key={job.id} className="h-full">
                         <BrowseJobCard job={job} />
@@ -131,13 +131,15 @@ const JobsGridSection: React.FC<JobsGridSectionProps> = ({ filters }) => {
                 ))}
             </div>
 
-            {/* Pagination */}
+            {/* Pagination - with overflow protection */}
             {totalPages > 1 && (
-                <Pagination
-                    page={page}
-                    totalPages={totalPages}
-                    onChange={setPage}
-                />
+                <div className="w-full overflow-hidden">
+                    <Pagination
+                        page={page}
+                        totalPages={totalPages}
+                        onChange={setPage}
+                    />
+                </div>
             )}
         </div>
     );

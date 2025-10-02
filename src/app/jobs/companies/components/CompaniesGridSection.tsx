@@ -95,7 +95,7 @@ const CompaniesGridSection: React.FC<CompaniesGridSectionProps> = ({
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 w-full overflow-hidden">
             <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-gray-900">Companies</h2>
                 <div className="text-sm text-gray-500">
@@ -108,6 +108,163 @@ const CompaniesGridSection: React.FC<CompaniesGridSectionProps> = ({
                     )}
                 </div>
             </div>
+
+            {/* Pagination at the top - only show if more than 9 companies total */}
+            {totalCompanies > 9 && totalPages > 1 && onPageChange && (
+                <div className="pb-4 border-b border-gray-200">
+                    {/* Mobile Pagination */}
+                    <div className="flex flex-col gap-4 sm:hidden">
+                        <div className="text-sm text-gray-600 text-center">
+                            Page {currentPage} of {totalPages}
+                        </div>
+                        
+                        <div className="flex items-center justify-center gap-2 max-w-full">
+                            <Button
+                                onClick={() => onPageChange(currentPage - 1)}
+                                disabled={currentPage <= 1}
+                                variant="outline"
+                                size="sm"
+                                className="flex items-center gap-1 px-2 min-w-0 flex-shrink-0"
+                            >
+                                <ChevronLeft className="w-4 h-4" />
+                            </Button>
+
+                            {/* Show only current page and adjacent pages on mobile */}
+                            <div className="flex items-center gap-1 overflow-hidden">
+                                {currentPage > 2 && (
+                                    <>
+                                        <Button
+                                            onClick={() => onPageChange(1)}
+                                            variant="outline"
+                                            size="sm"
+                                            className="w-8 h-8 p-0 text-xs flex-shrink-0"
+                                        >
+                                            1
+                                        </Button>
+                                        {currentPage > 3 && (
+                                            <span className="text-gray-400 px-1 text-xs">...</span>
+                                        )}
+                                    </>
+                                )}
+                                
+                                {currentPage > 1 && (
+                                    <Button
+                                        onClick={() => onPageChange(currentPage - 1)}
+                                        variant="outline"
+                                        size="sm"
+                                        className="w-8 h-8 p-0 text-xs flex-shrink-0"
+                                    >
+                                        {currentPage - 1}
+                                    </Button>
+                                )}
+                                
+                                <Button
+                                    variant="default"
+                                    size="sm"
+                                    className="w-8 h-8 p-0 text-xs flex-shrink-0"
+                                >
+                                    {currentPage}
+                                </Button>
+                                
+                                {currentPage < totalPages && (
+                                    <Button
+                                        onClick={() => onPageChange(currentPage + 1)}
+                                        variant="outline"
+                                        size="sm"
+                                        className="w-8 h-8 p-0 text-xs flex-shrink-0"
+                                    >
+                                        {currentPage + 1}
+                                    </Button>
+                                )}
+                                
+                                {currentPage < totalPages - 1 && (
+                                    <>
+                                        {currentPage < totalPages - 2 && (
+                                            <span className="text-gray-400 px-1 text-xs">...</span>
+                                        )}
+                                        <Button
+                                            onClick={() => onPageChange(totalPages)}
+                                            variant="outline"
+                                            size="sm"
+                                            className="w-8 h-8 p-0 text-xs flex-shrink-0"
+                                        >
+                                            {totalPages}
+                                        </Button>
+                                    </>
+                                )}
+                            </div>
+
+                            <Button
+                                onClick={() => onPageChange(currentPage + 1)}
+                                disabled={currentPage >= totalPages}
+                                variant="outline"
+                                size="sm"
+                                className="flex items-center gap-1 px-2 min-w-0 flex-shrink-0"
+                            >
+                                <ChevronRight className="w-4 h-4" />
+                            </Button>
+                        </div>
+                    </div>
+
+                    {/* Desktop Pagination */}
+                    <div className="hidden sm:flex items-center justify-between">
+                        <div className="text-sm text-gray-600">
+                            Page {currentPage} of {totalPages}
+                        </div>
+                        
+                        <div className="flex items-center gap-2">
+                            <Button
+                                onClick={() => onPageChange(currentPage - 1)}
+                                disabled={currentPage <= 1}
+                                variant="outline"
+                                size="sm"
+                                className="flex items-center gap-1"
+                            >
+                                <ChevronLeft className="w-4 h-4" />
+                                Previous
+                            </Button>
+
+                            {/* Page numbers */}
+                            <div className="flex items-center gap-1">
+                                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                    let pageNumber;
+                                    if (totalPages <= 5) {
+                                        pageNumber = i + 1;
+                                    } else {
+                                        const start = Math.max(1, currentPage - 2);
+                                        const end = Math.min(totalPages, start + 4);
+                                        pageNumber = start + i;
+                                        if (pageNumber > end) return null;
+                                    }
+
+                                    return (
+                                        <Button
+                                            key={pageNumber}
+                                            onClick={() => onPageChange(pageNumber)}
+                                            variant={pageNumber === currentPage ? "default" : "outline"}
+                                            size="sm"
+                                            className="w-8 h-8 p-0"
+                                        >
+                                            {pageNumber}
+                                        </Button>
+                                    );
+                                })}
+                            </div>
+
+                            <Button
+                                onClick={() => onPageChange(currentPage + 1)}
+                                disabled={currentPage >= totalPages}
+                                variant="outline"
+                                size="sm"
+                                className="flex items-center gap-1"
+                            >
+                                Next
+                                <ChevronRight className="w-4 h-4" />
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+            )}
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                 {companies.map((company, index) => (
@@ -117,66 +274,6 @@ const CompaniesGridSection: React.FC<CompaniesGridSectionProps> = ({
                     />
                 ))}
             </div>
-
-            {/* Pagination - only show if more than 9 companies total */}
-            {totalCompanies > 9 && totalPages > 1 && onPageChange && (
-                <div className="flex items-center justify-between pt-6 border-t border-gray-200">
-                    <div className="text-sm text-gray-600">
-                        Page {currentPage} of {totalPages}
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                        <Button
-                            onClick={() => onPageChange(currentPage - 1)}
-                            disabled={currentPage <= 1}
-                            variant="outline"
-                            size="sm"
-                            className="flex items-center gap-1"
-                        >
-                            <ChevronLeft className="w-4 h-4" />
-                            Previous
-                        </Button>
-
-                        {/* Page numbers */}
-                        <div className="flex items-center gap-1">
-                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                let pageNumber;
-                                if (totalPages <= 5) {
-                                    pageNumber = i + 1;
-                                } else {
-                                    const start = Math.max(1, currentPage - 2);
-                                    const end = Math.min(totalPages, start + 4);
-                                    pageNumber = start + i;
-                                    if (pageNumber > end) return null;
-                                }
-
-                                return (
-                                    <Button
-                                        key={pageNumber}
-                                        onClick={() => onPageChange(pageNumber)}
-                                        variant={pageNumber === currentPage ? "default" : "outline"}
-                                        size="sm"
-                                        className="w-8 h-8 p-0"
-                                    >
-                                        {pageNumber}
-                                    </Button>
-                                );
-                            })}
-                        </div>
-
-                        <Button
-                            onClick={() => onPageChange(currentPage + 1)}
-                            disabled={currentPage >= totalPages}
-                            variant="outline"
-                            size="sm"
-                            className="flex items-center gap-1"
-                        >
-                            Next
-                            <ChevronRight className="w-4 h-4" />
-                        </Button>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };

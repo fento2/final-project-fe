@@ -84,21 +84,30 @@ export function SideBar() {
 
       {/* Sidebar Mobile (slide-in) */}
       <motion.div
-        className="md:hidden fixed top-0 left-0 z-50 h-full bg-white dark:bg-black shadow-2xl w-70"
+        className="md:hidden fixed top-0 left-0 z-50 h-full bg-white dark:bg-black shadow-2xl w-80 max-w-[90vw] overflow-hidden"
         initial="hidden"
         animate={showSideBar ? "visible" : "hidden"}
         variants={mobileVariants}
         transition={transitionProps as any}
       >
-
-        <div className="flex items-center justify-center h-10 border-b py-10">
-          <img
-            src="/images/logo.png"
-            alt="Website Logo"
-            className="max-h-18 w-auto"
-          />
+        <div className="flex flex-col h-full">
+          <div className="flex items-center justify-between h-16 border-b px-4 flex-shrink-0">
+            <img
+              src="/images/logo.png"
+              alt="Website Logo"
+              className="h-8 w-auto"
+            />
+            <button
+              onClick={() => setShowSideBar(false)}
+              className="p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </button>
+          </div>
+          <div className="flex-1 overflow-hidden">
+            <SidebarContent isCollapsed={false} setIsCollapsed={setIsCollapsed} />
+          </div>
         </div>
-        <SidebarContent isCollapsed={false} setIsCollapsed={setIsCollapsed} />
       </motion.div>
     </>
   );
@@ -109,18 +118,18 @@ function SidebarContent({ isCollapsed, setIsCollapsed }: { isCollapsed: boolean,
   const router = useRouter()
 
   return (
-    <motion.div className="relative z-40 flex text-muted-foreground h-full shrink-0 flex-col transition-all">
-      <motion.ul className="flex h-full flex-col">
-        <div className="flex grow flex-col items-center py-2.5">
+    <motion.div className="relative z-40 flex text-muted-foreground h-full shrink-0 flex-col transition-all overflow-hidden">
+      <motion.ul className="flex h-full flex-col overflow-hidden">
+        <div className="flex grow flex-col items-center py-2.5 overflow-hidden">
           {/* Profile Section */}
-          <div className="flex h-[54px] w-full shrink-0 border-b p-2">
+          <div className="flex h-[54px] w-full flex-shrink-0 border-b p-2">
             <ProfileNavSection isCollapsed={!isCollapsed} setIsCollapsed={setIsCollapsed} />
           </div>
 
           {/* Main User Options */}
-          <div className="flex h-full w-full flex-col">
-            <div className="flex grow flex-col gap-4">
-              <ScrollArea className="h-16 grow p-2">
+          <div className="flex h-full w-full flex-col overflow-hidden">
+            <div className="flex grow flex-col gap-4 overflow-hidden">
+              <ScrollArea className="flex-1 grow p-2">
                 <div className={cn("flex w-full flex-col gap-1")}>
                   {role === 'USER' && <>
                     <UserOption isCollapsed={isCollapsed} />
@@ -153,13 +162,13 @@ function SidebarContent({ isCollapsed, setIsCollapsed }: { isCollapsed: boolean,
             </div>
 
             {/* Separator */}
-            <Separator className="w-full" />
+            <Separator className="w-full flex-shrink-0" />
 
             {/* Home Menu di paling bawah */}
             <Link
               href="/"
               className={cn(
-                "flex h-10 w-full items-center rounded-md px-4 py-2 mb-2 transition hover:bg-muted hover:text-primary"
+                "flex h-10 w-full items-center rounded-md px-4 py-2 mb-2 transition hover:bg-muted hover:text-primary flex-shrink-0"
               )}
             >
               <ChevronLeft className="h-6 w-6" />

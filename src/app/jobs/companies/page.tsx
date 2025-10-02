@@ -176,7 +176,7 @@ function CompaniesPageContent() {
                     </div>
 
                     {/* Companies Grid */}
-                    <div className="lg:col-span-3">
+                    <div className="lg:col-span-3 min-w-0 overflow-hidden">
                         <CompaniesGridSection 
                             companies={paginatedCompanies}
                             loading={loading}
