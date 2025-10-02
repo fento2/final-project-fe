@@ -1,5 +1,9 @@
+/* eslint-disable */
+/* stylelint-disable */
+/* CSS custom properties and Tailwind directives */
 @import "tailwindcss";
 @import "tw-animate-css";
+
 
 @custom-variant dark (&:is(.dark *));
 
@@ -41,6 +45,7 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+  --color-destructive-foreground: var(--destructive-foreground);
 }
 
 :root {
@@ -76,6 +81,7 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --destructive-foreground: oklch(1 0 0);
 }
 
 .dark {
@@ -110,6 +116,7 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+  --destructive-foreground: oklch(1 0 0);
 }
 
 @layer base {
@@ -119,4 +126,205 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+
+/* react quill */
+.ql-container.ql-bubble {
+  border: none;
+  box-shadow: none;
+}
+
+.ql-toolbar {
+  @apply rounded-t-md border border-gray-300 bg-gray-50;
+  border-bottom: none; /* 👈 biar gak dobel sama editor */
+}
+
+.ql-container {
+  @apply rounded-b-md border border-gray-300;
+  border-top: none; /* 👈 biar nyambung mulus ke toolbar */
+}
+
+.preview .ql-container {
+  @apply rounded-md border border-gray-300;
+  border: none;
+
+}
+.ql-readonly.ql-snow .ql-editor {
+  @apply p-0 m-0 min-h-0;
+}
+
+/* globals.css atau module CSS */
+
+.quill-preview ol {
+  list-style-type: disc ;   /* atau decimal untuk ol */
+  margin-left: 1.25rem;    /* setara ml-5 */
+  padding-left: 1.25rem;
+}
+
+.ql-editor {
+  min-height: 200px;
+}
+/* react quill */
+
+
+/* Di global CSS atau tailwind global file */
+.leaflet-container {
+  z-index: 10 !important; /* pastikan lebih rendah dari navbar */
+}
+
+.leaflet-pane {
+  z-index: 10 !important; 
+}
+
+.leaflet-tile-pane,
+.leaflet-marker-pane,
+.leaflet-shadow-pane,
+.leaflet-overlay-pane,
+.leaflet-popup-pane {
+  z-index: 10 !important;
+}
+
+
+/* Untuk Webkit (Chrome, Safari, Edge) */
+.thin-scrollbar::-webkit-scrollbar {
+  width: 6px;          /* Lebar scrollbar */
+  height: 6px;         /* Lebar scrollbar horizontal */
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.3); /* Warna thumb */
+  border-radius: 3px;  /* Membuat ujung bulat */
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0.05); /* Warna track */
+  border-radius: 3px;
+}
+
+/* Untuk Firefox */
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(165, 165, 165, 0.3) rgba(150, 147, 147, 0.05);
+}
+
+/* Line clamp utility */
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+/* HTML content styling for company descriptions */
+.company-description {
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.company-description p {
+  margin: 0 0 0.5rem 0;
+}
+
+.company-description p:last-child {
+  margin-bottom: 0;
+}
+
+.company-description br {
+  line-height: 0;
+}
+
+.company-description strong, 
+.company-description b {
+  font-weight: 600;
+  color: inherit;
+}
+
+.company-description em, 
+.company-description i {
+  font-style: italic;
+}
+
+.company-description a {
+  color: #4f46e5;
+  text-decoration: underline;
+}
+
+.company-description a:hover {
+  color: #3730a3;
+}
+
+.company-description ul, 
+.company-description ol {
+  margin: 0.25rem 0;
+  padding-left: 1rem;
+}
+
+.company-description li {
+  margin: 0.125rem 0;
+}
+
+.company-description h1,
+.company-description h2, 
+.company-description h3,
+.company-description h4,
+.company-description h5,
+.company-description h6 {
+  font-size: inherit;
+  font-weight: 600;
+  margin: 0.25rem 0;
+  line-height: 1.3;
+}
+
+.company-description div {
+  margin: 0.125rem 0;
+}
+
+.company-description span {
+  display: inline;
+}
+
+/* Autocomplete specific styles */
+.autocomplete-dropdown {
+  animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.autocomplete-item:hover {
+  @apply bg-gray-50 transition-colors duration-150;
+}
+
+.autocomplete-item:focus {
+  @apply bg-indigo-50 text-indigo-700 outline-none;
+}
+
+.autocomplete-loading {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Debounce indicator animation */
+.debounce-indicator {
+  animation: fadeInOut 1.5s ease-in-out infinite;
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
 }
