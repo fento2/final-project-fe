@@ -44,7 +44,7 @@ export default function PopularArticles() {
                 setPopularPosts(transformedPosts);
             }
         } catch (error) {
-            console.error('Error fetching popular posts:', error);
+
         } finally {
             setLoading(false);
         }

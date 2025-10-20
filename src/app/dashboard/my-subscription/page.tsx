@@ -75,7 +75,7 @@ export default function SubscriptionPage() {
             setSelectedFile(null);
             await fetchData();
         } catch (err) {
-            console.error(err);
+
             alert("Upload failed");
         } finally {
             setUploading(false);

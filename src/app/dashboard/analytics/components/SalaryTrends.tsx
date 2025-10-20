@@ -71,7 +71,7 @@ const SalaryTrends = () => {
 
             }
         } catch (error) {
-            console.error(error);
+
         } finally {
             setLoadingSalary(false);
         }

@@ -28,7 +28,7 @@ export function FacebookShareButton({
         FB.XFBML.parse(containerRef.current);
 
       } catch (e) {
-        console.warn("[FacebookShareButton] XFBML parse failed:", e);
+
       }
     }
   }, [fbReady, FB, href]);

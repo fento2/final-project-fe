@@ -101,7 +101,7 @@ const ApplicantSection = () => {
                 setTotal(data.data.total);
             }
         } catch (error) {
-            console.error(error);
+
         } finally {
             setLoading(false);
         }

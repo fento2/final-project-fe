@@ -44,7 +44,7 @@ const UniversityAutocomplete = ({ value, onChange }: Props) => {
                     setResults(universities);
                     setShowDropdown(true);
                 } catch (err) {
-                    console.error(err);
+
                 }
             }, 300),
         []

@@ -127,7 +127,7 @@ export default function BlogPage() {
                 }
             }
         } catch (err: any) {
-            console.error('Error fetching blog post:', err);
+
             setError(err.message || 'Failed to fetch blog post');
             setPost(null);
         } finally {

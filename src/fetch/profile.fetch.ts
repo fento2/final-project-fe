@@ -30,7 +30,6 @@ export const updateProfileRoleUserFetch = async (
     setLoading(true);
     const result = schemaUpdateProfileUser.safeParse(payload);
     if (!result.success) {
-      
       const messages = result.error.issues
         .map((issue) => issue.message)
         .join(", ");
@@ -57,7 +56,6 @@ export const updateProfileRoleUserFetch = async (
       return data;
     }
   } catch (error: unknown) {
-    
     return error;
   } finally {
     setLoading(false);
@@ -73,14 +71,13 @@ export const getProfilRoleUserFetch = async (toast: {
     const { data } = await apiCall.get("/account/get-data/user");
 
     if (data.success) {
-     
       return data.data;
     }
   } catch (error: unknown) {
     if (axios.isAxiosError(error)) {
       toast.error(error.response?.data.message);
     }
-    
+
     return null;
   }
 };
@@ -90,12 +87,9 @@ export const getDataCompanyProfileFetch = async () => {
   try {
     const { data } = await apiCall.get("/company/get/my-data-profile");
     if (data.success) {
-      
       return data.data;
     }
-  } catch (error) {
-  
-  }
+  } catch (error) {}
 };
 
 export const updateCompanyProfileFetch = async (
@@ -106,7 +100,7 @@ export const updateCompanyProfileFetch = async (
     const result = schemaUpdateCompanyProfile.safeParse(payload);
     if (!result.success) {
       const messages = result.error.issues[0].message;
-      
+
       toast.error(messages);
       return false;
     }
@@ -125,7 +119,6 @@ export const updateCompanyProfileFetch = async (
       return data.success;
     }
   } catch (error: any) {
-    console.error("Update failed:", error?.response?.data || error.message);
     toast.error(error?.response?.data?.message || "Failed to update");
     return false;
   }

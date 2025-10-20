@@ -27,7 +27,7 @@ export default function TopCompaniesSection() {
                 if (!aborted) setTopCompanies(Array.isArray(items) ? items.slice(0, 3) : []);
             } catch (err: any) {
                 if (err?.name === "CanceledError" || err?.name === "AbortError") return;
-                console.error("Failed to load top companies:", err);
+
                 if (!aborted) setError(err?.response?.data?.message || err?.message || "Failed to load companies");
             } finally {
                 if (!aborted) setLoading(false);

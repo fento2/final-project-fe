@@ -43,7 +43,6 @@ export const useJobBySlug = (slug: string) => {
           setError("Job not found");
         }
       } catch (err: any) {
-        console.error("❌ Error in fetchJobBySlug:", err);
         if (err.response?.status === 404) {
           setError("Job not found");
         } else if (err.response?.status === 401) {

@@ -62,10 +62,10 @@ const FeatureJobCard = ({
     const handleApplyClick = (e?: React.MouseEvent) => {
         e?.stopPropagation();
         if (!canApplyJobs) {
-            console.warn('Job applications are only available for job seekers (USER role)');
+
             return;
         }
-        
+
         // Navigate to application form
         router.push(`/jobs/${jobSlug}/apply`);
     };
@@ -81,30 +81,30 @@ const FeatureJobCard = ({
     // Format salary to IDR using backend data (same as DiscoveryJobCard)
     const formatSalary = (salaryValue: string | number | null | undefined, currency?: string, period?: string) => {
         if (!salaryValue || salaryValue === "Competitive") return "Competitive";
-        
+
         // Convert to string first
         const salaryString = String(salaryValue);
-        
+
         // Extract numeric value from string like "$5000/month" or "5000"
         const numericValue = salaryString.replace(/[^0-9]/g, '');
-        
+
         if (!numericValue || numericValue === '0') return "Competitive";
-        
+
         const amount = parseInt(numericValue);
-        
+
         // Default to IDR if no currency specified or if already in IDR
         if (!currency || currency === 'IDR') {
             const periodText = period === 'hour' ? 'jam' : period === 'week' ? 'minggu' : period === 'year' ? 'tahun' : 'bulan';
             return `${formatCurrency(amount)}/${periodText}`;
         }
-        
+
         // Convert from USD to IDR if needed (around 15,000 IDR = 1 USD)
         const idrAmount = currency === 'USD' ? amount * 15000 : amount;
         const periodText = period === 'hour' ? 'jam' : period === 'week' ? 'minggu' : period === 'year' ? 'tahun' : 'bulan';
-        
+
         return `${formatCurrency(idrAmount)}/${periodText}`;
     };
-    
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -194,16 +194,16 @@ const FeatureJobCard = ({
                             {daysLeft} day{daysLeft !== 1 ? 's' : ''} left
                         </span>
                     </div>
-                    
+
                     {canApplyJobs ? (
-                        <button 
+                        <button
                             onClick={(e) => handleApplyClick(e)}
                             className="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-lg hover:bg-indigo-700 transition-colors duration-200 group-hover:scale-105"
                         >
                             Apply Now
                         </button>
                     ) : (
-                        <button 
+                        <button
                             onClick={(e) => handleCompanyClick(e)}
                             className="inline-flex items-center px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors duration-200 group-hover:scale-105"
                         >

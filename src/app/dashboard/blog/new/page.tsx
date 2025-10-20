@@ -35,7 +35,7 @@ export default function NewBlogPage() {
             await createBlogPost({ title, slug, excerpt, content, featured_image_file: featuredImageFile, status });
             router.push("/dashboard/blog");
         } catch (e) {
-            console.error(e);
+
         } finally {
             setSaving(false);
         }

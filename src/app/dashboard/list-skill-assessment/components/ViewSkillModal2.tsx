@@ -65,7 +65,7 @@ export default function ViewSkillModal2({ isOpen, item, onClose }: Props) {
 
                 setParsedPreview(parsedQuestions);
             } catch (err) {
-                console.error(err);
+
                 setError("file", {
                     type: "manual",
                     message: "Gagal parsing file Excel",
