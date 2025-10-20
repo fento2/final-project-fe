@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { apiCall } from '@/helper/apiCall';
-import { useAuth } from './useAuth';
-import { useRouter } from 'next/navigation';
-import { useAuthStore } from '@/lib/zustand/authStore';
+import { useState, useEffect } from "react";
+import { apiCall } from "@/helper/apiCall";
+import { useAuth } from "./useAuth";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/lib/zustand/authStore";
 
 interface UseJobSaveReturn {
   isSaved: boolean;
@@ -23,7 +23,7 @@ export const useJobSave = (jobId: string | number): UseJobSaveReturn => {
     // Wait for auth check to finish to avoid flicker, then attempt check.
     // Server will return 401 if not logged in, which we handle gracefully.
     // Only check for USER role - companies shouldn't save jobs
-    if (!authLoading && jobId && isLogin && role === 'USER') {
+    if (!authLoading && jobId && isLogin && role === "USER") {
       checkSaveStatus();
     }
   }, [jobId, authLoading, isLogin, role]);
@@ -49,15 +49,13 @@ export const useJobSave = (jobId: string | number): UseJobSaveReturn => {
 
   const toggleSave = async (): Promise<void> => {
     if (!jobId) {
-
       return;
     }
 
     // Only allow USER role to save jobs
-    if (!isLogin || role !== 'USER') {
-
+    if (!isLogin || role !== "USER") {
       if (!isLogin) {
-        router.push('/login');
+        router.push("/login");
       }
       return;
     }
@@ -70,20 +68,20 @@ export const useJobSave = (jobId: string | number): UseJobSaveReturn => {
         setIsSaved(false);
       } else {
         // Save the job
-        await apiCall.post('/job-saves', { job_id: Number(jobId) });
+        await apiCall.post("/job-saves", { job_id: Number(jobId) });
         setIsSaved(true);
       }
       // Optionally re-check to sync with server state
       // await checkSaveStatus();
     } catch (error: any) {
-
       // You can add error handling/toast notification here
-      const errorMessage = error.response?.data?.message || 'Failed to update save status';
+      const errorMessage =
+        error.response?.data?.message || "Failed to update save status";
 
       // If unauthorized, redirect to login
       if (error.response?.status === 401 || error.response?.status === 403) {
         try {
-          router.push('/login');
+          router.push("/login");
         } catch {}
       }
     } finally {

@@ -46,7 +46,7 @@ const CompanyAutocomplete = ({ value, onChange }: Props) => {
                     setResults(companies);
                     setShowDropdown(true);
                 } catch (err) {
-                    console.error(err);
+
                 }
             }, 500), // delay 500ms
         []

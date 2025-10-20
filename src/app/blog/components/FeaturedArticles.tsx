@@ -44,7 +44,7 @@ export default function FeaturedArticles() {
                 setFeaturedPosts(transformedPosts);
             }
         } catch (error) {
-            console.error('Error fetching featured posts:', error);
+
         } finally {
             setLoading(false);
         }

@@ -81,7 +81,7 @@ export default function ReviewCompanyModal({ isOpen, item, onClose, onSaved }: P
             setOpen(false);
             onClose();
         } catch (e) {
-            console.error(e);
+
         } finally {
             setSaving(false);
         }

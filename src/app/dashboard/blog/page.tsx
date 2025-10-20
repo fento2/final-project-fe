@@ -31,7 +31,7 @@ export default function BlogDashboardPage() {
             await deleteBlogPost(idOrSlug);
             await refetch();
         } catch (e) {
-            console.error(e);
+
         } finally {
             setDeleting(null);
         }

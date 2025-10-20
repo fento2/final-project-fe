@@ -92,8 +92,7 @@ export default function ExperienceEditModal({ isOpen, onClose, experience, onSav
             onSaved?.();
             onClose();
         } catch (err) {
-            console.error("save experience error:", err);
-            // you can display toast / set local error here
+
         }
     };
 

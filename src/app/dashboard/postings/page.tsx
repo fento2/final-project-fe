@@ -80,7 +80,7 @@ const PostingsPage = () => {
       setTotalPage(data.data.totalPage);
       setCategories(["all", ...data.data.categories]);
     } catch (error) {
-      console.error(error);
+
     } finally {
       setLoading(false)
     }

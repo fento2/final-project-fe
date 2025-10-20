@@ -207,7 +207,6 @@ export const checkApplicationExists = async (
     );
     return response.data.exists || false;
   } catch (error) {
-    console.error("Error checking application existence:", error);
     return false;
   }
 };

@@ -20,12 +20,12 @@ const BlogNewsSection = () => {
         try {
             setLoading(true);
             setError(null);
-            
+
             const { data } = await apiCall.get('/blog');
-            
+
             // Handle different response structures
             const postsData = data?.data?.blogs || data?.blogs || data?.data || data || [];
-            
+
             if (Array.isArray(postsData) && postsData.length > 0) {
                 // Transform posts for consistent structure
                 const transformedPosts = postsData.slice(0, 6).map((post: any) => ({
@@ -52,7 +52,7 @@ const BlogNewsSection = () => {
                 setBlogPosts([]);
             }
         } catch (err: any) {
-            console.error('Error fetching blog posts for home:', err);
+
             setError(err.message || 'Failed to fetch blog posts');
             setBlogPosts([]);
         } finally {
@@ -68,10 +68,10 @@ const BlogNewsSection = () => {
     // Helper function to format date
     const formatDate = (date: Date | string) => {
         const d = new Date(date);
-        return d.toLocaleDateString('en-US', { 
-            year: 'numeric', 
-            month: 'short', 
-            day: 'numeric' 
+        return d.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric'
         });
     };
 
@@ -105,7 +105,7 @@ const BlogNewsSection = () => {
             </section>
         );
     }
-    
+
     const nextSlide = () => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % blogPosts.length);
     };
@@ -140,8 +140,8 @@ const BlogNewsSection = () => {
                                             <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 border-0 shadow-lg h-full cursor-pointer">
                                                 <div className="relative h-40 bg-gray-100 overflow-hidden">
                                                     {post.image || post.featured_image ? (
-                                                        <img 
-                                                            src={post.image || post.featured_image} 
+                                                        <img
+                                                            src={post.image || post.featured_image}
                                                             alt={post.title}
                                                             className="w-full h-full object-cover"
                                                         />
@@ -217,8 +217,8 @@ const BlogNewsSection = () => {
                             <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 border-0 shadow-lg cursor-pointer h-full">
                                 <div className="relative h-56 md:h-64 bg-gray-100 overflow-hidden">
                                     {post.image || post.featured_image ? (
-                                        <img 
-                                            src={post.image || post.featured_image} 
+                                        <img
+                                            src={post.image || post.featured_image}
                                             alt={post.title}
                                             className="w-full h-full object-cover"
                                         />

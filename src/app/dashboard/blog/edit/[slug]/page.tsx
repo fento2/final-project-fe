@@ -40,7 +40,7 @@ export default function EditBlogPage() {
                     setOriginalPost(data);
                 }
             } catch (e) {
-                console.error(e);
+
             } finally {
                 setLoading(false);
             }
@@ -72,7 +72,7 @@ export default function EditBlogPage() {
             });
             router.push("/dashboard/blog");
         } catch (e) {
-            console.error(e);
+
         } finally {
             setSaving(false);
         }
