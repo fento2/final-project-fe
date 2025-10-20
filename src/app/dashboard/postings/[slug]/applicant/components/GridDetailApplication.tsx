@@ -33,7 +33,7 @@ const GridDetailApplication = () => {
             const { data } = await apiCall.get(`/applications/detail/${application_id}`);
             if (data.success) setApplicant(data.data);
         } catch (error) {
-            console.error(error);
+
         }
     };
     const getAllInterviewList = async () => {
@@ -41,7 +41,7 @@ const GridDetailApplication = () => {
             const { data } = await apiCall.get("/interviews/company/all");
             if (data.success) setRawSchedules(data.data);
         } catch (error) {
-            console.error(error);
+
         }
     };
     const getEditInterview = async () => {
@@ -63,7 +63,7 @@ const GridDetailApplication = () => {
                 setRawSchedules(data.data.all);
             }
         } catch (error) {
-            console.error(error);
+
         }
     };
     const onSaveInterview = async () => {
@@ -90,7 +90,7 @@ const GridDetailApplication = () => {
                 getDetail()
             }
         } catch (error) {
-            console.error(error);
+
         }
     };
     // ---------- Effects ----------

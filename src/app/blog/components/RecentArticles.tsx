@@ -46,7 +46,7 @@ export default function RecentArticles() {
                 setRecentPosts(transformedPosts);
             }
         } catch (error) {
-            console.error('Error fetching recent posts:', error);
+
         } finally {
             setLoading(false);
         }
@@ -176,8 +176,8 @@ export default function RecentArticles() {
                             key={i + 1}
                             onClick={() => setCurrentPage(i + 1)}
                             className={`px-3 py-2 rounded-lg text-sm font-medium ${currentPage === i + 1
-                                    ? "bg-blue-600 text-white"
-                                    : "border border-gray-200 hover:bg-gray-50"
+                                ? "bg-blue-600 text-white"
+                                : "border border-gray-200 hover:bg-gray-50"
                                 }`}
                         >
                             {i + 1}

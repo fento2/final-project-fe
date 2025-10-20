@@ -62,7 +62,6 @@ export const useSavedJobs = () => {
       setSavedJobs(normalizedJobs);
       setError(null);
     } catch (err: any) {
-      console.error("Failed to fetch saved jobs:", err);
       setError(err?.response?.data?.message || "Failed to load saved jobs");
     } finally {
       setLoading(false);
@@ -76,7 +75,6 @@ export const useSavedJobs = () => {
         prev.filter((savedJob) => savedJob.Job.job_id !== jobId)
       );
     } catch (err: any) {
-      console.error("Failed to unsave job:", err);
       setError(
         err?.response?.data?.message || "Failed to remove job from saved list"
       );

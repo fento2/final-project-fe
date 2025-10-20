@@ -74,9 +74,7 @@ export const getEducationListFetch = async (
     if (data.success) {
       setEducations(data.data);
     }
-  } catch (error) {
-    console.error("Failed to fetch education list:", error);
-  }
+  } catch (error) {}
 };
 export const getEducationDetailFetch = async (
   education_id: string,

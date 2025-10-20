@@ -57,7 +57,7 @@ export default function BlogGrid() {
                 setPosts([]);
             }
         } catch (err: any) {
-            console.error('Error fetching blog posts:', err);
+
 
             // Check for specific backend errors
             if (err.response?.status === 500) {

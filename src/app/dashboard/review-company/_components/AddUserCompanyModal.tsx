@@ -71,7 +71,7 @@ export default function AddUserCompanyModal({
                     const list = Array.isArray(raw) ? raw : raw.data ?? [];
                     if (mounted) setCompanies(list);
                 } catch (err) {
-                    console.error("fetch companies:", err);
+
                 }
             })();
             return () => { mounted = false; };
@@ -94,7 +94,7 @@ export default function AddUserCompanyModal({
             onSaved?.();
             onClose();
         } catch (err: any) {
-            console.error("Add user company failed:", err);
+
             alert(err?.response?.data?.message || "Gagal menambah riwayat kerja");
         }
     };

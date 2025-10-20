@@ -36,7 +36,7 @@ const FieldSkill = () => {
             setSkillList(data.data.skills ?? []);
           }
         } catch (error) {
-          console.error(error);
+
         }
       }, 1000),
     []
