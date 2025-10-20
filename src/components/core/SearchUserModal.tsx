@@ -47,11 +47,11 @@ const isCompanyUser = (user: any): boolean => {
   // Check role first
   const role = user?.role?.toString?.()?.toUpperCase?.();
   if (role === "COMPANY" || role === "COMPANIES") return true;
-  
+
   // Fallback: check username pattern
   const username = user?.username?.toString?.()?.toLowerCase?.();
   if (username?.includes("_company") || username?.endsWith("company")) return true;
-  
+
   return false;
 };
 
@@ -90,8 +90,7 @@ export default function SearchUserModal({ open, onOpenChange, username }: Search
               slug: item.slug || null,
             }));
           }
-          console.log('Public users API response:', raw);
-          console.log('Mapped search results:', list);
+
         } catch {
           // ignore search errors, fallback to exact profile
         }
@@ -100,10 +99,10 @@ export default function SearchUserModal({ open, onOpenChange, username }: Search
 
         if (list.length > 0) {
           // Filter out developers from search results
-          const filteredList = list.filter((u: any) => 
+          const filteredList = list.filter((u: any) =>
             u?.role?.toString?.()?.toUpperCase?.() !== 'DEVELOPER'
           );
-          
+
           setResults(filteredList);
           const exact = filteredList.find((u: any) => u?.username?.toLowerCase?.() === username.toLowerCase());
           if (exact) setProfile(exact);
@@ -111,7 +110,7 @@ export default function SearchUserModal({ open, onOpenChange, username }: Search
           // 2) Fallback: exact username profile
           const res = await apiCall.get(`/public/profile/${encodeURIComponent(username)}`);
           const rawData = (res as any)?.data?.data ?? (res as any)?.data ?? null;
-          
+
           if (!rawData) {
             setError("User not found");
           } else if (rawData.role?.toString?.()?.toUpperCase?.() === 'DEVELOPER') {
@@ -129,8 +128,7 @@ export default function SearchUserModal({ open, onOpenChange, username }: Search
               role: rawData.role || null,
               slug: rawData.slug || null,
             };
-            console.log('Exact profile API response:', rawData);
-            console.log('Mapped exact profile data:', data);
+
             setProfile(data);
             setResults([data]);
           }
@@ -145,7 +143,7 @@ export default function SearchUserModal({ open, onOpenChange, username }: Search
             const next = [uname, ...history].slice(0, 10);
             window.localStorage.setItem("user-search-history", JSON.stringify(next));
           }
-        } catch {}
+        } catch { }
       } catch (e: any) {
         if (!cancelled) {
           const msg = e?.response?.data?.message || e?.message || "Failed to search user";

@@ -40,19 +40,13 @@ export default function TopCompaniesSection() {
     }, []);
 
     // Debug: Log the entire API response to understand backend structure
-    console.log('🏢 TopCompanies API Response from /company/find (aligned with jobs/company):', {
-        companiesCount: topCompanies?.length,
-        loading,
-        error,
-        endpointUsed: '/company/find',
-        sampleCompany: topCompanies?.[0] ? { allFields: Object.keys(topCompanies[0]) } : null
-    });
+
 
     const handleCompanyClick = (company: SimpleCompany) => {
         // Navigate to jobs/company page filtered by company name (same page logic)
         const params = new URLSearchParams();
         if (company.name) params.set("name", company.name);
-    router.push(`/jobs/companies?${params.toString()}`);
+        router.push(`/jobs/companies?${params.toString()}`);
     };
 
     if (loading) {
@@ -114,11 +108,7 @@ export default function TopCompaniesSection() {
 
                     <div className="space-y-6">
                         {topCompanies.map((company: SimpleCompany, index: number) => {
-                            console.log(`🏢 Company ${index + 1} - ${company.name} (from /company/find):`, {
-                                company_id: company.company_id,
-                                name: company.name,
-                                allFields: Object.keys(company)
-                            });
+
 
                             // Get website from company data
                             const website = (company as any).website || null;

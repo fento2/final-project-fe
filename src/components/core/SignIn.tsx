@@ -44,13 +44,13 @@ const SignIn = () => {
         setShowSignIn(false)
         setIsLogin(true);
         toast.success(data.message)
-        console.log(data)
+
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         toast.error(error.response?.data.message)
       }
-      console.log(error)
+
     } finally {
       setLoading(false)
     }

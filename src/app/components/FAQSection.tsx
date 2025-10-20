@@ -52,7 +52,6 @@ const FAQSection = () => {
     ]; const handleSendMessage = () => {
         if (message.trim()) {
             // Handle message sending logic here
-            console.log("Message sent:", message);
             setMessage("");
         }
     };

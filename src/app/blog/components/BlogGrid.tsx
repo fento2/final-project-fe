@@ -20,10 +20,10 @@ export default function BlogGrid() {
             setLoading(true);
             setError(null);
 
-            console.log('Fetching posts from backend...');
+
             const { data } = await apiCall.get('/blog');
 
-            console.log('Backend response:', data);
+
 
             // Handle different response structures
             const postsData = data?.data?.blogs || data?.blogs || data?.data || data || [];
@@ -51,9 +51,9 @@ export default function BlogGrid() {
                 }));
 
                 setPosts(transformedPosts);
-                console.log('Posts transformed and set successfully:', transformedPosts);
+
             } else {
-                console.log('Invalid posts data structure, setting empty array');
+
                 setPosts([]);
             }
         } catch (err: any) {
@@ -91,12 +91,12 @@ export default function BlogGrid() {
 
     // Filter posts by category
     const filteredPosts = useMemo(() => {
-        console.log("Filtering posts:", { posts, selectedCategory });
+
 
         if (selectedCategory === "All") {
             // Menampilkan semua post yang published
             const published = posts.filter((post: BlogPost) => post.status === 'published');
-            console.log("All posts filtered:", published);
+
             return published;
         }
 
@@ -104,7 +104,7 @@ export default function BlogGrid() {
         const categoryFiltered = posts.filter((post: BlogPost) =>
             post.category === selectedCategory && post.status === 'published'
         );
-        console.log("Category filtered posts:", categoryFiltered);
+
         return categoryFiltered;
     }, [posts, selectedCategory]);
 

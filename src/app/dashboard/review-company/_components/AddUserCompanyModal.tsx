@@ -89,7 +89,7 @@ export default function AddUserCompanyModal({
                 payload.company_id = Number(data.company_id);
             }
 
-            console.log(payload);
+
             await apiCall.post("/user-companies", payload);
             onSaved?.();
             onClose();

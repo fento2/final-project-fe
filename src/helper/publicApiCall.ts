@@ -16,24 +16,25 @@ export const fetchJobPublic = async (slug: string) => {
     const response = await publicApiCall.get(`/postings/get-detail/${slug}`);
     return response.data;
   } catch (error: any) {
-    console.log('Public detail endpoint failed, trying general postings...');
-    
     // If specific endpoint fails, try general postings
     try {
-      const response = await publicApiCall.get('/postings', {
-        params: { limit: 100, sort: 'created_at', order: 'desc' }
+      const response = await publicApiCall.get("/postings", {
+        params: { limit: 100, sort: "created_at", order: "desc" },
       });
-      const jobsData = response.data?.data?.data || response.data?.data || response.data || [];
+      const jobsData =
+        response.data?.data?.data || response.data?.data || response.data || [];
       const jobs = Array.isArray(jobsData) ? jobsData : [];
-      
+
       // Find job by slug or job_id
-      const foundJob = jobs.find((j: any) => j.slug === slug || j.job_id?.toString() === slug);
-      
+      const foundJob = jobs.find(
+        (j: any) => j.slug === slug || j.job_id?.toString() === slug
+      );
+
       if (foundJob) {
         return { data: foundJob };
       }
-      
-      throw new Error('Job not found in general postings');
+
+      throw new Error("Job not found in general postings");
     } catch (generalError) {
       throw generalError;
     }
@@ -43,7 +44,9 @@ export const fetchJobPublic = async (slug: string) => {
 // Helper function to fetch company data without authentication
 export const fetchCompanyPublic = async (companyName: string) => {
   try {
-    const response = await publicApiCall.get(`/company/name/${encodeURIComponent(companyName)}`);
+    const response = await publicApiCall.get(
+      `/company/name/${encodeURIComponent(companyName)}`
+    );
     return response.data;
   } catch (error) {
     throw error;

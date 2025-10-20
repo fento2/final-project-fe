@@ -42,7 +42,7 @@ export default function SubscriptionPage() {
             const resSubscription = await apiCall.get("/subscription");
             setSubscription(resSubscription.data.data);
         } catch (error) {
-            console.log(error);
+
         } finally {
             setLoading(false);
         }
