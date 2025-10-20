@@ -30,7 +30,7 @@ export default function ReviewCompanyPage() {
                 await apiCall.delete(`/user-companies/${user_company_id}`);
             }
         } catch (error) {
-            console.log(error);
+
         } finally {
             refetch();
         }

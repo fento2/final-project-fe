@@ -83,7 +83,7 @@ const ExperienceForm = () => {
             endDate: endDate || null,
             description: form.description,
         }
-        console.log(payload);
+
         const result = await apiCall.post("/experiences", payload);
         alert(result.status);
         setOpen(false);

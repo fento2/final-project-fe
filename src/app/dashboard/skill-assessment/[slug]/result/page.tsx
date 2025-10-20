@@ -25,10 +25,10 @@ export default function ResultSKillAssessmentPage() {
     const fetchData = async () => {
         try {
             const result = await apiCall.get(`/userAssessments/${resultRaw.user_assessment_id}`);
-            console.log(result.data.data);
+
             setData(result.data.data);
         } catch (error) {
-            console.log(error);
+
         }
     }
 

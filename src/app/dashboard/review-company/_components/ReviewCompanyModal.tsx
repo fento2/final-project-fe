@@ -55,7 +55,7 @@ export default function ReviewCompanyModal({ isOpen, item, onClose, onSaved }: P
                 rating_facilities: item.reviews?.rating_facilities || 1,
                 rating_career: item.reviews?.rating_career || 1,
             })
-            console.log(item.reviews?.review_id);
+
         }
     }, [isOpen, reset, item]);
 
@@ -105,7 +105,7 @@ export default function ReviewCompanyModal({ isOpen, item, onClose, onSaved }: P
             setOpen(false);
             onClose();
         } catch (error) {
-            console.log(error);
+
         } finally {
             setSaving(false)
         }

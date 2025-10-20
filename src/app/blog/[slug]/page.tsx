@@ -26,12 +26,11 @@ export default function BlogPage() {
             setLoading(true);
             setError(null);
 
-            console.log('Fetching blog post:', slug);
+
 
             // Coba fetch post spesifik berdasarkan slug
             try {
                 const { data } = await apiCall.get(`/blog/${slug}`);
-                console.log('Single post response:', data);
 
                 // Transform backend data to match frontend BlogPost interface
                 if (data?.data) {
@@ -82,7 +81,7 @@ export default function BlogPage() {
             } catch (slugErr: any) {
                 // Jika endpoint spesifik tidak ada, coba get semua posts dan cari berdasarkan slug
                 if (slugErr.response?.status === 404) {
-                    console.log('Single post endpoint not found, trying to get all posts...');
+
                     const { data } = await apiCall.get('/blog');
                     const postsData = data?.data?.blogs || data?.blogs || data?.data || data || [];
 
@@ -93,7 +92,7 @@ export default function BlogPage() {
                         );
 
                         if (foundPost) {
-                            console.log('Found post in all posts:', foundPost);
+
                             // Transform the found post
                             const transformedPost: BlogPost = {
                                 id: foundPost.id,
@@ -116,11 +115,11 @@ export default function BlogPage() {
                             };
                             setPost(transformedPost);
                         } else {
-                            console.log('Post not found in all posts');
+
                             setPost(null);
                         }
                     } else {
-                        console.log('Invalid posts data structure');
+
                         setPost(null);
                     }
                 } else {

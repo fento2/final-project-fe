@@ -27,7 +27,7 @@ export default function UserSubscriptionPage() {
             setError("");
             const { data } = await apiCall.get("/userSubscription/user-subscription");
             setData(data.data);
-            console.log(data.data);
+
         } catch (error: any) {
             setError(error.response.data.message || "Failed to load data");
         } finally {

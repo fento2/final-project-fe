@@ -31,7 +31,7 @@ export default function ProfileSkillsSection() {
                 setError(e?.response?.data?.message || e?.message || "Failed to load skills");
             } finally {
                 if (mounted) setLoading(false);
-                console.log(userSkills);
+
             }
         }
         load();

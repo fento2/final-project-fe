@@ -25,7 +25,7 @@ export default function AuthInit() {
                 }
             } catch (error) {
                 setLogOut();
-                console.log("keep-login error", error);
+
             } finally {
                 setChekLogin(false);
             }

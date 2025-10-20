@@ -7,21 +7,15 @@ import { useFeaturedJobs } from "@/hooks/useJobs";
 export default function FeatureJob() {
     const [page, setPage] = useState(1);
     const { jobs: featuredJobs, loading, error } = useFeaturedJobs(18); // Get more jobs for pagination
-    
+
     // Debug: Log featured jobs salary data
     useEffect(() => {
         if (featuredJobs && featuredJobs.length > 0) {
             const firstJob = featuredJobs[0] as any;
-            console.log('Featured Jobs - First job data from backend:', firstJob);
-            console.log('Featured Jobs - Salary fields:', {
-                salary: firstJob.salary,
-                periodSalary: firstJob.periodSalary,
-                currency: firstJob.currency,
-                expected_salary: firstJob.expected_salary
-            });
+
         }
     }, [featuredJobs]);
-    
+
     if (loading) {
         return (
             <section className="max-w-7xl mx-auto px-4 py-16 text-center">
@@ -67,8 +61,8 @@ export default function FeatureJob() {
             {/* Jobs Grid - list on mobile, grid on larger screens */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-12">
                 {currentPageJobs.map((job: any, i: number) => (
-                    <FeatureJobCard 
-                        key={job.job_id || job.id || i} 
+                    <FeatureJobCard
+                        key={job.job_id || job.id || i}
                         company={job.Companies?.name || job.Company?.name || job.company?.name || job.company || "Unknown Company"}
                         logo={job.Companies?.profile_picture || job.Company?.profile_picture || job.company?.profile_picture || "/images/logo.png"}
                         postedDate={job.createdAt ? new Date(job.createdAt).toLocaleDateString() : "Recently"}
@@ -90,40 +84,37 @@ export default function FeatureJob() {
             {totalPages > 1 && (
                 <div className="flex justify-center items-center space-x-2">
                     <button
-                        className={`p-2 rounded-xl transition-all duration-200 ${
-                            page <= 1 
-                                ? "bg-gray-100 text-gray-400 cursor-not-allowed" 
+                        className={`p-2 rounded-xl transition-all duration-200 ${page <= 1
+                                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                                 : "bg-white text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 shadow-sm"
-                        }`}
+                            }`}
                         onClick={() => setPage(page - 1)}
                         disabled={page <= 1}
                     >
                         <ChevronLeft className="w-5 h-5" />
                     </button>
-                    
+
                     {[...Array(totalPages)].map((_, index) => {
                         const num = index + 1;
                         return (
                             <button
                                 key={num}
-                                className={`px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
-                                    page === num 
-                                        ? "bg-indigo-600 text-white shadow-md" 
+                                className={`px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${page === num
+                                        ? "bg-indigo-600 text-white shadow-md"
                                         : "bg-white text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 shadow-sm"
-                                }`}
+                                    }`}
                                 onClick={() => setPage(num)}
                             >
                                 {num.toString().padStart(2, "0")}
                             </button>
                         );
                     })}
-                    
+
                     <button
-                        className={`p-2 rounded-xl transition-all duration-200 ${
-                            page >= totalPages 
-                                ? "bg-gray-100 text-gray-400 cursor-not-allowed" 
+                        className={`p-2 rounded-xl transition-all duration-200 ${page >= totalPages
+                                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
                                 : "bg-white text-gray-700 hover:bg-indigo-50 hover:text-indigo-600 shadow-sm"
-                        }`}
+                            }`}
                         onClick={() => setPage(page + 1)}
                         disabled={page >= totalPages}
                     >

@@ -21,7 +21,7 @@ export default function SkillAssessmentDetailPage() {
 
     const fetchData = async () => {
         const res = await apiCall.get(`/skillAssessments/${slug[0]}`);
-        console.log(res);
+
         setSkillAssessments(res.data.data);
     }
 
@@ -30,7 +30,7 @@ export default function SkillAssessmentDetailPage() {
     }, [])
 
     useEffect(() => {
-        console.log(skillAssessments);
+
     }, [skillAssessments])
 
     const handleStart = async () => {
@@ -52,7 +52,7 @@ export default function SkillAssessmentDetailPage() {
                         {skillAssessments[0].skill_name}
                     </CardContent>
                     <CardFooter className="justify-between">
-                        <Button variant="link"  className="cursor-pointer"><ArrowLeft /> Back</Button>
+                        <Button variant="link" className="cursor-pointer"><ArrowLeft /> Back</Button>
                         <Button className="bg-green-600 hover:bg-green-700" onClick={handleStart}>Start</Button>
                     </CardFooter>
                 </Card>
