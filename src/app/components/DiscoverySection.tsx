@@ -48,19 +48,13 @@ const DiscoverySection: React.FC = () => {
     // Convert API jobs to local Job type format
     const jobs: Job[] = React.useMemo(() => {
         if (!Array.isArray(apiJobs)) return [];
-        
+
         // Debug: Log first job to check salary data structure
         if (apiJobs.length > 0) {
             const firstJob = apiJobs[0] as any;
-            console.log('First job data from backend:', firstJob);
-            console.log('Salary fields:', {
-                salary: firstJob.salary,
-                periodSalary: firstJob.periodSalary,
-                currency: firstJob.currency,
-                expected_salary: firstJob.expected_salary
-            });
+
         }
-        
+
         return apiJobs.map((job: any) => ({
             id: job.job_id || job.id,
             company: job.Companies?.name || job.Company?.name || job.company?.name || "Unknown Company",
@@ -78,7 +72,7 @@ const DiscoverySection: React.FC = () => {
             lng: parseFloat(job.longitude) || 0,
             slug: job.slug,
         }));
-    }, [apiJobs]);    useEffect(() => {
+    }, [apiJobs]); useEffect(() => {
         // get user location
         if (typeof window !== "undefined" && navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -95,8 +89,8 @@ const DiscoverySection: React.FC = () => {
             );
         }
 
-// Use API data instead of dummy data
-    // Jobs will be loaded from the useJobs hook
+        // Use API data instead of dummy data
+        // Jobs will be loaded from the useJobs hook
     }, []);
 
     // compute sorted list by proximity if coords available
@@ -140,7 +134,7 @@ const DiscoverySection: React.FC = () => {
                 <p className="mt-4 text-gray-500 max-w-2xl mx-auto">
                     Showing jobs {selectedCity === 'Nearest' ? 'nearest to you' : `in ${selectedCity}`}. Allow location access for distance sorting.
                 </p>
-                <LocationSelector 
+                <LocationSelector
                     cities={cities}
                     selectedCity={selectedCity}
                     onCityChange={setSelectedCity}
@@ -149,7 +143,7 @@ const DiscoverySection: React.FC = () => {
 
             {/* Mobile Carousel */}
             <div className="block lg:hidden">
-                <MobileJobCarousel 
+                <MobileJobCarousel
                     jobs={displayedJobs}
                     loading={apiLoading}
                     coords={coords}
@@ -159,7 +153,7 @@ const DiscoverySection: React.FC = () => {
 
             {/* Desktop Grid */}
             <div className="hidden lg:block">
-                <JobGrid 
+                <JobGrid
                     jobs={displayedJobs}
                     loading={apiLoading}
                     coords={coords}

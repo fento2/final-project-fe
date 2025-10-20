@@ -11,9 +11,9 @@ interface FacebookShareButtonProps {
   onShare?: () => void;
 }
 
-export function FacebookShareButton({ 
-  href, 
-  layout = "button", 
+export function FacebookShareButton({
+  href,
+  layout = "button",
   size = "small",
   className = "",
   onShare
@@ -26,7 +26,7 @@ export function FacebookShareButton({
       // Parse the Facebook button
       try {
         FB.XFBML.parse(containerRef.current);
-        console.log("[FacebookShareButton] XFBML parsed successfully");
+
       } catch (e) {
         console.warn("[FacebookShareButton] XFBML parse failed:", e);
       }
@@ -35,8 +35,8 @@ export function FacebookShareButton({
 
   return (
     <div ref={containerRef} className={className}>
-      <div 
-        className="fb-share-button" 
+      <div
+        className="fb-share-button"
         data-href={href}
         data-layout={layout}
         data-size={size}

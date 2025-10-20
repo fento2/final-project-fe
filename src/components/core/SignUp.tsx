@@ -56,7 +56,7 @@ const SignUp = () => {
         toast.error(error.response?.data.message)
 
       }
-      console.log(error)
+
     } finally {
       setLoading(false)
     }

@@ -22,7 +22,7 @@ export const postingsCreateFetch = async (
     }
   } catch (error) {
     toast.error("faild create job");
-    console.log(error);
+
     return false;
   } finally {
     setLoading(false);
@@ -65,7 +65,6 @@ export const getDetailForEditFetch = async (
       setEditSkills(data.data.skills);
     }
   } catch (error) {
-    console.log(error);
   } finally {
     setLoading(false);
   }
@@ -111,7 +110,7 @@ export const updateJobPostingFetch = async (
     if (!result.success) {
       const messages = result.error.issues[0].message;
       toast.error(messages);
-      console.log(result.error);
+
       return;
     }
     const { data } = await apiCall.patch(
@@ -124,7 +123,7 @@ export const updateJobPostingFetch = async (
     }
   } catch (error) {
     toast.error("faild update job");
-    console.log(error);
+
     return false;
   } finally {
     setLoading(false);
@@ -137,7 +136,5 @@ export const getApplicantIdFetch = async (job_id: number) => {
     if (data.success) {
       return data;
     }
-  } catch (error) {
-    console.log(error);
-  }
+  } catch (error) {}
 };
