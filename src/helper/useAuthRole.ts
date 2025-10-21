@@ -1,6 +1,6 @@
 "use client";
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { redirect, useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/zustand/authStore";
 
 export const useAuthRole = (validRole: string) => {
@@ -13,7 +13,7 @@ export const useAuthRole = (validRole: string) => {
     if (role === "DEVELOPER") return;
 
     if (!isLogin || role !== validRole) {
-      router.replace("/");
+      redirect("/");
     }
   }, [role, validRole, isLogin, checkLogin, router]);
 
